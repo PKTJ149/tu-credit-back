@@ -11,4 +11,5 @@ Recommended files:
 - `current-credit-transfer-flow.md`
 - `future-auth-onboarding-flow.md`
 - `future-finance-payment-flow.md`
+- `future-credit-transfer-flow.md`
 - `future-flow-priority-plan.md`
