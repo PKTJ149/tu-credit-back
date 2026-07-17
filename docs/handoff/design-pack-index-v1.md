@@ -26,6 +26,22 @@ This index groups the current redesign-ready documentation into one place for th
 - [learning-registration-screen-spec-v1.md](learning-registration-screen-spec-v1.md)
 - [public-discovery-screen-spec-v1.md](public-discovery-screen-spec-v1.md)
 
+## Wireframe Blueprints
+
+- [auth-onboarding-wireframe-blueprint-v1.md](auth-onboarding-wireframe-blueprint-v1.md)
+- [finance-payment-wireframe-blueprint-v1.md](finance-payment-wireframe-blueprint-v1.md)
+- [credit-transfer-wireframe-blueprint-v1.md](credit-transfer-wireframe-blueprint-v1.md)
+- [learning-registration-wireframe-blueprint-v1.md](learning-registration-wireframe-blueprint-v1.md)
+- [public-discovery-wireframe-blueprint-v1.md](public-discovery-wireframe-blueprint-v1.md)
+
+## UX Copy Drafts
+
+- [auth-onboarding-ux-copy-draft-v1.md](auth-onboarding-ux-copy-draft-v1.md)
+- [finance-payment-ux-copy-draft-v1.md](finance-payment-ux-copy-draft-v1.md)
+- [credit-transfer-ux-copy-draft-v1.md](credit-transfer-ux-copy-draft-v1.md)
+- [learning-registration-ux-copy-draft-v1.md](learning-registration-ux-copy-draft-v1.md)
+- [public-discovery-ux-copy-draft-v1.md](public-discovery-ux-copy-draft-v1.md)
+
 ## Design Briefs
 
 - [auth-onboarding-design-brief-v1.md](auth-onboarding-design-brief-v1.md)
@@ -49,4 +65,3 @@ This index groups the current redesign-ready documentation into one place for th
 4. Credit Transfer
 5. Learning and Registration
 6. Public Discovery
-
