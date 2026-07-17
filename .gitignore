@@ -20,4 +20,8 @@ out/
 .turbo/
 .vercel/
 .cache/
+*.tsbuildinfo
+
+# Local Claude Code settings (machine-specific)
+.claude/settings.local.json
 
