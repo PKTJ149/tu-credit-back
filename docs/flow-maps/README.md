@@ -9,4 +9,6 @@ Recommended files:
 - `current-learning-registration-flow.md`
 - `current-finance-payment-flow.md`
 - `current-credit-transfer-flow.md`
+- `future-auth-onboarding-flow.md`
+- `future-finance-payment-flow.md`
 - `future-flow-priority-plan.md`
