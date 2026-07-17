@@ -17,6 +17,7 @@ This folder contains the working documentation for the CREDIT BANK website redes
 - [state-models/auth-onboarding-state-model.md](state-models/auth-onboarding-state-model.md): Future-state auth and onboarding definition for redesign and handoff.
 - [state-models/payment-state-model.md](state-models/payment-state-model.md): Future-state payment lifecycle for finance and payment redesign.
 - [state-models/credit-transfer-state-model.md](state-models/credit-transfer-state-model.md): Future-state credit transfer lifecycle for guided request redesign.
+- [handoff/design-pack-index-v1.md](handoff/design-pack-index-v1.md): Single entry point for the current design-ready documentation pack.
 
 ## Folders
 
