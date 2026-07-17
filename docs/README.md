@@ -6,6 +6,9 @@ This folder contains the working documentation for the CREDIT BANK website redes
 
 - [00-redesign-operating-plan.md](00-redesign-operating-plan.md): Required project sequence and working rules.
 - [01-current-website-audit.md](01-current-website-audit.md): Current website inventory and first-pass audit notes.
+- [02-current-page-inventory.md](02-current-page-inventory.md): Current page-by-page inventory from the source website.
+- [03-current-flow-map.md](03-current-flow-map.md): Current observed flow map and cross-flow dependencies.
+- [04-ux-ui-audit-findings.md](04-ux-ui-audit-findings.md): First-pass UX/UI findings with severity, impact, and recommendations.
 
 ## Folders
 
@@ -27,4 +30,3 @@ Each audit or planning document should clearly distinguish:
 - UX risk
 - Recommendation
 - Open question
-
