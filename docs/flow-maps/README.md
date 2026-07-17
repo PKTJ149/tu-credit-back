@@ -10,4 +10,3 @@ Recommended files:
 - `current-finance-payment-flow.md`
 - `current-credit-transfer-flow.md`
 - `future-flow-priority-plan.md`
-
