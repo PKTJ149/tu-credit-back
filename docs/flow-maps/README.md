@@ -12,4 +12,6 @@ Recommended files:
 - `future-auth-onboarding-flow.md`
 - `future-finance-payment-flow.md`
 - `future-credit-transfer-flow.md`
+- `future-learning-registration-flow.md`
+- `future-public-discovery-flow.md`
 - `future-flow-priority-plan.md`
