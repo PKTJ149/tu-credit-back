@@ -31,7 +31,7 @@ export default function ResetSentPage() {
         </div>
 
         <Link
-          href="/"
+          href="/login"
           className="ui-button-primary w-full"
         >
           กลับไปหน้าเข้าสู่ระบบ

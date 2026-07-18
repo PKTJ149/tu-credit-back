@@ -1,8 +1,23 @@
 import Link from "next/link";
-import { LayoutDashboard, ClipboardList, Wallet, FileText } from "lucide-react";
+import {
+  LayoutDashboard,
+  Compass,
+  ClipboardList,
+  Wallet,
+  FileText,
+  GraduationCap,
+  ArrowLeftRight,
+} from "lucide-react";
 import type { ReactNode } from "react";
 
-type MemberNavItem = "dashboard" | "registrations" | "finance" | "documents";
+type MemberNavItem =
+  | "dashboard"
+  | "learning"
+  | "registrations"
+  | "finance"
+  | "documents"
+  | "academic"
+  | "transfer";
 
 type MemberPageShellProps = {
   title: string;
@@ -13,8 +28,11 @@ type MemberPageShellProps = {
 
 const navItems: { id: MemberNavItem; label: string; href: string; icon: typeof LayoutDashboard }[] = [
   { id: "dashboard", label: "แดชบอร์ด", href: "/dashboard", icon: LayoutDashboard },
+  { id: "learning", label: "เรียนรู้", href: "/learning", icon: Compass },
   { id: "registrations", label: "การลงทะเบียน", href: "/registrations", icon: ClipboardList },
+  { id: "transfer", label: "เทียบโอนหน่วยกิต", href: "/transfer", icon: ArrowLeftRight },
   { id: "finance", label: "การเงิน", href: "/finance", icon: Wallet },
+  { id: "academic", label: "ผลการเรียน", href: "/academic-progress", icon: GraduationCap },
   { id: "documents", label: "เอกสาร", href: "/finance/documents", icon: FileText },
 ];
 

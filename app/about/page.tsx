@@ -1,10 +1,10 @@
 import { PublicPageShell } from "@/components/public-page-shell";
-import { Home } from "@/components/discovery/home";
+import { About } from "@/components/discovery/about";
 
-export default function HomePage() {
+export default function AboutPage() {
   return (
     <PublicPageShell>
-      <Home />
+      <About />
     </PublicPageShell>
   );
 }

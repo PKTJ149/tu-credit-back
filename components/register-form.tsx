@@ -152,7 +152,7 @@ export function RegisterForm() {
         <div className="text-sm text-[var(--ink-muted)]">
           มีบัญชีอยู่แล้ว?{" "}
           <Link
-            href="/"
+            href="/login"
             className="font-medium text-[var(--primary)] transition hover:text-[color:color-mix(in_oklch,var(--primary)_84%,black)]"
           >
             เข้าสู่ระบบ

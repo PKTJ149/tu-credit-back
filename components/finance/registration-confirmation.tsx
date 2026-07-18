@@ -74,16 +74,27 @@ export function RegistrationConfirmation({
         </div>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Link href="/finance" className="ui-button-primary w-full sm:w-auto sm:flex-1">
-            ไปที่หน้าการเงิน
-            <ArrowRight aria-hidden="true" className="h-4 w-4" />
-          </Link>
-          <Link
-            href="/finance"
-            className="ui-button-secondary w-full sm:w-auto sm:flex-1"
-          >
-            ดูรายการลงทะเบียนของฉัน
-          </Link>
+          {paymentRequired ? (
+            <>
+              <Link href="/finance" className="ui-button-primary w-full sm:w-auto sm:flex-1">
+                ไปที่หน้าการเงิน
+                <ArrowRight aria-hidden="true" className="h-4 w-4" />
+              </Link>
+              <Link href="/registrations" className="ui-button-secondary w-full sm:w-auto sm:flex-1">
+                ดูรายการลงทะเบียนของฉัน
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/registrations" className="ui-button-primary w-full sm:w-auto sm:flex-1">
+                ดูรายการลงทะเบียนของฉัน
+                <ArrowRight aria-hidden="true" className="h-4 w-4" />
+              </Link>
+              <Link href="/finance" className="ui-button-secondary w-full sm:w-auto sm:flex-1">
+                ไปที่หน้าการเงิน
+              </Link>
+            </>
+          )}
         </div>
       </section>
     </div>

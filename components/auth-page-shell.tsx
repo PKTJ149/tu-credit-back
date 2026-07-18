@@ -87,7 +87,7 @@ export function AuthPageShell({
               ช่วยเหลือ
             </a>
             <Link
-              href="/"
+              href="/login"
               className="ml-4 inline-flex h-10 items-center rounded-lg border border-[color:var(--border)] bg-[var(--background)] px-4 font-medium text-[var(--foreground)] hover:bg-[var(--surface)] focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
             >
               เข้าสู่ระบบ

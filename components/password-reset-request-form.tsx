@@ -64,7 +64,7 @@ export function PasswordResetRequestForm() {
         </button>
 
         <Link
-          href="/"
+          href="/login"
           className="inline-flex text-sm font-medium text-[var(--primary)] transition hover:text-[color:color-mix(in_oklch,var(--primary)_84%,black)]"
         >
           กลับไปหน้าเข้าสู่ระบบ

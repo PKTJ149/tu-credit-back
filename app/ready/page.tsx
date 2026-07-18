@@ -62,7 +62,7 @@ export default function ReadyPage() {
         </div>
 
         <Link
-          href="/"
+          href="/registrations"
           className="ui-button-primary w-full"
         >
           ดำเนินการต่อ
