@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useState } from "react";
 import { Stepper } from "@/components/credit-transfer/stepper";
@@ -9,13 +9,20 @@ type RequestErrors = {
   sourceInstitution?: string;
   subjectName?: string;
   requestDetail?: string;
+  destinationInstitution?: string;
+  destinationType?: string;
 };
 
 export function TransferRequestForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const direction = searchParams.get("direction") === "out" ? "out" : "in";
+
   const [sourceInstitution, setSourceInstitution] = useState("");
   const [subjectName, setSubjectName] = useState("");
   const [requestDetail, setRequestDetail] = useState("");
+  const [destinationInstitution, setDestinationInstitution] = useState("");
+  const [destinationType, setDestinationType] = useState("");
   const [errors, setErrors] = useState<RequestErrors>({});
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -23,12 +30,23 @@ export function TransferRequestForm() {
 
     const nextErrors: RequestErrors = {};
 
-    if (!sourceInstitution.trim()) {
-      nextErrors.sourceInstitution = "กรุณากรอกชื่อสถาบันต้นทาง";
-    }
-
-    if (!subjectName.trim()) {
-      nextErrors.subjectName = "กรุณากรอกชื่อรายวิชาหรือหลักสูตร";
+    if (direction === "in") {
+      if (!sourceInstitution.trim()) {
+        nextErrors.sourceInstitution = "กรุณากรอกชื่อสถาบันต้นทาง";
+      }
+      if (!subjectName.trim()) {
+        nextErrors.subjectName = "กรุณากรอกชื่อรายวิชาหรือหลักสูตร";
+      }
+    } else {
+      if (!subjectName.trim()) {
+        nextErrors.subjectName = "กรุณากรอกรายวิชาที่เสร็จสิ้นแล้วที่ต้องการส่ง";
+      }
+      if (!destinationInstitution.trim()) {
+        nextErrors.destinationInstitution = "กรุณากรอกชื่อสถาบันปลายทาง";
+      }
+      if (!destinationType.trim()) {
+        nextErrors.destinationType = "กรุณาระบุประเภทสถาบันปลายทาง";
+      }
     }
 
     if (!requestDetail.trim()) {
@@ -53,33 +71,41 @@ export function TransferRequestForm() {
         onSubmit={handleSubmit}
         noValidate
       >
-        <div className="space-y-2">
-          <label
-            htmlFor="sourceInstitution"
-            className="text-sm font-medium text-[var(--foreground)]"
-          >
-            สถาบันต้นทาง
-          </label>
-          <input
-            id="sourceInstitution"
-            type="text"
-            placeholder="เช่น มหาวิทยาลัยเกษตรศาสตร์"
-            value={sourceInstitution}
-            onChange={(event) => setSourceInstitution(event.target.value)}
-            aria-invalid={errors.sourceInstitution ? "true" : "false"}
-            className="ui-input"
-          />
-          {errors.sourceInstitution ? (
-            <p className="ui-error-text">{errors.sourceInstitution}</p>
-          ) : null}
-        </div>
+        <p className="text-sm font-medium text-[var(--primary)]">
+          {direction === "in" ? "เทียบโอนเข้า" : "เทียบโอนออก"}
+        </p>
+
+        {direction === "in" ? (
+          <div className="space-y-2">
+            <label
+              htmlFor="sourceInstitution"
+              className="text-sm font-medium text-[var(--foreground)]"
+            >
+              สถาบันต้นทาง
+            </label>
+            <input
+              id="sourceInstitution"
+              type="text"
+              placeholder="เช่น มหาวิทยาลัยเกษตรศาสตร์"
+              value={sourceInstitution}
+              onChange={(event) => setSourceInstitution(event.target.value)}
+              aria-invalid={errors.sourceInstitution ? "true" : "false"}
+              className="ui-input"
+            />
+            {errors.sourceInstitution ? (
+              <p className="ui-error-text">{errors.sourceInstitution}</p>
+            ) : null}
+          </div>
+        ) : null}
 
         <div className="space-y-2">
           <label
             htmlFor="subjectName"
             className="text-sm font-medium text-[var(--foreground)]"
           >
-            รายวิชาหรือหลักสูตรที่ต้องการเทียบโอน
+            {direction === "in"
+              ? "รายวิชาหรือหลักสูตรที่ต้องการเทียบโอน"
+              : "รายวิชาที่เสร็จสิ้นแล้วที่ต้องการส่ง"}
           </label>
           <input
             id="subjectName"
@@ -94,6 +120,52 @@ export function TransferRequestForm() {
             <p className="ui-error-text">{errors.subjectName}</p>
           ) : null}
         </div>
+
+        {direction === "out" ? (
+          <>
+            <div className="space-y-2">
+              <label
+                htmlFor="destinationInstitution"
+                className="text-sm font-medium text-[var(--foreground)]"
+              >
+                สถาบันปลายทาง
+              </label>
+              <input
+                id="destinationInstitution"
+                type="text"
+                placeholder="เช่น มหาวิทยาลัยเชียงใหม่"
+                value={destinationInstitution}
+                onChange={(event) => setDestinationInstitution(event.target.value)}
+                aria-invalid={errors.destinationInstitution ? "true" : "false"}
+                className="ui-input"
+              />
+              {errors.destinationInstitution ? (
+                <p className="ui-error-text">{errors.destinationInstitution}</p>
+              ) : null}
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="destinationType"
+                className="text-sm font-medium text-[var(--foreground)]"
+              >
+                ประเภทสถาบันปลายทาง
+              </label>
+              <input
+                id="destinationType"
+                type="text"
+                placeholder="เช่น มหาวิทยาลัยของรัฐ"
+                value={destinationType}
+                onChange={(event) => setDestinationType(event.target.value)}
+                aria-invalid={errors.destinationType ? "true" : "false"}
+                className="ui-input"
+              />
+              {errors.destinationType ? (
+                <p className="ui-error-text">{errors.destinationType}</p>
+              ) : null}
+            </div>
+          </>
+        ) : null}
 
         <div className="space-y-2">
           <label

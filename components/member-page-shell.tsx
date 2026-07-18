@@ -17,7 +17,8 @@ type MemberNavItem =
   | "finance"
   | "documents"
   | "academic"
-  | "transfer";
+  | "transfer"
+  | "account";
 
 type MemberPageShellProps = {
   title: string;
@@ -85,9 +86,13 @@ export function MemberPageShell({
             })}
           </nav>
 
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:color-mix(in_oklch,var(--secondary)_45%,white)] text-sm font-semibold text-[var(--secondary-foreground)]">
+          <Link
+            href="/profile"
+            aria-label="โปรไฟล์ของฉัน"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:color-mix(in_oklch,var(--secondary)_45%,white)] text-sm font-semibold text-[var(--secondary-foreground)] focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
+          >
             นศ
-          </div>
+          </Link>
         </div>
 
         <nav
