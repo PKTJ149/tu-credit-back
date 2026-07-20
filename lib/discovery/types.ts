@@ -4,6 +4,7 @@ export type Program = {
   name: string;
   credits: number;
   level: string;
+  faculty: string;
   summary: string;
 };
 

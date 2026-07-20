@@ -33,7 +33,7 @@ type MemberPageShellProps = {
 
 const navItems: { id: MemberNavItem; label: string; href: string; icon: typeof LayoutDashboard }[] = [
   { id: "dashboard", label: "แดชบอร์ด", href: "/dashboard", icon: LayoutDashboard },
-  { id: "learning", label: "เรียนรู้", href: "/learning", icon: Compass },
+  { id: "learning", label: "เป้าหมายการเรียนรู้", href: "/learning", icon: Compass },
   { id: "programs", label: "หลักสูตร", href: "/member/programs", icon: LibraryBig },
   { id: "subjects", label: "รายวิชา", href: "/member/subjects", icon: BookOpen },
   { id: "registrations", label: "การลงทะเบียน", href: "/registrations", icon: ClipboardList },

@@ -12,6 +12,7 @@ const programs: Program[] = [
     name: "หลักสูตรประกาศนียบัตรการพัฒนาซอฟต์แวร์",
     credits: 18,
     level: "ประกาศนียบัตร",
+    faculty: "คณะวิทยาการเรียนรู้และศึกษาศาสตร์",
     summary: "เส้นทางการเรียนรู้สำหรับผู้ที่ต้องการทักษะการพัฒนาซอฟต์แวร์อย่างเป็นระบบ",
   },
   {
@@ -20,6 +21,7 @@ const programs: Program[] = [
     name: "หลักสูตรประกาศนียบัตรการวิเคราะห์ข้อมูล",
     credits: 15,
     level: "ประกาศนียบัตร",
+    faculty: "คณะวิทยาศาสตร์และเทคโนโลยี",
     summary: "เรียนรู้การวิเคราะห์และนำเสนอข้อมูลเพื่อการตัดสินใจ",
   },
   {
@@ -28,6 +30,7 @@ const programs: Program[] = [
     name: "หลักสูตรประกาศนียบัตรการตลาดดิจิทัล",
     credits: 12,
     level: "ประกาศนียบัตร",
+    faculty: "คณะพาณิชยศาสตร์และการบัญชี",
     summary: "ปูพื้นฐานการตลาดยุคดิจิทัลสำหรับผู้ประกอบการและนักการตลาด",
   },
   {
@@ -36,6 +39,7 @@ const programs: Program[] = [
     name: "อบรมเชิงปฏิบัติการการพูดในที่สาธารณะ",
     credits: 3,
     level: "อบรมระยะสั้น",
+    faculty: "คณะศิลปศาสตร์",
     summary: "ฝึกทักษะการพูดและการนำเสนออย่างมั่นใจ",
   },
   {
@@ -44,6 +48,7 @@ const programs: Program[] = [
     name: "อบรมความรู้ทางการเงินเบื้องต้น",
     credits: 3,
     level: "อบรมระยะสั้น",
+    faculty: "คณะพาณิชยศาสตร์และการบัญชี",
     summary: "ปูพื้นฐานการวางแผนการเงินส่วนบุคคล",
   },
   {
@@ -52,11 +57,13 @@ const programs: Program[] = [
     name: "หลักสูตรประกาศนียบัตรพื้นฐานปัญญาประดิษฐ์",
     credits: 15,
     level: "ประกาศนียบัตร",
+    faculty: "คณะวิทยาศาสตร์และเทคโนโลยี",
     summary: "ทำความเข้าใจแนวคิดและการประยุกต์ใช้ปัญญาประดิษฐ์เบื้องต้น",
   },
 ];
 
-const levelOptions = Array.from(new Set(programs.map((program) => program.level)));
+const levelOptions = Array.from(new Set(programs.map((p) => p.level)));
+const facultyOptions = Array.from(new Set(programs.map((p) => p.faculty)));
 
 type ProgramsListProps = {
   showHeading?: boolean;
@@ -66,6 +73,7 @@ type ProgramsListProps = {
 export function ProgramsList({ showHeading = true, detailBasePath = "/programs" }: ProgramsListProps) {
   const [searchValue, setSearchValue] = useState("");
   const [levelFilter, setLevelFilter] = useState("");
+  const [facultyFilter, setFacultyFilter] = useState("");
 
   const filteredPrograms = useMemo(() => {
     const query = searchValue.trim().toLowerCase();
@@ -77,10 +85,11 @@ export function ProgramsList({ showHeading = true, detailBasePath = "/programs" 
         program.summary.toLowerCase().includes(query);
 
       const matchesLevel = levelFilter.length === 0 || program.level === levelFilter;
+      const matchesFaculty = facultyFilter.length === 0 || program.faculty === facultyFilter;
 
-      return matchesQuery && matchesLevel;
+      return matchesQuery && matchesLevel && matchesFaculty;
     });
-  }, [searchValue, levelFilter]);
+  }, [searchValue, levelFilter, facultyFilter]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -99,10 +108,10 @@ export function ProgramsList({ showHeading = true, detailBasePath = "/programs" 
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="ค้นหาหลักสูตร"
-        filterOptions={levelOptions}
-        filterValue={levelFilter}
-        onFilterChange={setLevelFilter}
-        filterLabel="ระดับ"
+        filters={[
+          { label: "ระดับ", options: levelOptions, value: levelFilter, onChange: setLevelFilter },
+          { label: "คณะ", options: facultyOptions, value: facultyFilter, onChange: setFacultyFilter },
+        ]}
       />
 
       {filteredPrograms.length > 0 ? (

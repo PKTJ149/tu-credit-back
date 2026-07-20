@@ -42,7 +42,7 @@ const subjects: Subject[] = [
     id: "s5",
     slug: "english-communication",
     name: "การสื่อสารภาษาอังกฤษเพื่อการทำงาน",
-    credits: 3,
+    credits: 2,
     faculty: "คณะศิลปศาสตร์",
     summary: "พัฒนาทักษะภาษาอังกฤษสำหรับการทำงานจริง",
   },
@@ -54,9 +54,28 @@ const subjects: Subject[] = [
     faculty: "คณะวิทยาศาสตร์และเทคโนโลยี",
     summary: "แนวคิดพื้นฐานของการออกแบบและดำเนินการวิจัย",
   },
+  {
+    id: "s7",
+    slug: "design-thinking",
+    name: "การคิดเชิงออกแบบ",
+    credits: 1,
+    faculty: "คณะศิลปศาสตร์",
+    summary: "กระบวนการออกแบบที่เน้นผู้ใช้เป็นศูนย์กลาง",
+  },
+  {
+    id: "s8",
+    slug: "accounting-basics",
+    name: "บัญชีเบื้องต้นสำหรับผู้ประกอบการ",
+    credits: 2,
+    faculty: "คณะพาณิชยศาสตร์และการบัญชี",
+    summary: "หลักการบัญชีเบื้องต้นและการอ่านงบการเงิน",
+  },
 ];
 
-const facultyOptions = Array.from(new Set(subjects.map((subject) => subject.faculty)));
+const facultyOptions = Array.from(new Set(subjects.map((s) => s.faculty)));
+const creditOptions = Array.from(new Set(subjects.map((s) => `${s.credits} หน่วยกิต`))).sort(
+  (a, b) => Number(a) - Number(b),
+);
 
 type SubjectsListProps = {
   showHeading?: boolean;
@@ -66,6 +85,7 @@ type SubjectsListProps = {
 export function SubjectsList({ showHeading = true, detailBasePath = "/subjects" }: SubjectsListProps) {
   const [searchValue, setSearchValue] = useState("");
   const [facultyValue, setFacultyValue] = useState("");
+  const [creditsValue, setCreditsValue] = useState("");
 
   const filteredSubjects = useMemo(() => {
     const normalizedSearch = searchValue.trim().toLowerCase();
@@ -77,10 +97,11 @@ export function SubjectsList({ showHeading = true, detailBasePath = "/subjects" 
         subject.summary.toLowerCase().includes(normalizedSearch);
 
       const matchesFaculty = facultyValue.length === 0 || subject.faculty === facultyValue;
+      const matchesCredits = creditsValue.length === 0 || `${subject.credits} หน่วยกิต` === creditsValue;
 
-      return matchesSearch && matchesFaculty;
+      return matchesSearch && matchesFaculty && matchesCredits;
     });
-  }, [searchValue, facultyValue]);
+  }, [searchValue, facultyValue, creditsValue]);
 
   return (
     <div className="flex flex-col gap-8">
@@ -99,10 +120,15 @@ export function SubjectsList({ showHeading = true, detailBasePath = "/subjects" 
         searchValue={searchValue}
         onSearchChange={setSearchValue}
         searchPlaceholder="ค้นหารายวิชา"
-        filterOptions={facultyOptions}
-        filterValue={facultyValue}
-        onFilterChange={setFacultyValue}
-        filterLabel="คณะ"
+        filters={[
+          { label: "คณะ", options: facultyOptions, value: facultyValue, onChange: setFacultyValue },
+          {
+            label: "หน่วยกิต",
+            options: creditOptions.map((c) => `${c} หน่วยกิต`),
+            value: creditsValue,
+            onChange: setCreditsValue,
+          },
+        ]}
       />
 
       {filteredSubjects.length > 0 ? (
