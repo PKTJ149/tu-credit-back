@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { FileX } from "lucide-react";
 
 import { DocumentRow, type FinanceDocument } from "@/components/finance/document-row";
@@ -20,11 +21,14 @@ export function DocumentsArchive({ documents }: DocumentsArchiveProps) {
           ))}
         </div>
       ) : (
-        <div className="mt-4 flex flex-col items-center gap-3 rounded-lg border border-dashed border-[color:var(--border)] px-6 py-12 text-center">
+        <div className="mt-4 flex flex-col items-center gap-4 rounded-lg border border-dashed border-[color:var(--border)] px-6 py-12 text-center">
           <FileX aria-hidden="true" className="h-8 w-8 text-[var(--ink-subtle)]" />
           <p className="text-sm leading-7 text-[var(--ink-muted)]">
             ยังไม่มีเอกสารทางการเงินให้ดาวน์โหลดในขณะนี้
           </p>
+          <Link href="/finance" className="ui-button-secondary">
+            ดูสถานะการเงิน
+          </Link>
         </div>
       )}
     </section>

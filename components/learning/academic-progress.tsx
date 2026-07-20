@@ -8,13 +8,16 @@ type AcademicProgressProps = {
   records: AcademicRecord[];
 };
 
-const summaryBlocks = [
-  { label: "หน่วยกิตสะสม", value: "9 หน่วยกิต" },
-  { label: "รายวิชาที่เสร็จสิ้น", value: "3 รายวิชา" },
-  { label: "ผลการเรียนล่าสุด", value: "เกรด A" },
-];
-
 export function AcademicProgress({ records }: AcademicProgressProps) {
+  const totalCredits = records.reduce((sum, r) => sum + r.credits, 0);
+  const latestGrade = records.length > 0 ? records[0].grade : "—";
+
+  const summaryBlocks = [
+    { label: "หน่วยกิตสะสม", value: totalCredits > 0 ? `${totalCredits} หน่วยกิต` : "0 หน่วยกิต" },
+    { label: "รายวิชาที่เสร็จสิ้น", value: `${records.length} รายวิชา` },
+    { label: "ผลการเรียนล่าสุด", value: latestGrade !== "—" ? `เกรด ${latestGrade}` : "—" },
+  ];
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-3">

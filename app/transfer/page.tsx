@@ -8,7 +8,7 @@ export default function TransferPage() {
       description="เลือกประเภทคำขอเทียบโอนที่ตรงกับความต้องการของคุณ และตรวจสอบสถานะคำขอที่ผ่านมา"
       currentNav="transfer"
     >
-      <TransferHub />
+      <TransferHub recentRequests={[]} />
     </MemberPageShell>
   );
 }

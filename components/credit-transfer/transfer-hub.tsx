@@ -1,28 +1,15 @@
 import Link from "next/link";
-import { ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { ArrowDownToLine, ArrowUpFromLine, ClipboardList } from "lucide-react";
 import { SectionCard } from "@/components/finance/section-card";
 import { TransferTypeCard } from "@/components/credit-transfer/transfer-type-card";
 import { RequestRow } from "@/components/credit-transfer/request-row";
 import type { TransferRequest } from "@/lib/credit-transfer/transfer-state";
 
-const recentRequests: TransferRequest[] = [
-  {
-    id: "t1",
-    type: "in",
-    title: "เทียบโอนรายวิชาแคลคูลัส 1 จากมหาวิทยาลัยเกษตรศาสตร์",
-    submittedDate: "10 ก.ค. 2569",
-    state: "under-review",
-  },
-  {
-    id: "t2",
-    type: "out",
-    title: "ส่งผลการเรียนไปยังมหาวิทยาลัยเชียงใหม่",
-    submittedDate: "2 มิ.ย. 2569",
-    state: "approved",
-  },
-];
+type TransferHubProps = {
+  recentRequests?: TransferRequest[];
+};
 
-export function TransferHub() {
+export function TransferHub({ recentRequests = [] }: TransferHubProps) {
   return (
     <div className="space-y-6">
       <SectionCard>
@@ -61,22 +48,33 @@ export function TransferHub() {
       </div>
 
       <SectionCard title="คำขอล่าสุด">
-        <div>
-          {recentRequests.map((request) => (
-            <RequestRow
-              key={request.id}
-              request={request}
-              actionLabel="ดูรายละเอียด"
-              actionHref="/transfer/history"
-            />
-          ))}
-        </div>
-        <Link
-          href="/transfer/history"
-          className="mt-4 inline-flex text-sm font-medium text-[var(--primary)] hover:underline focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
-        >
-          ดูประวัติคำขอทั้งหมด
-        </Link>
+        {recentRequests.length > 0 ? (
+          <>
+            <div>
+              {recentRequests.map((request) => (
+                <RequestRow
+                  key={request.id}
+                  request={request}
+                  actionLabel="ดูรายละเอียด"
+                  actionHref="/transfer/history"
+                />
+              ))}
+            </div>
+            <Link
+              href="/transfer/history"
+              className="mt-4 inline-flex text-sm font-medium text-[var(--primary)] hover:underline focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
+            >
+              ดูประวัติคำขอทั้งหมด
+            </Link>
+          </>
+        ) : (
+          <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed border-[color:var(--border)] px-6 py-10 text-center">
+            <ClipboardList aria-hidden="true" className="h-7 w-7 text-[var(--ink-subtle)]" />
+            <p className="text-sm leading-7 text-[var(--ink-muted)]">
+              ยังไม่มีคำขอเทียบโอน เลือกประเภทด้านบนเพื่อเริ่มคำขอแรกของคุณ
+            </p>
+          </div>
+        )}
       </SectionCard>
     </div>
   );

@@ -8,7 +8,7 @@ export default function LearningPage() {
       description="ติดตามความคืบหน้าตามหลักสูตรเป้าหมาย ดูช่องว่างหน่วยกิต และวางแผนรายวิชาถัดไป"
       currentNav="learning"
     >
-      <LearningGoals />
+      <LearningGoals hasGoal={false} />
     </MemberPageShell>
   );
 }

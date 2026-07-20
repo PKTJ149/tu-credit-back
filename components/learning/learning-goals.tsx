@@ -220,7 +220,39 @@ const careerPaths = [
 const progressPct = Math.round((goal.earnedCredits / goal.totalCredits) * 100);
 const missingCredits = goal.totalCredits - goal.earnedCredits;
 
-export function LearningGoals() {
+type LearningGoalsProps = {
+  hasGoal?: boolean;
+};
+
+export function LearningGoals({ hasGoal = true }: LearningGoalsProps) {
+  if (!hasGoal) {
+    return (
+      <div className="flex flex-col items-center gap-6 rounded-xl border border-dashed border-[color:var(--border)] bg-[var(--background)] px-6 py-16 text-center sm:py-24">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[color:color-mix(in_oklch,var(--primary)_10%,white)] text-[var(--primary)]">
+          <Target aria-hidden="true" className="h-8 w-8" />
+        </div>
+        <div className="max-w-sm">
+          <h2 className="text-lg font-semibold text-[var(--foreground)]">
+            ยังไม่มีเป้าหมายการเรียนรู้
+          </h2>
+          <p className="mt-2 text-sm leading-7 text-[var(--ink-muted)]">
+            เลือกหลักสูตรที่คุณต้องการ ระบบจะช่วยวางแผนรายวิชา ติดตามหน่วยกิต
+            และแนะนำเส้นทางการเรียนที่เหมาะกับคุณ
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Link href="/member/programs" className="ui-button-primary">
+            เลือกหลักสูตร
+            <ArrowRight aria-hidden="true" className="h-4 w-4" />
+          </Link>
+          <Link href="/member/subjects" className="ui-button-secondary">
+            สำรวจรายวิชา
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
       <aside className="space-y-4 xl:sticky xl:top-24 xl:self-start">

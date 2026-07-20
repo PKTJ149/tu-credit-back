@@ -56,11 +56,19 @@ export function MyRegistrations({ registrations }: MyRegistrationsProps) {
           ))}
         </div>
       ) : (
-        <div className="mt-4 flex flex-col items-center gap-3 rounded-lg border border-dashed border-[color:var(--border)] px-6 py-12 text-center">
+        <div className="mt-4 flex flex-col items-center gap-4 rounded-lg border border-dashed border-[color:var(--border)] px-6 py-12 text-center">
           <ClipboardList aria-hidden="true" className="h-8 w-8 text-[var(--ink-subtle)]" />
           <p className="text-sm leading-7 text-[var(--ink-muted)]">
             คุณยังไม่มีการลงทะเบียนที่กำลังดำเนินการ
           </p>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link href="/member/subjects" className="ui-button-primary">
+              สำรวจรายวิชา
+            </Link>
+            <Link href="/member/programs" className="ui-button-secondary">
+              ดูหลักสูตร
+            </Link>
+          </div>
         </div>
       )}
     </section>
