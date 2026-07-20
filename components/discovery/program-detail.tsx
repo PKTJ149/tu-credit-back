@@ -18,9 +18,17 @@ type ProgramDetailData = {
 
 type ProgramDetailProps = {
   program: ProgramDetailData;
+  mode?: "public" | "member";
+  subjectDetailBasePath?: string;
 };
 
-export function ProgramDetail({ program }: ProgramDetailProps) {
+export function ProgramDetail({
+  program,
+  mode = "public",
+  subjectDetailBasePath = "/subjects",
+}: ProgramDetailProps) {
+  const isMember = mode === "member";
+
   return (
     <article className="mx-auto flex w-full max-w-3xl flex-col gap-10">
       <header className="flex flex-col gap-4">
@@ -85,7 +93,11 @@ export function ProgramDetail({ program }: ProgramDetailProps) {
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {program.relatedSubjects.map((subject) => (
-            <SubjectCard key={subject.id} subject={subject} />
+            <SubjectCard
+              key={subject.id}
+              subject={subject}
+              detailBasePath={subjectDetailBasePath}
+            />
           ))}
         </div>
       </section>
@@ -94,16 +106,21 @@ export function ProgramDetail({ program }: ProgramDetailProps) {
         aria-label="เริ่มต้นใช้งาน"
         className="flex flex-col gap-4 rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-6"
       >
-        <p className="text-sm font-medium text-[var(--foreground)]">{program.ctaLine}</p>
+        <p className="text-sm font-medium text-[var(--foreground)]">
+          {isMember ? "เลือกขั้นตอนถัดไปสำหรับหลักสูตรนี้" : program.ctaLine}
+        </p>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Link href="/register" className="ui-button-primary h-11 px-5 text-sm sm:flex-1">
-            สมัครสมาชิก
+          <Link
+            href={isMember ? "/registrations" : "/register"}
+            className="ui-button-primary h-11 px-5 text-sm sm:flex-1"
+          >
+            {isMember ? "ไปที่การลงทะเบียน" : "สมัครสมาชิก"}
           </Link>
           <Link
-            href="/login"
+            href={isMember ? "/learning" : "/login"}
             className="ui-button-secondary h-11 px-5 text-sm sm:flex-1"
           >
-            เข้าสู่ระบบ
+            {isMember ? "กลับไปเป้าหมายการเรียนรู้" : "เข้าสู่ระบบ"}
           </Link>
         </div>
       </section>

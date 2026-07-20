@@ -4,12 +4,13 @@ import type { Subject } from "@/lib/discovery/types";
 
 type SubjectCardProps = {
   subject: Subject;
+  detailBasePath?: string;
 };
 
-export function SubjectCard({ subject }: SubjectCardProps) {
+export function SubjectCard({ subject, detailBasePath = "/subjects" }: SubjectCardProps) {
   return (
     <Link
-      href={`/subjects/${subject.slug}`}
+      href={`${detailBasePath}/${subject.slug}`}
       className="flex flex-col gap-3 rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-5 transition hover:border-[color:var(--ring)] focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
     >
       <div className="flex items-center gap-3">

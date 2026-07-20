@@ -4,12 +4,13 @@ import type { Program } from "@/lib/discovery/types";
 
 type ProgramCardProps = {
   program: Program;
+  detailBasePath?: string;
 };
 
-export function ProgramCard({ program }: ProgramCardProps) {
+export function ProgramCard({ program, detailBasePath = "/programs" }: ProgramCardProps) {
   return (
     <Link
-      href={`/programs/${program.slug}`}
+      href={`${detailBasePath}/${program.slug}`}
       className="flex flex-col gap-3 rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-5 transition hover:border-[color:var(--ring)] focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
     >
       <div className="flex items-center gap-3">

@@ -11,7 +11,17 @@ const relatedProgram: Program = {
   summary: "เส้นทางการเรียนรู้สำหรับผู้ที่ต้องการทักษะการพัฒนาซอฟต์แวร์อย่างเป็นระบบ",
 };
 
-export function SubjectDetail() {
+type SubjectDetailProps = {
+  mode?: "public" | "member";
+  programDetailBasePath?: string;
+};
+
+export function SubjectDetail({
+  mode = "public",
+  programDetailBasePath = "/programs",
+}: SubjectDetailProps) {
+  const isMember = mode === "member";
+
   return (
     <article className="mx-auto flex w-full max-w-3xl flex-col gap-8">
       <header className="flex flex-col gap-4">
@@ -49,7 +59,7 @@ export function SubjectDetail() {
         >
           ส่วนหนึ่งของหลักสูตร
         </h2>
-        <ProgramCard program={relatedProgram} />
+        <ProgramCard program={relatedProgram} detailBasePath={programDetailBasePath} />
       </section>
 
       <section
@@ -60,14 +70,14 @@ export function SubjectDetail() {
           id="subject-cta-heading"
           className="text-base font-medium text-[var(--foreground)]"
         >
-          เริ่มต้นใช้งานเพื่อดำเนินการลงทะเบียน
+          {isMember ? "เลือกขั้นตอนถัดไปสำหรับรายวิชานี้" : "เริ่มต้นใช้งานเพื่อดำเนินการลงทะเบียน"}
         </h2>
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Link href="/register" className="ui-button-primary">
-            สมัครสมาชิก
+          <Link href={isMember ? "/registrations" : "/register"} className="ui-button-primary">
+            {isMember ? "ไปที่การลงทะเบียน" : "สมัครสมาชิก"}
           </Link>
-          <Link href="/login" className="ui-button-secondary">
-            เข้าสู่ระบบ
+          <Link href={isMember ? "/learning" : "/login"} className="ui-button-secondary">
+            {isMember ? "กลับไปเป้าหมายการเรียนรู้" : "เข้าสู่ระบบ"}
           </Link>
         </div>
       </section>

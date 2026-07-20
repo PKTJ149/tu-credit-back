@@ -58,7 +58,12 @@ const programs: Program[] = [
 
 const levelOptions = Array.from(new Set(programs.map((program) => program.level)));
 
-export function ProgramsList() {
+type ProgramsListProps = {
+  showHeading?: boolean;
+  detailBasePath?: string;
+};
+
+export function ProgramsList({ showHeading = true, detailBasePath = "/programs" }: ProgramsListProps) {
   const [searchValue, setSearchValue] = useState("");
   const [levelFilter, setLevelFilter] = useState("");
 
@@ -79,14 +84,16 @@ export function ProgramsList() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">
-          หลักสูตรทั้งหมด
-        </h1>
-        <p className="mt-2 text-sm leading-6 text-[var(--ink-muted)]">
-          สำรวจหลักสูตรที่เปิดสอนและเปรียบเทียบข้อมูลก่อนตัดสินใจ
-        </p>
-      </div>
+      {showHeading ? (
+        <div>
+          <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">
+            หลักสูตรทั้งหมด
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-[var(--ink-muted)]">
+            สำรวจหลักสูตรที่เปิดสอนและเปรียบเทียบข้อมูลก่อนตัดสินใจ
+          </p>
+        </div>
+      ) : null}
 
       <SearchFilterBar
         searchValue={searchValue}
@@ -101,7 +108,7 @@ export function ProgramsList() {
       {filteredPrograms.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredPrograms.map((program) => (
-            <ProgramCard key={program.id} program={program} />
+            <ProgramCard key={program.id} program={program} detailBasePath={detailBasePath} />
           ))}
         </div>
       ) : (

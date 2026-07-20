@@ -58,7 +58,12 @@ const subjects: Subject[] = [
 
 const facultyOptions = Array.from(new Set(subjects.map((subject) => subject.faculty)));
 
-export function SubjectsList() {
+type SubjectsListProps = {
+  showHeading?: boolean;
+  detailBasePath?: string;
+};
+
+export function SubjectsList({ showHeading = true, detailBasePath = "/subjects" }: SubjectsListProps) {
   const [searchValue, setSearchValue] = useState("");
   const [facultyValue, setFacultyValue] = useState("");
 
@@ -79,14 +84,16 @@ export function SubjectsList() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div>
-        <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">
-          รายวิชาทั้งหมด
-        </h1>
-        <p className="mt-2 text-sm leading-6 text-[var(--ink-muted)] sm:text-base">
-          ค้นหาและประเมินรายวิชาที่เปิดสอนได้อย่างรวดเร็ว
-        </p>
-      </div>
+      {showHeading ? (
+        <div>
+          <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">
+            รายวิชาทั้งหมด
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-[var(--ink-muted)] sm:text-base">
+            ค้นหาและประเมินรายวิชาที่เปิดสอนได้อย่างรวดเร็ว
+          </p>
+        </div>
+      ) : null}
 
       <SearchFilterBar
         searchValue={searchValue}
@@ -101,7 +108,7 @@ export function SubjectsList() {
       {filteredSubjects.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filteredSubjects.map((subject) => (
-            <SubjectCard key={subject.id} subject={subject} />
+            <SubjectCard key={subject.id} subject={subject} detailBasePath={detailBasePath} />
           ))}
         </div>
       ) : (
