@@ -6,6 +6,17 @@ export type Program = {
   level: string;
   faculty: string;
   summary: string;
+  description?: string;
+  seats?: number;
+  enrolledCount?: number;
+  teachers?: string[];
+  status?: "open" | "closed";
+  type?: string;
+  totalPrice?: number;
+  subjects?: Subject[];
+  qualification?: string;
+  careerPaths?: string[];
+  outcomes?: string[];
 };
 
 export type Subject = {
@@ -15,6 +26,7 @@ export type Subject = {
   credits: number;
   faculty: string;
   summary: string;
+  price?: number;
 };
 
 export type NewsItem = {
