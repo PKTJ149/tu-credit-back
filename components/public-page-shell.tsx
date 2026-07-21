@@ -6,6 +6,7 @@ type PublicPageShellProps = {
 };
 
 const publicNavItems = [
+  { label: "หน้าหลัก", href: "/" },
   { label: "หลักสูตร", href: "/programs" },
   { label: "รายวิชา", href: "/subjects" },
   { label: "เกี่ยวกับ", href: "/about" },

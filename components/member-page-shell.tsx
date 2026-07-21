@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  Home,
   LayoutDashboard,
   Compass,
   BookOpen,
@@ -13,6 +14,7 @@ import {
 import type { ReactNode } from "react";
 
 type MemberNavItem =
+  | "home"
   | "dashboard"
   | "learning"
   | "programs"
@@ -32,6 +34,7 @@ type MemberPageShellProps = {
 };
 
 const navItems: { id: MemberNavItem; label: string; href: string; icon: typeof LayoutDashboard }[] = [
+  { id: "home", label: "หน้าหลัก", href: "/", icon: Home },
   { id: "dashboard", label: "แดชบอร์ด", href: "/dashboard", icon: LayoutDashboard },
   { id: "learning", label: "เป้าหมายการเรียนรู้", href: "/learning", icon: Compass },
   { id: "programs", label: "หลักสูตร", href: "/member/programs", icon: LibraryBig },

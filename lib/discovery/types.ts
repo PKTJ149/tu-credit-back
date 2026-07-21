@@ -1,3 +1,22 @@
+export type SubjectCategory = {
+  id: string;
+  name: string;
+  nameEn?: string;
+  subjects: Subject[];
+};
+
+export type Subject = {
+  id: string;
+  slug: string;
+  name: string;
+  nameEn?: string;
+  code?: string;
+  credits: number;
+  faculty: string;
+  summary: string;
+  price?: number;
+};
+
 export type Program = {
   id: string;
   slug: string;
@@ -13,20 +32,13 @@ export type Program = {
   status?: "open" | "closed";
   type?: string;
   totalPrice?: number;
+  originalPrice?: number;
+  duration?: string;
   subjects?: Subject[];
+  subjectCategories?: SubjectCategory[];
   qualification?: string;
   careerPaths?: string[];
   outcomes?: string[];
-};
-
-export type Subject = {
-  id: string;
-  slug: string;
-  name: string;
-  credits: number;
-  faculty: string;
-  summary: string;
-  price?: number;
 };
 
 export type NewsItem = {
