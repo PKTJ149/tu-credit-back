@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Breadcrumb } from "@/components/breadcrumb";
 
 type PublicPageShellProps = {
   children: ReactNode;
@@ -84,6 +85,7 @@ export function PublicPageShell({ children }: PublicPageShellProps) {
       </header>
 
       <main id="main-content" className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+        <Breadcrumb />
         {children}
       </main>
 
