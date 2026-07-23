@@ -99,12 +99,12 @@ export function ProgramCard({ program, detailBasePath = "/programs", canSave = t
           {typeLabel}
         </span>
 
-        <h3 className="mb-1 line-clamp-1 text-lg font-bold leading-tight text-[var(--foreground)]">
+        <h3 className="mb-1 line-clamp-2 text-lg font-bold leading-tight text-[var(--foreground)]">
           {program.name}
         </h3>
 
         <div className="mb-12 flex flex-col">
-          <p className="line-clamp-1 text-xs text-[var(--ink-subtle)]">{program.faculty}</p>
+          <p className="line-clamp-1 text-sm text-[var(--ink-subtle)]">{program.faculty}</p>
           {program.teachers && program.teachers.length > 0 && (
             <p className="line-clamp-1 text-xs text-[var(--ink-muted)]">
               <span className="font-semibold text-[var(--ink-subtle)]">ผู้สอน :</span>{" "}

@@ -1,15 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowDownToLine, ArrowUpFromLine, ClipboardList } from "lucide-react";
 import { SectionCard } from "@/components/finance/section-card";
 import { TransferTypeCard } from "@/components/credit-transfer/transfer-type-card";
 import { RequestRow } from "@/components/credit-transfer/request-row";
-import type { TransferRequest } from "@/lib/credit-transfer/transfer-state";
+import { useSessionData } from "@/lib/session/session-data";
 
-type TransferHubProps = {
-  recentRequests?: TransferRequest[];
-};
+export function TransferHub() {
+  const { data } = useSessionData();
+  const recentRequests = data.transfers;
 
-export function TransferHub({ recentRequests = [] }: TransferHubProps) {
   return (
     <div className="space-y-6">
       <SectionCard>

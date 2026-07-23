@@ -9,7 +9,7 @@ export default function LearningPage() {
           กำหนดและติดตามเส้นทางการเรียนรู้ของคุณ
         </p>
       </div>
-      <LearningGoals hasGoal={false} />
+      <LearningGoals />
     </div>
   );
 }

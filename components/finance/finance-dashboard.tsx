@@ -1,34 +1,34 @@
+"use client";
+
 import Link from "next/link";
 import { CheckCircle2, Wallet } from "lucide-react";
 import { StatusPanel } from "@/components/finance/status-panel";
 import { PayableItemRow } from "@/components/finance/payable-item-row";
 import { StatusBadge } from "@/components/finance/status-badge";
 import { SectionCard } from "@/components/finance/section-card";
-import {
-  formatTHB,
-  type PayableItem,
-  type PaymentState,
-} from "@/lib/finance/payment-state";
+import { formatTHB } from "@/lib/finance/payment-state";
+import { CURRENT_TERM, useSessionData } from "@/lib/session/session-data";
 
-type HistoryPreviewItem = {
-  id: string;
-  name: string;
-  date: string;
-  amount: number;
-  state: PaymentState;
-};
+export function FinanceDashboard() {
+  const { data } = useSessionData();
 
-type FinanceDashboardProps = {
-  statusState?: PaymentState;
-  payableItems: PayableItem[];
-  historyPreview?: HistoryPreviewItem[];
-};
+  // Anything not yet confirmed still needs the learner's attention.
+  const payableItems = data.payables.filter(
+    (item) => item.state !== "payment-confirmed",
+  );
+  // Confirmed payments become the transaction history preview.
+  const historyPreview = data.payables
+    .filter((item) => item.state === "payment-confirmed")
+    .map((item) => ({
+      id: item.id,
+      name: item.name,
+      date: CURRENT_TERM,
+      amount: item.amount,
+      state: item.state,
+    }));
 
-export function FinanceDashboard({
-  statusState,
-  payableItems,
-  historyPreview = [],
-}: FinanceDashboardProps) {
+  const statusState = payableItems[0]?.state;
+
   const outstandingBalance = payableItems.reduce(
     (total, item) => total + item.amount,
     0,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { GraduationCap, ChevronLeft, ChevronRight } from "lucide-react";
 
 const slides = [
@@ -33,7 +34,11 @@ const slides = [
   },
 ];
 
-export function HomeBanner() {
+interface HomeBannerProps {
+  hero?: ReactNode;
+}
+
+export function HomeBanner({ hero }: HomeBannerProps) {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -57,26 +62,52 @@ export function HomeBanner() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="flex min-h-[220px] items-center px-8 py-10 sm:min-h-[260px] sm:px-12">
-        {/* Content */}
-        <div className="flex flex-1 flex-col gap-3">
-          <span className={`self-start rounded-full px-3 py-1 text-xs font-semibold ${slide.badgeColor}`}>
-            {slide.label}
-          </span>
-          <h2 className="text-2xl font-bold text-[var(--foreground)] sm:text-3xl [text-wrap:balance]">
-            {slide.title}
-          </h2>
-          <p className="text-sm text-[var(--ink-muted)]">{slide.subtitle}</p>
-        </div>
+      {hero ? (
+        <>
+          {/* Hero overlay mode — taller banner */}
+          <div className="flex min-h-[420px] flex-col justify-center px-8 py-16 sm:min-h-[500px] sm:px-12 lg:px-16">
+            {hero}
+          </div>
 
-        {/* Decorative icon */}
-        <div className="hidden shrink-0 items-center justify-center sm:flex">
+          {/* Slide info — bottom right */}
+          <div className="absolute bottom-14 right-8 hidden flex-col items-end gap-1 sm:flex">
+            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${slide.badgeColor}`}>
+              {slide.label}
+            </span>
+            <p className="text-right text-sm font-semibold text-[var(--foreground)] opacity-70">{slide.title}</p>
+            <p className="text-right text-xs text-[var(--ink-muted)]">{slide.subtitle}</p>
+          </div>
+
+          {/* Decorative icon */}
           <GraduationCap
             aria-hidden="true"
-            className="h-24 w-24 text-[var(--secondary-foreground)] opacity-[0.08]"
+            className="absolute right-8 top-1/2 hidden h-36 w-36 -translate-y-1/2 text-[var(--foreground)] opacity-[0.05] sm:block"
           />
-        </div>
-      </div>
+        </>
+      ) : (
+        <>
+          <div className="flex min-h-[220px] items-center px-8 py-10 sm:min-h-[260px] sm:px-12">
+            {/* Content */}
+            <div className="flex flex-1 flex-col gap-3">
+              <span className={`self-start rounded-full px-3 py-1 text-xs font-semibold ${slide.badgeColor}`}>
+                {slide.label}
+              </span>
+              <h2 className="text-2xl font-bold text-[var(--foreground)] sm:text-3xl [text-wrap:balance]">
+                {slide.title}
+              </h2>
+              <p className="text-sm text-[var(--ink-muted)]">{slide.subtitle}</p>
+            </div>
+
+            {/* Decorative icon */}
+            <div className="hidden shrink-0 items-center justify-center sm:flex">
+              <GraduationCap
+                aria-hidden="true"
+                className="h-24 w-24 text-[var(--secondary-foreground)] opacity-[0.08]"
+              />
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Prev / Next */}
       <button

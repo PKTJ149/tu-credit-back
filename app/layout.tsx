@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans_Thai } from "next/font/google";
 import "./globals.css";
+import { AuthProvider } from "@/lib/auth/auth-context";
+import { SessionDataProvider } from "@/lib/session/session-data";
 
 const plexSansThai = IBM_Plex_Sans_Thai({
   variable: "--font-ibm-plex-sans-thai",
@@ -37,7 +39,9 @@ export default function RootLayout({
         >
           ข้ามไปยังเนื้อหา
         </a>
-        {children}
+        <AuthProvider>
+          <SessionDataProvider>{children}</SessionDataProvider>
+        </AuthProvider>
       </body>
     </html>
   );

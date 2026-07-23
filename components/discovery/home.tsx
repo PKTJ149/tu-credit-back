@@ -213,41 +213,29 @@ export function Home() {
   return (
     <div className="flex flex-col gap-16 lg:gap-20">
 
-      {/* ── Banner ── */}
-      <HomeBanner />
-
-      {/* ── Hero ── */}
-      <section className="flex flex-col gap-6">
-        <h1 className="max-w-3xl text-3xl font-semibold text-[var(--foreground)] [text-wrap:balance] sm:text-4xl lg:text-5xl">
-          สะสมและเทียบโอนหน่วยกิตกับ Credit Bank มหาวิทยาลัยธรรมศาสตร์
-        </h1>
-        <p className="max-w-[70ch] text-base leading-7 text-[var(--ink-muted)] sm:text-lg sm:leading-8">
-          Credit Bank ช่วยให้คุณเรียนรู้อย่างยืดหยุ่น สะสมหน่วยกิตจากหลักสูตรและรายวิชาที่หลากหลาย
-          และเทียบโอนผลการเรียนได้อย่างเป็นระบบ ไม่ว่าคุณจะเป็นนักศึกษาปัจจุบันหรือผู้เรียนภายนอก
-        </p>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Link href="/programs" className="ui-button-primary h-11 px-6 text-sm">
-            เริ่มสำรวจหลักสูตร
-          </Link>
-          <Link href="/subjects" className="ui-button-secondary h-11 px-6 text-sm">
-            ดูรายวิชาทั้งหมด
-          </Link>
-        </div>
-      </section>
-
-      {/* ── Trust ── */}
-      <section className="flex flex-col gap-4 border-t border-[color:var(--border)] pt-10">
-        <h2 className="text-xl font-semibold text-[var(--foreground)]">
-          ระบบที่เชื่อถือได้จากมหาวิทยาลัยธรรมศาสตร์
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-3">
-          {trustStatements.map((statement) => (
-            <p key={statement} className="max-w-[65ch] text-sm leading-6 text-[var(--ink-muted)]">
-              {statement}
+      {/* ── Hero Banner ── */}
+      <HomeBanner
+        hero={
+          <div className="flex max-w-xl flex-col gap-6">
+            <h1 className="text-3xl font-semibold text-[var(--foreground)] [text-wrap:balance] sm:text-4xl lg:text-5xl">
+              สะสมและเทียบโอนหน่วยกิตกับ Credit Bank มหาวิทยาลัยธรรมศาสตร์
+            </h1>
+            <p className="max-w-[55ch] text-base leading-7 text-[var(--ink-muted)] sm:text-lg sm:leading-8">
+              Credit Bank ช่วยให้คุณเรียนรู้อย่างยืดหยุ่น สะสมหน่วยกิตจากหลักสูตรและรายวิชาที่หลากหลาย
+              และเทียบโอนผลการเรียนได้อย่างเป็นระบบ ไม่ว่าคุณจะเป็นนักศึกษาปัจจุบันหรือผู้เรียนภายนอก
             </p>
-          ))}
-        </div>
-      </section>
+            <div className="flex flex-wrap gap-3">
+              <Link href="/programs" className="ui-button-primary h-11 px-6 text-sm">
+                เริ่มสำรวจหลักสูตร
+              </Link>
+              <Link href="/subjects" className="ui-button-secondary h-11 px-6 text-sm">
+                ดูรายวิชาทั้งหมด
+              </Link>
+            </div>
+          </div>
+        }
+      />
+
 
       {/* ── Recommended Programs (slidable) ── */}
       <section className="flex flex-col gap-5">

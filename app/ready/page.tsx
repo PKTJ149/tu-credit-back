@@ -62,10 +62,10 @@ export default function ReadyPage() {
         </div>
 
         <Link
-          href="/registrations"
+          href="/profile"
           className="ui-button-primary w-full"
         >
-          ดำเนินการต่อ
+          ไปยังโปรไฟล์ของฉัน
         </Link>
       </div>
     </AuthPageShell>

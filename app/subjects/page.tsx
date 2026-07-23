@@ -3,7 +3,7 @@ import { SubjectsList } from "@/components/discovery/subjects-list";
 
 export default function SubjectsPage() {
   return (
-    <PublicPageShell>
+    <PublicPageShell showBreadcrumb={false}>
       <SubjectsList />
     </PublicPageShell>
   );

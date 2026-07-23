@@ -1,14 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { CircleAlert, ClipboardList } from "lucide-react";
 
 import { RegistrationRow } from "@/components/learning/registration-row";
-import type { Registration } from "@/lib/learning/registration-status";
+import { useSessionData } from "@/lib/session/session-data";
 
-type MyRegistrationsProps = {
-  registrations: Registration[];
-};
-
-export function MyRegistrations({ registrations }: MyRegistrationsProps) {
+export function MyRegistrations() {
+  const { data } = useSessionData();
+  const registrations = data.registrations;
   const hasAwaitingPayment = registrations.some(
     (registration) => registration.status === "awaiting-payment",
   );

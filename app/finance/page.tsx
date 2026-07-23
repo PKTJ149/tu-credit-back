@@ -8,7 +8,7 @@ export default function FinancePage() {
       description="ตรวจสอบยอดค้างชำระและสถานะการชำระเงินของคุณได้ที่นี่"
       currentNav="finance"
     >
-      <FinanceDashboard payableItems={[]} historyPreview={[]} />
+      <FinanceDashboard />
     </MemberPageShell>
   );
 }

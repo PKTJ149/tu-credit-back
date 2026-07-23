@@ -1,21 +1,35 @@
+"use client";
+
 import Link from "next/link";
 import { CheckCircle2, CircleAlert, ArrowRight } from "lucide-react";
 import { formatTHB } from "@/lib/finance/payment-state";
+import { useSessionData } from "@/lib/session/session-data";
 
-type RegisteredItem = {
-  name: string;
-  amount: number;
-};
+export function RegistrationConfirmation() {
+  const { data } = useSessionData();
+  // The most recently registered item is the one we just confirmed.
+  const latest = data.registrations[0];
 
-type RegistrationConfirmationProps = {
-  paymentRequired: boolean;
-  registeredItem: RegisteredItem;
-};
+  // Safety net: someone opened this page without registering anything.
+  if (!latest) {
+    return (
+      <div className="mx-auto max-w-2xl">
+        <section className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-6 text-center sm:p-8">
+          <p className="text-sm leading-7 text-[var(--ink-muted)]">
+            ยังไม่มีรายการลงทะเบียนล่าสุด
+          </p>
+          <Link href="/member/programs" className="ui-button-primary mt-6">
+            เลือกหลักสูตรเพื่อลงทะเบียน
+            <ArrowRight aria-hidden="true" className="h-4 w-4" />
+          </Link>
+        </section>
+      </div>
+    );
+  }
 
-export function RegistrationConfirmation({
-  paymentRequired,
-  registeredItem,
-}: RegistrationConfirmationProps) {
+  const paymentRequired = latest.amount > 0;
+  const itemLabel = `${latest.itemType === "program" ? "หลักสูตร" : "รายวิชา"}: ${latest.itemName} (${latest.term})`;
+
   return (
     <div className="mx-auto max-w-2xl">
       <section className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-6 sm:p-8">
@@ -36,13 +50,13 @@ export function RegistrationConfirmation({
 
         <div className="mt-6 rounded-lg border border-[color:var(--border)] bg-[var(--surface)] px-4 py-4">
           <p className="text-sm font-semibold text-[var(--foreground)]">
-            {registeredItem.name}
+            {itemLabel}
           </p>
           {paymentRequired ? (
             <p className="mt-2 text-sm text-[var(--ink-muted)]">
               ยอดที่ต้องชำระ
               <span className="ml-2 text-base font-semibold text-[var(--foreground)]">
-                {formatTHB(registeredItem.amount)}
+                {formatTHB(latest.amount)}
               </span>
             </p>
           ) : null}

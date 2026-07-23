@@ -9,7 +9,7 @@ export default function RegistrationsPage() {
           ตรวจสอบการลงทะเบียนที่กำลังดำเนินการและล่าสุดของคุณ
         </p>
       </div>
-      <MyRegistrations registrations={[]} />
+      <MyRegistrations />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { MemberPageShell } from "@/components/member-page-shell";
 import { ProgramDetail } from "@/components/discovery/program-detail";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import type { Program } from "@/lib/discovery/types";
 
 const mockProgram: Program = {
@@ -144,6 +145,14 @@ export default async function MemberProgramDetailPage({ params }: MemberProgramD
       title="รายละเอียดหลักสูตร"
       description="ตรวจสอบโครงสร้างหลักสูตร รายวิชา และขั้นตอนถัดไป"
       currentNav="programs"
+      breadcrumb={
+        <Breadcrumb
+          items={[
+            { label: "หลักสูตร", href: "/member/programs" },
+            { label: mockProgram.name },
+          ]}
+        />
+      }
     >
       <ProgramDetail
         program={mockProgram}

@@ -8,13 +8,7 @@ export default function RegistrationConfirmationPage() {
       description="ตรวจสอบผลการลงทะเบียนและขั้นตอนถัดไปของคุณ"
       currentNav="registrations"
     >
-      <RegistrationConfirmation
-        paymentRequired={true}
-        registeredItem={{
-          name: "รายวิชา: การเขียนโปรแกรมเบื้องต้น (ภาคเรียนที่ 1/2569)",
-          amount: 3500,
-        }}
-      />
+      <RegistrationConfirmation />
     </MemberPageShell>
   );
 }

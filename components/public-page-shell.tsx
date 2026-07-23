@@ -1,9 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Breadcrumb } from "@/components/breadcrumb";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { ProfileDropdown } from "@/components/profile-dropdown";
+import { useAuth } from "@/lib/auth/auth-context";
 
 type PublicPageShellProps = {
   children: ReactNode;
+  showBreadcrumb?: boolean;
 };
 
 const publicNavItems = [
@@ -15,7 +20,23 @@ const publicNavItems = [
   { label: "ช่วยเหลือ", href: "/help" },
 ];
 
-export function PublicPageShell({ children }: PublicPageShellProps) {
+// When signed in, shared pages point at the member versions of the flows.
+const memberNavItems = [
+  { label: "หน้าหลัก", href: "/profile" },
+  { label: "หลักสูตร", href: "/member/programs" },
+  { label: "รายวิชา", href: "/member/subjects" },
+  { label: "ข่าวสาร", href: "/news" },
+  { label: "เกี่ยวกับ", href: "/about" },
+  { label: "ช่วยเหลือ", href: "/help" },
+];
+
+export function PublicPageShell({ children, showBreadcrumb = true }: PublicPageShellProps) {
+  const { isReady, isAuthenticated } = useAuth();
+  // Until we've read localStorage, render the signed-out header so the server
+  // and first client render agree (no hydration mismatch).
+  const signedIn = isReady && isAuthenticated;
+  const navItems = signedIn ? memberNavItems : publicNavItems;
+
   return (
     <div className="min-h-screen bg-[var(--surface)]">
       <header className="border-b border-[color:var(--border)] bg-[var(--background)]">
@@ -38,7 +59,7 @@ export function PublicPageShell({ children }: PublicPageShellProps) {
             aria-label="เมนูหลัก"
             className="hidden items-center gap-6 text-sm font-medium text-[var(--ink-muted)] md:flex"
           >
-            {publicNavItems.map((item) => (
+            {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -49,24 +70,28 @@ export function PublicPageShell({ children }: PublicPageShellProps) {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="hidden h-10 items-center rounded-lg border border-[color:var(--border)] bg-[var(--background)] px-4 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--surface)] focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)] sm:inline-flex"
-            >
-              เข้าสู่ระบบ
-            </Link>
-            <Link href="/register" className="ui-button-primary h-10 px-4 text-sm">
-              สมัครสมาชิก
-            </Link>
-          </div>
+          {signedIn ? (
+            <ProfileDropdown />
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link
+                href="/login"
+                className="hidden h-10 items-center rounded-lg border border-[color:var(--border)] bg-[var(--background)] px-4 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--surface)] focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)] sm:inline-flex"
+              >
+                เข้าสู่ระบบ
+              </Link>
+              <Link href="/register" className="ui-button-primary h-10 px-4 text-sm">
+                สมัครสมาชิก
+              </Link>
+            </div>
+          )}
         </div>
 
         <nav
           aria-label="เมนูหลัก (มือถือ)"
           className="flex items-center gap-1 overflow-x-auto border-t border-[color:var(--border)] px-4 py-2 md:hidden"
         >
-          {publicNavItems.map((item) => (
+          {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -75,17 +100,19 @@ export function PublicPageShell({ children }: PublicPageShellProps) {
               {item.label}
             </Link>
           ))}
-          <Link
-            href="/login"
-            className="inline-flex h-9 shrink-0 items-center rounded-lg px-3 text-sm font-medium text-[var(--primary)]"
-          >
-            เข้าสู่ระบบ
-          </Link>
+          {signedIn ? null : (
+            <Link
+              href="/login"
+              className="inline-flex h-9 shrink-0 items-center rounded-lg px-3 text-sm font-medium text-[var(--primary)]"
+            >
+              เข้าสู่ระบบ
+            </Link>
+          )}
         </nav>
       </header>
 
       <main id="main-content" className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-        <Breadcrumb />
+        {showBreadcrumb && <Breadcrumb />}
         {children}
       </main>
 

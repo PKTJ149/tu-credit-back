@@ -9,7 +9,7 @@ export default function FinancePage() {
           ตรวจสอบยอดค้างชำระและสถานะการชำระเงินของคุณ
         </p>
       </div>
-      <FinanceDashboard payableItems={[]} historyPreview={[]} />
+      <FinanceDashboard />
     </div>
   );
 }

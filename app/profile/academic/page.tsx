@@ -1,7 +1,4 @@
 import { AcademicProgress } from "@/components/learning/academic-progress";
-import type { AcademicRecord } from "@/lib/learning/registration-status";
-
-const records: AcademicRecord[] = [];
 
 export default function AcademicPage() {
   return (
@@ -12,7 +9,7 @@ export default function AcademicPage() {
           ดูผลการเรียนและความก้าวหน้าในการสะสมหน่วยกิตของคุณ
         </p>
       </div>
-      <AcademicProgress records={records} />
+      <AcademicProgress />
     </div>
   );
 }

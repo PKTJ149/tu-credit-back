@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   GraduationCap,
   CheckCircle2,
@@ -13,9 +14,11 @@ import {
   ChevronRight,
   Clock,
   BadgeCheck,
+  Target,
 } from "lucide-react";
 import type { Program } from "@/lib/discovery/types";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { useSessionData } from "@/lib/session/session-data";
 
 const TABS = ["ภาพรวม", "รายวิชา", "รีวิวและความคิดเห็น"] as const;
 type Tab = (typeof TABS)[number];
@@ -40,9 +43,41 @@ export function ProgramDetail({
   mode = "public",
   subjectDetailBasePath = "/subjects",
 }: ProgramDetailProps) {
+  const router = useRouter();
+  const { data, registerForItem, addGoal, removeGoal } = useSessionData();
   const [activeTab, setActiveTab] = useState<Tab>("ภาพรวม");
   const [saved, setSaved] = useState(false);
   const isMember = mode === "member";
+
+  // Is this program already one of the learner's goals?
+  const existingGoal = data.goals.find((g) => g.slug === program.slug);
+  const goalSet = existingGoal !== undefined;
+
+  function handleRegister() {
+    if (!isMember) return;
+    registerForItem({
+      itemName: program.name,
+      itemType: "program",
+      slug: program.slug,
+      amount: program.totalPrice ?? 0,
+    });
+    router.push("/registrations/confirmation");
+  }
+
+  function handleToggleGoal() {
+    if (!isMember) return;
+    if (existingGoal) {
+      removeGoal(existingGoal.id);
+    } else {
+      addGoal({
+        name: program.name,
+        itemType: "program",
+        slug: program.slug,
+        credits: program.credits,
+      });
+    }
+  }
+
   const isOpen = program.status !== "closed";
   const typeLabel = program.type ?? program.level;
   const badgeStyle = getTypeBadgeStyle(typeLabel);
@@ -62,15 +97,17 @@ export function ProgramDetail({
 
   return (
     <article className="w-full">
-      {/* Breadcrumb */}
-      <div className="mb-4">
-        <Breadcrumb
-          items={[
-            { label: "หลักสูตร", href: isMember ? "/member/programs" : "/programs" },
-            { label: program.name },
-          ]}
-        />
-      </div>
+      {/* Breadcrumb (member pages render this via MemberPageShell instead, above the title) */}
+      {!isMember && (
+        <div className="mb-4">
+          <Breadcrumb
+            items={[
+              { label: "หลักสูตร", href: "/programs" },
+              { label: program.name },
+            ]}
+          />
+        </div>
+      )}
 
       {/* Banner */}
       <div className="relative mb-6 flex aspect-[4/1] items-center justify-center overflow-hidden rounded-2xl bg-[color:color-mix(in_oklch,var(--secondary)_20%,white)]">
@@ -115,27 +152,61 @@ export function ProgramDetail({
 
             {/* Mobile-only CTA (shows before tabs on small screens) */}
             <div className="flex flex-col gap-3 lg:hidden">
-              <Link
-                href={isMember ? "/registrations" : "/register"}
-                className="ui-button-primary h-11 w-full text-sm"
-              >
-                {isMember ? "ลงทะเบียนหลักสูตร" : "สมัครสมาชิกเพื่อลงทะเบียน"}
-              </Link>
+              {isMember ? (
+                <button
+                  type="button"
+                  onClick={handleRegister}
+                  className="ui-button-primary h-11 w-full text-sm"
+                >
+                  ลงทะเบียนหลักสูตร
+                </button>
+              ) : (
+                <Link
+                  href="/register"
+                  className="ui-button-primary h-11 w-full text-sm"
+                >
+                  สมัครสมาชิกเพื่อลงทะเบียน
+                </Link>
+              )}
               <button
                 type="button"
-                onClick={() => setSaved(!saved)}
+                onClick={() => isMember && setSaved(!saved)}
+                disabled={!isMember}
+                title={!isMember ? "เข้าสู่ระบบเพื่อบันทึกหลักสูตร" : undefined}
                 className={`flex h-11 w-full items-center justify-center gap-2 rounded-lg border text-sm font-medium transition ${
-                  saved
+                  !isMember
+                    ? "cursor-not-allowed border-[color:var(--border)] text-[var(--ink-subtle)] opacity-50"
+                    : saved
                     ? "border-[color:var(--primary)] bg-[color:color-mix(in_oklch,var(--primary)_8%,white)] text-[color:var(--primary)]"
                     : "border-[color:var(--border)] text-[var(--ink-muted)] hover:border-[color:var(--ring)]"
                 }`}
               >
-                {saved ? (
+                {saved && isMember ? (
                   <BookmarkCheck aria-hidden="true" className="h-4 w-4" />
                 ) : (
                   <Bookmark aria-hidden="true" className="h-4 w-4" />
                 )}
-                {saved ? "บันทึกแล้ว" : "บันทึกหลักสูตร"}
+                {saved && isMember ? "บันทึกแล้ว" : "บันทึกหลักสูตร"}
+              </button>
+              <button
+                type="button"
+                onClick={handleToggleGoal}
+                disabled={!isMember}
+                title={!isMember ? "เข้าสู่ระบบเพื่อตั้งเป้าหมาย" : undefined}
+                className={`flex h-11 w-full items-center justify-center gap-2 rounded-lg border text-sm font-medium transition ${
+                  !isMember
+                    ? "cursor-not-allowed border-[color:var(--border)] text-[var(--ink-subtle)] opacity-50"
+                    : goalSet
+                    ? "border-[color:var(--secondary-foreground)] bg-[color:color-mix(in_oklch,var(--secondary)_12%,white)] text-[color:var(--secondary-foreground)]"
+                    : "border-[color:var(--border)] text-[var(--ink-muted)] hover:border-[color:var(--ring)] hover:text-[var(--foreground)]"
+                }`}
+              >
+                {goalSet && isMember ? (
+                  <CheckCircle2 aria-hidden="true" className="h-4 w-4" />
+                ) : (
+                  <Target aria-hidden="true" className="h-4 w-4" />
+                )}
+                {goalSet && isMember ? "อยู่ในเป้าหมายแล้ว" : "เลือกเป็นเป้าหมายการเรียนรู้"}
               </button>
             </div>
           </div>
@@ -336,9 +407,9 @@ export function ProgramDetail({
                                       </p>
                                     )}
                                     {subject.code && (
-                                      <p className="mt-0.5 font-mono text-[11px] text-[var(--ink-subtle)]">
+                                      <span className="mt-1 inline-flex items-center rounded bg-[color:color-mix(in_oklch,var(--secondary)_20%,white)] px-1.5 py-0.5 font-mono text-[10px] font-medium text-[var(--ink-muted)]">
                                         {subject.code}
-                                      </p>
+                                      </span>
                                     )}
                                   </div>
                                   {/* Right: price (prominent) + credits */}
@@ -479,28 +550,62 @@ export function ProgramDetail({
               )}
 
               <div className="flex flex-col gap-3">
-                <Link
-                  href={isMember ? "/registrations" : "/register"}
-                  className="ui-button-primary h-11 w-full text-sm"
-                >
-                  {isMember ? "ลงทะเบียนหลักสูตร" : "สมัครสมาชิกเพื่อลงทะเบียน"}
-                </Link>
+                {isMember ? (
+                  <button
+                    type="button"
+                    onClick={handleRegister}
+                    className="ui-button-primary h-11 w-full text-sm"
+                  >
+                    ลงทะเบียนหลักสูตร
+                  </button>
+                ) : (
+                  <Link
+                    href="/register"
+                    className="ui-button-primary h-11 w-full text-sm"
+                  >
+                    สมัครสมาชิกเพื่อลงทะเบียน
+                  </Link>
+                )}
                 <button
                   type="button"
-                  aria-label={saved ? "ยกเลิกการบันทึก" : "บันทึกหลักสูตรนี้"}
-                  onClick={() => setSaved(!saved)}
+                  aria-label={saved && isMember ? "ยกเลิกการบันทึก" : "บันทึกหลักสูตรนี้"}
+                  onClick={() => isMember && setSaved(!saved)}
+                  disabled={!isMember}
+                  title={!isMember ? "เข้าสู่ระบบเพื่อบันทึกหลักสูตร" : undefined}
                   className={`flex h-11 items-center justify-center gap-2 rounded-lg border text-sm font-medium transition ${
-                    saved
+                    !isMember
+                      ? "cursor-not-allowed border-[color:var(--border)] text-[var(--ink-subtle)] opacity-50"
+                      : saved
                       ? "border-[color:var(--primary)] bg-[color:color-mix(in_oklch,var(--primary)_8%,white)] text-[color:var(--primary)]"
                       : "border-[color:var(--border)] text-[var(--ink-muted)] hover:border-[color:var(--ring)] hover:text-[var(--foreground)]"
                   }`}
                 >
-                  {saved ? (
+                  {saved && isMember ? (
                     <BookmarkCheck aria-hidden="true" className="h-4 w-4" />
                   ) : (
                     <Bookmark aria-hidden="true" className="h-4 w-4" />
                   )}
-                  {saved ? "บันทึกแล้ว" : "บันทึกหลักสูตร"}
+                  {saved && isMember ? "บันทึกแล้ว" : "บันทึกหลักสูตร"}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleToggleGoal}
+                  disabled={!isMember}
+                  title={!isMember ? "เข้าสู่ระบบเพื่อตั้งเป้าหมาย" : undefined}
+                  className={`flex h-11 w-full items-center justify-center gap-2 rounded-lg border text-sm font-medium transition ${
+                    !isMember
+                      ? "cursor-not-allowed border-[color:var(--border)] text-[var(--ink-subtle)] opacity-50"
+                      : goalSet
+                      ? "border-[color:var(--secondary-foreground)] bg-[color:color-mix(in_oklch,var(--secondary)_12%,white)] text-[color:var(--secondary-foreground)]"
+                      : "border-[color:var(--border)] text-[var(--ink-muted)] hover:border-[color:var(--ring)] hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  {goalSet && isMember ? (
+                    <CheckCircle2 aria-hidden="true" className="h-4 w-4" />
+                  ) : (
+                    <Target aria-hidden="true" className="h-4 w-4" />
+                  )}
+                  {goalSet && isMember ? "อยู่ในเป้าหมายแล้ว" : "เลือกเป็นเป้าหมายการเรียนรู้"}
                 </button>
               </div>
             </div>

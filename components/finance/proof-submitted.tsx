@@ -1,13 +1,10 @@
+"use client";
+
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { StatusPanel } from "@/components/finance/status-panel";
 import { formatTHB } from "@/lib/finance/payment-state";
-
-const submittedDetails = [
-  { label: "จำนวนเงิน", value: formatTHB(3500) },
-  { label: "วันที่ส่ง", value: "15 ก.ค. 2569" },
-  { label: "ไฟล์แนบ", value: "สลิปโอนเงิน.jpg" },
-];
+import { CURRENT_TERM, useSessionData } from "@/lib/session/session-data";
 
 const nextSteps = [
   "ทีมงานจะตรวจสอบหลักฐานการชำระเงินของคุณ",
@@ -16,6 +13,14 @@ const nextSteps = [
 ];
 
 export function ProofSubmitted() {
+  const { data } = useSessionData();
+  const submitted = data.payables.find((p) => p.state === "pending-verification");
+  const submittedDetails = [
+    { label: "จำนวนเงิน", value: submitted ? formatTHB(submitted.amount) : "-" },
+    { label: "วันที่ส่ง", value: CURRENT_TERM },
+    { label: "ไฟล์แนบ", value: "สลิปโอนเงิน.jpg" },
+  ];
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <StatusPanel

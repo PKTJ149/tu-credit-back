@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ProfileDropdown } from "@/components/profile-dropdown";
-import { Breadcrumb } from "@/components/breadcrumb";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 
 type MemberNavItem =
   | "home"
@@ -22,12 +22,15 @@ type MemberPageShellProps = {
   currentNav?: MemberNavItem;
   children: ReactNode;
   fullBleed?: boolean;
+  showBreadcrumb?: boolean;
+  /** Custom breadcrumb to render above the title, in place of the auto-generated one. */
+  breadcrumb?: ReactNode;
 };
 
-const publicNavItems = [
-  { label: "หน้าหลัก", href: "/" },
-  { label: "หลักสูตร", href: "/programs" },
-  { label: "รายวิชา", href: "/subjects" },
+const memberNavItems = [
+  { label: "หน้าหลัก", href: "/profile" },
+  { label: "หลักสูตร", href: "/member/programs" },
+  { label: "รายวิชา", href: "/member/subjects" },
   { label: "ข่าวสาร", href: "/news" },
   { label: "เกี่ยวกับ", href: "/about" },
   { label: "ช่วยเหลือ", href: "/help" },
@@ -38,6 +41,8 @@ export function MemberPageShell({
   description,
   children,
   fullBleed = false,
+  showBreadcrumb = true,
+  breadcrumb,
 }: MemberPageShellProps) {
   return (
     <div className="flex min-h-screen flex-col bg-[var(--surface)]">
@@ -63,7 +68,7 @@ export function MemberPageShell({
             aria-label="เมนูหลัก"
             className="hidden items-center gap-6 text-sm font-medium text-[var(--ink-muted)] lg:flex"
           >
-            {publicNavItems.map((item) => (
+            {memberNavItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
@@ -83,7 +88,7 @@ export function MemberPageShell({
           aria-label="เมนูหลัก (มือถือ)"
           className="flex items-center gap-1 overflow-x-auto border-t border-[color:var(--border)] px-4 py-2 lg:hidden"
         >
-          {publicNavItems.map((item) => (
+          {memberNavItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -104,7 +109,7 @@ export function MemberPageShell({
           id="main-content"
           className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8"
         >
-          <Breadcrumb />
+          {breadcrumb !== undefined ? breadcrumb : showBreadcrumb && <Breadcrumb />}
           <div className="mb-6">
             <h1 className="text-2xl font-semibold text-[var(--foreground)]">{title}</h1>
             {description ? (

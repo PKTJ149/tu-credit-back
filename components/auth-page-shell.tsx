@@ -1,11 +1,13 @@
 import Link from "next/link";
 import {
-  CircleCheck,
   CircleHelp,
   Landmark,
   ShieldCheck,
 } from "lucide-react";
 import type { ReactNode } from "react";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+
+type SidebarStat = { label: string; value: string };
 
 type AuthPageShellProps = {
   badge: string;
@@ -15,7 +17,11 @@ type AuthPageShellProps = {
   panelTitle: string;
   panelDescription: string;
   currentStep?: "sign-in" | "register" | "verify" | "profile" | "ready";
+  hideSteps?: boolean;
   size?: "standard" | "wide";
+  hideSidebar?: boolean;
+  sidebarStats?: SidebarStat[];
+  sidebarPoints?: string[];
   children: ReactNode;
 };
 
@@ -31,14 +37,6 @@ const supportStats = [
   { label: "ช่องทางช่วยเหลือ", value: "บริการผู้เรียน มธ." },
 ];
 
-const flowSteps = [
-  { id: "sign-in", label: "เข้าสู่ระบบ" },
-  { id: "register", label: "บัญชี" },
-  { id: "verify", label: "ยืนยัน" },
-  { id: "profile", label: "โปรไฟล์" },
-  { id: "ready", label: "พร้อมใช้งาน" },
-];
-
 export function AuthPageShell({
   badge,
   title,
@@ -46,10 +44,14 @@ export function AuthPageShell({
   panelBadge,
   panelTitle,
   panelDescription,
-  currentStep = "sign-in",
   size = "standard",
+  hideSidebar = false,
+  sidebarStats,
+  sidebarPoints,
   children,
 }: AuthPageShellProps) {
+  const resolvedStats = sidebarStats ?? supportStats;
+  const resolvedPoints = sidebarPoints ?? supportPoints;
   const contentMaxWidth = size === "wide" ? "max-w-7xl" : "max-w-6xl";
   const workspaceColumns =
     size === "wide"
@@ -59,8 +61,8 @@ export function AuthPageShell({
   return (
     <div className="min-h-screen bg-[var(--surface)]">
       <header className="border-b border-[color:var(--border)] bg-[var(--background)]">
-        <div className={`mx-auto flex w-full ${contentMaxWidth} items-center justify-between px-4 py-4 sm:px-6 lg:px-8`}>
-          <div className="flex items-center gap-4">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--primary)] text-sm font-semibold text-[var(--primary-foreground)]">
               CB
             </div>
@@ -72,58 +74,42 @@ export function AuthPageShell({
                 Credit Bank
               </p>
             </div>
-          </div>
+          </Link>
 
-          <nav className="hidden items-center gap-2 text-sm text-[var(--ink-muted)] md:flex">
-            <a href="#programs" className="transition hover:text-[var(--foreground)]">
-              หลักสูตร
-            </a>
-            <span className="text-[color:var(--border)]">/</span>
-            <a href="#subjects" className="transition hover:text-[var(--foreground)]">
-              รายวิชา
-            </a>
-            <span className="text-[color:var(--border)]">/</span>
-            <a href="#help" className="transition hover:text-[var(--foreground)]">
-              ช่วยเหลือ
-            </a>
+          <nav className="hidden items-center gap-6 text-sm font-medium text-[var(--ink-muted)] md:flex">
+            {[
+              { label: "หน้าหลัก", href: "/" },
+              { label: "หลักสูตร", href: "/programs" },
+              { label: "รายวิชา", href: "/subjects" },
+              { label: "เกี่ยวกับ", href: "/about" },
+              { label: "ข่าวสาร", href: "/news" },
+              { label: "ช่วยเหลือ", href: "/help" },
+            ].map((item) => (
+              <Link key={item.href} href={item.href} className="transition hover:text-[var(--foreground)]">
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="ml-4 inline-flex h-10 items-center rounded-lg border border-[color:var(--border)] bg-[var(--background)] px-4 font-medium text-[var(--foreground)] hover:bg-[var(--surface)] focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
+              className="hidden h-10 items-center rounded-lg border border-[color:var(--border)] bg-[var(--background)] px-4 text-sm font-medium text-[var(--foreground)] hover:bg-[var(--surface)] focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)] sm:inline-flex"
             >
               เข้าสู่ระบบ
             </Link>
-          </nav>
+            <Link href="/register" className="ui-button-primary h-10 px-4 text-sm">
+              สมัครสมาชิก
+            </Link>
+          </div>
         </div>
       </header>
 
       <main id="main-content" className={`mx-auto w-full ${contentMaxWidth} px-4 py-6 sm:px-6 lg:px-8 lg:py-8`}>
-        <div className="mb-6 overflow-x-auto rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-2">
-          <ol className="flex min-w-max items-center gap-1">
-            {flowSteps.map((step) => {
-              const isActive = step.id === currentStep;
+        <Breadcrumb />
 
-              return (
-                <li key={step.id} className="flex items-center">
-                  <span
-                    className={`inline-flex h-9 items-center gap-2 rounded-lg px-3 text-sm font-medium ${
-                      isActive
-                        ? "bg-[var(--primary)] text-[var(--primary-foreground)]"
-                        : "text-[var(--ink-muted)]"
-                    }`}
-                  >
-                    {isActive ? (
-                      <CircleCheck aria-hidden="true" className="h-4 w-4" />
-                    ) : null}
-                    {step.label}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
-        </div>
-
-        <div className={`grid gap-6 ${workspaceColumns}`}>
-          <aside className="space-y-4">
+        <div className={`grid gap-6 ${hideSidebar ? "" : workspaceColumns}`}>
+          {!hideSidebar && <aside className="space-y-4">
             <section className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-5">
               <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[color:color-mix(in_oklch,var(--secondary)_55%,white)] text-[var(--secondary-foreground)]">
                 <Landmark aria-hidden="true" className="h-5 w-5" />
@@ -147,7 +133,7 @@ export function AuthPageShell({
                 </h2>
               </div>
               <dl className="space-y-4">
-                {supportStats.map((item) => (
+                {resolvedStats.map((item) => (
                   <div key={item.label}>
                     <dt className="text-xs font-medium text-[var(--ink-subtle)]">
                       {item.label}
@@ -168,7 +154,7 @@ export function AuthPageShell({
                 </h2>
               </div>
               <ul className="space-y-3">
-                {supportPoints.map((item) => (
+                {resolvedPoints.map((item) => (
                   <li key={item} className="flex gap-3 text-sm leading-6 text-[var(--ink-muted)]">
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--primary)]" />
                     {item}
@@ -176,7 +162,7 @@ export function AuthPageShell({
                 ))}
               </ul>
             </section>
-          </aside>
+          </aside>}
 
           <section className="min-w-0">
             <div className="rounded-xl border border-[color:var(--border)] bg-[var(--background)]">

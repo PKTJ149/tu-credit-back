@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { FileUploadField } from "@/components/finance/file-upload-field";
+import { useSessionData } from "@/lib/session/session-data";
 
 type ProofErrors = {
   proofFile?: string;
@@ -20,6 +21,7 @@ const checklistItems = [
 
 export function SubmitProofForm() {
   const router = useRouter();
+  const { data, submitPayment } = useSessionData();
   const [proofFile, setProofFile] = useState<File | null>(null);
   const [amountPaid, setAmountPaid] = useState("");
   const [paymentDate, setPaymentDate] = useState("");
@@ -58,6 +60,12 @@ export function SubmitProofForm() {
     });
 
     setIsSaving(false);
+
+    // Move the outstanding payable into "waiting for verification".
+    const target = data.payables.find((p) => p.state === "payment-required");
+    if (target) {
+      submitPayment(target.id);
+    }
 
     router.push("/finance/proof-submitted");
   }

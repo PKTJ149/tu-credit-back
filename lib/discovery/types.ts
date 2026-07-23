@@ -5,16 +5,36 @@ export type SubjectCategory = {
   subjects: Subject[];
 };
 
+export type ScheduleItem = {
+  date: string;
+  topic: string;
+  teacher: string;
+  status: "upcoming" | "ongoing" | "completed";
+};
+
 export type Subject = {
   id: string;
   slug: string;
   name: string;
   nameEn?: string;
   code?: string;
+  category?: string;
   credits: number;
   faculty: string;
   summary: string;
   price?: number;
+  studyMode?: "online" | "onsite" | "hybrid";
+  startDate?: string;
+  endDate?: string;
+  teachers?: string[];
+  seats?: number;
+  enrolledCount?: number;
+  status?: "open" | "closed";
+  duration?: string;
+  outcomes?: string[];
+  qualification?: string;
+  description?: string;
+  scheduleItems?: ScheduleItem[];
 };
 
 export type Program = {

@@ -2,11 +2,21 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { User, KeyRound, Settings, LogOut, ChevronDown } from "lucide-react";
+import { useAuth } from "@/lib/auth/auth-context";
 
 export function ProfileDropdown() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const { user, logout } = useAuth();
+
+  function handleLogout() {
+    setOpen(false);
+    logout();
+    router.push("/login");
+  }
 
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
@@ -27,9 +37,9 @@ export function ProfileDropdown() {
         className="flex items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-sm font-medium text-[var(--foreground)] transition hover:bg-[var(--surface)] focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
       >
         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color:color-mix(in_oklch,var(--secondary)_50%,white)] text-xs font-semibold text-[var(--secondary-foreground)]">
-          นศ
+          {user?.initials ?? "นศ"}
         </div>
-        <span className="hidden sm:block">โปรไฟล์ของฉัน</span>
+        <span className="hidden sm:block">{user?.name ?? "โปรไฟล์ของฉัน"}</span>
         <ChevronDown
           aria-hidden="true"
           className={`hidden h-4 w-4 text-[var(--ink-subtle)] transition-transform duration-150 sm:block ${open ? "rotate-180" : ""}`}
@@ -63,14 +73,14 @@ export function ProfileDropdown() {
             ตั้งค่า
           </Link>
           <hr className="my-1.5 border-[color:var(--border)]" />
-          <Link
-            href="/login"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-[var(--destructive)] hover:bg-[color:color-mix(in_oklch,var(--destructive)_6%,white)] focus:outline-none"
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm font-medium text-[var(--destructive)] hover:bg-[color:color-mix(in_oklch,var(--destructive)_6%,white)] focus:outline-none"
           >
             <LogOut aria-hidden="true" className="h-4 w-4 shrink-0" />
             ออกจากระบบ
-          </Link>
+          </button>
         </div>
       )}
     </div>

@@ -8,7 +8,7 @@ export default function RegistrationsPage() {
       description="ตรวจสอบการลงทะเบียนที่กำลังดำเนินการและล่าสุดของคุณ"
       currentNav="registrations"
     >
-      <MyRegistrations registrations={[]} />
+      <MyRegistrations />
     </MemberPageShell>
   );
 }

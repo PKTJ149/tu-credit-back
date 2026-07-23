@@ -1,14 +1,14 @@
+"use client";
+
 import { GraduationCap } from "lucide-react";
 
 import { SectionCard } from "@/components/finance/section-card";
 import { AcademicRecordRow } from "@/components/learning/academic-record-row";
-import type { AcademicRecord } from "@/lib/learning/registration-status";
+import { useSessionData } from "@/lib/session/session-data";
 
-type AcademicProgressProps = {
-  records: AcademicRecord[];
-};
-
-export function AcademicProgress({ records }: AcademicProgressProps) {
+export function AcademicProgress() {
+  const { data } = useSessionData();
+  const records = data.academicRecords;
   const totalCredits = records.reduce((sum, r) => sum + r.credits, 0);
   const latestGrade = records.length > 0 ? records[0].grade : "—";
 

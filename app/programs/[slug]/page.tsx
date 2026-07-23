@@ -140,7 +140,7 @@ export default async function ProgramDetailPage({ params }: ProgramDetailPagePro
   await params;
 
   return (
-    <PublicPageShell>
+    <PublicPageShell showBreadcrumb={false}>
       <ProgramDetail program={mockProgram} />
     </PublicPageShell>
   );

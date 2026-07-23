@@ -3,7 +3,7 @@ import { ProgramsList } from "@/components/discovery/programs-list";
 
 export default function ProgramsPage() {
   return (
-    <PublicPageShell>
+    <PublicPageShell showBreadcrumb={false}>
       <ProgramsList />
     </PublicPageShell>
   );

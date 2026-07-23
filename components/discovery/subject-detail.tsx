@@ -1,87 +1,602 @@
-import Link from "next/link";
-import { ProgramCard } from "@/components/discovery/program-card";
-import type { Program } from "@/lib/discovery/types";
+"use client";
 
-const relatedProgram: Program = {
-  id: "p1",
-  slug: "software-development",
-  name: "หลักสูตรประกาศนียบัตรการพัฒนาซอฟต์แวร์",
-  credits: 18,
-  level: "ประกาศนียบัตร",
-  faculty: "คณะวิทยาการเรียนรู้และศึกษาศาสตร์",
-  summary: "เส้นทางการเรียนรู้สำหรับผู้ที่ต้องการทักษะการพัฒนาซอฟต์แวร์อย่างเป็นระบบ",
-};
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import {
+  BookOpen,
+  Star,
+  Bookmark,
+  BookmarkCheck,
+  Users,
+  Clock,
+  MonitorPlay,
+  MapPin,
+  Calendar,
+  CheckCircle2,
+  BadgeCheck,
+  Target,
+} from "lucide-react";
+import type { Subject, ScheduleItem } from "@/lib/discovery/types";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { useSessionData } from "@/lib/session/session-data";
+
+const TABS = ["ภาพรวม", "รีวิวและความคิดเห็น"] as const;
+type Tab = (typeof TABS)[number];
 
 type SubjectDetailProps = {
+  subject: Subject;
   mode?: "public" | "member";
-  programDetailBasePath?: string;
 };
 
-export function SubjectDetail({
-  mode = "public",
-  programDetailBasePath = "/programs",
-}: SubjectDetailProps) {
+function getStudyModeLabel(mode: Subject["studyMode"]): string {
+  if (mode === "online") return "ออนไลน์";
+  if (mode === "onsite") return "เรียนในสถานที่";
+  if (mode === "hybrid") return "ออนไลน์และในสถานที่";
+  return "";
+}
+
+function getScheduleStatusBadge(status: ScheduleItem["status"]): {
+  label: string;
+  className: string;
+} {
+  if (status === "upcoming")
+    return { label: "กำลังจะมาถึง", className: "bg-blue-50 text-blue-700" };
+  if (status === "ongoing")
+    return { label: "กำลังดำเนินการ", className: "bg-amber-50 text-amber-700" };
+  if (status === "completed")
+    return { label: "เสร็จสิ้น", className: "bg-green-50 text-green-700" };
+  return { label: status, className: "bg-[var(--surface)] text-[var(--ink-muted)]" };
+}
+
+export function SubjectDetail({ subject, mode = "public" }: SubjectDetailProps) {
+  const router = useRouter();
+  const { data, registerForItem, addGoal, removeGoal } = useSessionData();
+  const [activeTab, setActiveTab] = useState<Tab>("ภาพรวม");
+  const [saved, setSaved] = useState(false);
   const isMember = mode === "member";
+  const isOpen = subject.status !== "closed";
+
+  // Is this subject already one of the learner's goals?
+  const existingGoal = data.goals.find((g) => g.slug === subject.slug);
+  const goalSet = existingGoal !== undefined;
+
+  function handleRegister() {
+    if (!isMember) return;
+    registerForItem({
+      itemName: subject.name,
+      itemType: "subject",
+      slug: subject.slug,
+      amount: subject.price ?? 0,
+    });
+    router.push("/registrations/confirmation");
+  }
+
+  function handleToggleGoal() {
+    if (!isMember) return;
+    if (existingGoal) {
+      removeGoal(existingGoal.id);
+    } else {
+      addGoal({
+        name: subject.name,
+        nameEn: subject.nameEn,
+        itemType: "subject",
+        slug: subject.slug,
+        credits: subject.credits,
+        // Subjects carry their own category; fall back handled in the store.
+        category: undefined,
+      });
+    }
+  }
+
 
   return (
-    <article className="mx-auto flex w-full max-w-3xl flex-col gap-8">
-      <header className="flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold text-[var(--foreground)] sm:text-3xl">
-          การเขียนโปรแกรมเบื้องต้น
-        </h1>
-        <p className="text-base leading-7 text-[var(--ink-muted)]">
-          รายวิชานี้ปูพื้นฐานการเขียนโปรแกรมสำหรับผู้เริ่มต้น ครอบคลุมตรรกะพื้นฐาน
-          โครงสร้างควบคุม และการแก้ปัญหาด้วยโปรแกรมคอมพิวเตอร์
-        </p>
-        <p className="font-mono text-sm font-medium text-[var(--ink-subtle)]">
-          3 หน่วยกิต
-        </p>
-      </header>
-
-      <section
-        aria-labelledby="eligibility-heading"
-        className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-5"
-      >
-        <h2
-          id="eligibility-heading"
-          className="text-lg font-semibold text-[var(--foreground)]"
-        >
-          คุณสมบัติผู้เรียน
-        </h2>
-        <p className="mt-2 text-sm leading-6 text-[var(--ink-muted)]">
-          ไม่จำเป็นต้องมีพื้นฐานการเขียนโปรแกรมมาก่อน เหมาะสำหรับผู้เริ่มต้นทุกระดับ
-        </p>
-      </section>
-
-      <section aria-labelledby="related-program-heading" className="flex flex-col gap-4">
-        <h2
-          id="related-program-heading"
-          className="text-lg font-semibold text-[var(--foreground)]"
-        >
-          ส่วนหนึ่งของหลักสูตร
-        </h2>
-        <ProgramCard program={relatedProgram} detailBasePath={programDetailBasePath} />
-      </section>
-
-      <section
-        aria-labelledby="subject-cta-heading"
-        className="flex flex-col gap-4 rounded-xl border border-[color:var(--border)] bg-[var(--surface)] p-5"
-      >
-        <h2
-          id="subject-cta-heading"
-          className="text-base font-medium text-[var(--foreground)]"
-        >
-          {isMember ? "เลือกขั้นตอนถัดไปสำหรับรายวิชานี้" : "เริ่มต้นใช้งานเพื่อดำเนินการลงทะเบียน"}
-        </h2>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Link href={isMember ? "/registrations" : "/register"} className="ui-button-primary">
-            {isMember ? "ไปที่การลงทะเบียน" : "สมัครสมาชิก"}
-          </Link>
-          <Link href={isMember ? "/learning" : "/login"} className="ui-button-secondary">
-            {isMember ? "กลับไปเป้าหมายการเรียนรู้" : "เข้าสู่ระบบ"}
-          </Link>
+    <article className="w-full">
+      {/* Breadcrumb (member pages render this via MemberPageShell instead, above the title) */}
+      {!isMember && (
+        <div className="mb-4">
+          <Breadcrumb
+            items={[
+              { label: "รายวิชา", href: "/subjects" },
+              { label: subject.name },
+            ]}
+          />
         </div>
-      </section>
+      )}
+
+      {/* Banner */}
+      <div className="relative mb-6 flex aspect-[4/1] items-center justify-center overflow-hidden rounded-2xl bg-[color:color-mix(in_oklch,var(--secondary)_20%,white)]">
+        <BookOpen
+          aria-hidden="true"
+          className="h-16 w-16 text-[var(--secondary-foreground)] opacity-10"
+        />
+        <span className="absolute bottom-3 right-4 text-[10px] font-medium text-[var(--ink-subtle)] opacity-60">
+          ภาพปก
+        </span>
+        <div className="absolute left-4 top-4 flex items-center gap-2">
+          {subject.status && (
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                isOpen ? "bg-green-50 text-green-700" : "bg-red-50 text-red-600"
+              }`}
+            >
+              {isOpen ? "เปิดรับสมัคร" : "ปิดรับสมัคร"}
+            </span>
+          )}
+          {subject.code && (
+            <span className="rounded-full bg-[color:color-mix(in_oklch,var(--secondary)_30%,white)] px-3 py-1 font-mono text-xs font-semibold text-[var(--ink-muted)]">
+              {subject.code}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* 2-column layout: main content + sticky sidebar */}
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
+        {/* ── LEFT: main content ── */}
+        <div className="min-w-0 flex-1">
+          {/* Header */}
+          <div className="mb-6 flex flex-col gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm text-[var(--ink-subtle)]">{subject.faculty}</span>
+              {subject.category && (
+                <span className="rounded-full bg-[color:color-mix(in_oklch,var(--secondary)_20%,white)] px-3 py-1 text-xs font-medium text-[var(--ink-muted)]">
+                  {subject.category}
+                </span>
+              )}
+            </div>
+
+            <h1 className="text-2xl font-semibold leading-tight text-[var(--foreground)] sm:text-3xl">
+              {subject.name}
+            </h1>
+
+            {subject.nameEn && (
+              <p className="text-sm text-[var(--ink-muted)]">{subject.nameEn}</p>
+            )}
+
+            {subject.summary && (
+              <p className="text-base leading-7 text-[var(--ink-muted)]">{subject.summary}</p>
+            )}
+
+            {/* Mobile-only CTA (shows before tabs on small screens) */}
+            <div className="flex flex-col gap-3 lg:hidden">
+              {isMember ? (
+                <button
+                  type="button"
+                  onClick={handleRegister}
+                  className="ui-button-primary h-11 w-full text-sm"
+                >
+                  ลงทะเบียนรายวิชา
+                </button>
+              ) : (
+                <Link
+                  href="/register"
+                  className="ui-button-primary h-11 w-full text-sm"
+                >
+                  สมัครสมาชิกเพื่อลงทะเบียน
+                </Link>
+              )}
+              <button
+                type="button"
+                onClick={() => isMember && setSaved(!saved)}
+                disabled={!isMember}
+                title={!isMember ? "เข้าสู่ระบบเพื่อบันทึกรายวิชา" : undefined}
+                className={`flex h-11 w-full items-center justify-center gap-2 rounded-lg border text-sm font-medium transition ${
+                  !isMember
+                    ? "cursor-not-allowed border-[color:var(--border)] text-[var(--ink-subtle)] opacity-50"
+                    : saved
+                    ? "border-[color:var(--primary)] bg-[color:color-mix(in_oklch,var(--primary)_8%,white)] text-[color:var(--primary)]"
+                    : "border-[color:var(--border)] text-[var(--ink-muted)] hover:border-[color:var(--ring)]"
+                }`}
+              >
+                {saved && isMember ? (
+                  <BookmarkCheck aria-hidden="true" className="h-4 w-4" />
+                ) : (
+                  <Bookmark aria-hidden="true" className="h-4 w-4" />
+                )}
+                {saved && isMember ? "บันทึกแล้ว" : "บันทึกรายวิชา"}
+              </button>
+              <button
+                type="button"
+                onClick={handleToggleGoal}
+                disabled={!isMember}
+                title={!isMember ? "เข้าสู่ระบบเพื่อตั้งเป้าหมาย" : undefined}
+                className={`flex h-11 w-full items-center justify-center gap-2 rounded-lg border text-sm font-medium transition ${
+                  !isMember
+                    ? "cursor-not-allowed border-[color:var(--border)] text-[var(--ink-subtle)] opacity-50"
+                    : goalSet
+                    ? "border-[color:var(--secondary-foreground)] bg-[color:color-mix(in_oklch,var(--secondary)_12%,white)] text-[color:var(--secondary-foreground)]"
+                    : "border-[color:var(--border)] text-[var(--ink-muted)] hover:border-[color:var(--ring)] hover:text-[var(--foreground)]"
+                }`}
+              >
+                {goalSet && isMember ? (
+                  <CheckCircle2 aria-hidden="true" className="h-4 w-4" />
+                ) : (
+                  <Target aria-hidden="true" className="h-4 w-4" />
+                )}
+                {goalSet && isMember ? "อยู่ในเป้าหมายแล้ว" : "เลือกเป็นเป้าหมายการเรียนรู้"}
+              </button>
+            </div>
+          </div>
+
+          {/* Tab navigation */}
+          <div className="mb-6 border-b border-[color:var(--border)]">
+            <nav className="-mb-px flex gap-0" aria-label="แท็บเนื้อหา">
+              {TABS.map((tab) => {
+                const isActive = activeTab === tab;
+                return (
+                  <button
+                    key={tab}
+                    type="button"
+                    onClick={() => setActiveTab(tab)}
+                    className={`flex items-center gap-1.5 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
+                      isActive
+                        ? "border-[color:var(--primary)] text-[color:var(--primary)]"
+                        : "border-transparent text-[var(--ink-muted)] hover:border-[color:var(--border)] hover:text-[var(--foreground)]"
+                    }`}
+                    aria-selected={isActive}
+                    role="tab"
+                  >
+                    {tab === "ภาพรวม" && (
+                      <BookOpen aria-hidden="true" className="h-3.5 w-3.5" />
+                    )}
+                    {tab === "รีวิวและความคิดเห็น" && (
+                      <Star aria-hidden="true" className="h-3.5 w-3.5" />
+                    )}
+                    {tab}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Tab content */}
+          <div role="tabpanel">
+            {/* ── ภาพรวม ── */}
+            {activeTab === "ภาพรวม" && (
+              <div className="flex flex-col gap-4">
+                {/* เกี่ยวกับรายวิชา */}
+                {(subject.summary || subject.description) && (
+                  <section className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-6">
+                    <h2 className="mb-3 text-base font-semibold text-[var(--foreground)]">
+                      เกี่ยวกับรายวิชา
+                    </h2>
+                    <p className="text-sm leading-7 text-[var(--ink-muted)]">
+                      {subject.description ?? subject.summary}
+                    </p>
+                  </section>
+                )}
+
+                {/* รูปแบบการเรียน */}
+                {subject.studyMode && (
+                  <section className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-6">
+                    <h2 className="mb-4 text-base font-semibold text-[var(--foreground)]">
+                      รูปแบบการเรียน
+                    </h2>
+                    <div className="flex flex-wrap gap-2">
+                      {(subject.studyMode === "online" || subject.studyMode === "hybrid") && (
+                        <span className="flex items-center gap-2 rounded-lg border border-[color:var(--border)] bg-[color:color-mix(in_oklch,var(--secondary)_10%,white)] px-3 py-2 text-sm font-medium text-[var(--foreground)]">
+                          <MonitorPlay aria-hidden="true" className="h-4 w-4 text-[var(--ink-subtle)]" />
+                          ออนไลน์
+                        </span>
+                      )}
+                      {(subject.studyMode === "onsite" || subject.studyMode === "hybrid") && (
+                        <span className="flex items-center gap-2 rounded-lg border border-[color:var(--border)] bg-[color:color-mix(in_oklch,var(--secondary)_10%,white)] px-3 py-2 text-sm font-medium text-[var(--foreground)]">
+                          <MapPin aria-hidden="true" className="h-4 w-4 text-[var(--ink-subtle)]" />
+                          เรียนในสถานที่
+                        </span>
+                      )}
+                    </div>
+                  </section>
+                )}
+
+                {/* กำหนดการเรียน */}
+                {(subject.startDate || subject.endDate) && (
+                  <section className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-6">
+                    <h2 className="mb-4 text-base font-semibold text-[var(--foreground)]">
+                      กำหนดการเรียน
+                    </h2>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      {subject.startDate && (
+                        <div className="flex items-center gap-3">
+                          <Calendar aria-hidden="true" className="h-4 w-4 shrink-0 text-[var(--ink-subtle)]" />
+                          <div>
+                            <p className="text-xs text-[var(--ink-muted)]">วันเริ่มเรียน</p>
+                            <p className="text-sm font-semibold text-[var(--foreground)]">
+                              {subject.startDate}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      {subject.endDate && (
+                        <div className="flex items-center gap-3">
+                          <Calendar aria-hidden="true" className="h-4 w-4 shrink-0 text-[var(--ink-subtle)]" />
+                          <div>
+                            <p className="text-xs text-[var(--ink-muted)]">วันสิ้นสุด</p>
+                            <p className="text-sm font-semibold text-[var(--foreground)]">
+                              {subject.endDate}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                )}
+
+                {/* สิ่งที่จะได้รับ */}
+                {subject.outcomes && subject.outcomes.length > 0 && (
+                  <section className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-6">
+                    <h2 className="mb-4 text-base font-semibold text-[var(--foreground)]">
+                      สิ่งที่จะได้รับ
+                    </h2>
+                    <ul className="flex flex-col gap-3">
+                      {subject.outcomes.map((outcome) => (
+                        <li key={outcome} className="flex items-start gap-3">
+                          <CheckCircle2
+                            aria-hidden="true"
+                            className="mt-0.5 h-5 w-5 shrink-0 text-[var(--secondary-foreground)]"
+                          />
+                          <span className="text-sm leading-6 text-[var(--ink-muted)]">
+                            {outcome}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+
+                {/* คุณสมบัติผู้เรียน */}
+                {subject.qualification && (
+                  <section className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-6">
+                    <h2 className="mb-3 text-base font-semibold text-[var(--foreground)]">
+                      คุณสมบัติผู้เรียน
+                    </h2>
+                    <p className="text-sm leading-7 text-[var(--ink-muted)]">
+                      {subject.qualification}
+                    </p>
+                  </section>
+                )}
+
+                {/* ตารางการเรียน */}
+                {subject.scheduleItems && subject.scheduleItems.length > 0 && (
+                  <section className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-6">
+                    <h2 className="mb-4 text-base font-semibold text-[var(--foreground)]">
+                      ตารางการเรียน
+                    </h2>
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-[color:var(--border)]">
+                            <th className="pb-3 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-[var(--ink-subtle)]">
+                              วันที่
+                            </th>
+                            <th className="pb-3 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-[var(--ink-subtle)]">
+                              หัวข้อ
+                            </th>
+                            <th className="pb-3 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-[var(--ink-subtle)]">
+                              ผู้สอน
+                            </th>
+                            <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wide text-[var(--ink-subtle)]">
+                              สถานะ
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[color:var(--border)]">
+                          {subject.scheduleItems.map((item, idx) => {
+                            const badge = getScheduleStatusBadge(item.status);
+                            return (
+                              <tr key={idx}>
+                                <td className="whitespace-nowrap py-3 pr-4 text-sm text-[var(--foreground)]">
+                                  {item.date}
+                                </td>
+                                <td className="py-3 pr-4 text-sm text-[var(--ink-muted)]">
+                                  {item.topic}
+                                </td>
+                                <td className="whitespace-nowrap py-3 pr-4 text-sm text-[var(--ink-muted)]">
+                                  {item.teacher}
+                                </td>
+                                <td className="py-3">
+                                  <span
+                                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${badge.className}`}
+                                  >
+                                    {badge.label}
+                                  </span>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+                )}
+              </div>
+            )}
+
+            {/* ── รีวิว ── */}
+            {activeTab === "รีวิวและความคิดเห็น" && (
+              <div className="flex flex-col items-center gap-4 rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-12 text-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[var(--surface)]">
+                  <Star aria-hidden="true" className="h-7 w-7 text-[var(--ink-subtle)]" />
+                </div>
+                <div>
+                  <p className="font-medium text-[var(--foreground)]">ยังไม่มีรีวิว</p>
+                  <p className="mt-1 text-sm text-[var(--ink-muted)]">
+                    เป็นคนแรกที่รีวิวรายวิชานี้หลังจากเรียนจบ
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── RIGHT: sticky sidebar ── */}
+        <aside className="hidden shrink-0 lg:block lg:w-80 xl:w-96">
+          <div className="sticky top-8 flex flex-col gap-4">
+            {/* Price card */}
+            <div className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-5">
+              {subject.price !== undefined && (
+                <div className="mb-4 flex flex-col gap-0.5">
+                  <span
+                    className={`text-3xl font-bold leading-none tracking-tight ${
+                      subject.price === 0
+                        ? "text-green-700"
+                        : "text-[var(--foreground)]"
+                    }`}
+                  >
+                    {subject.price === 0 ? "ฟรี" : `฿${subject.price.toLocaleString()}`}
+                  </span>
+                  {subject.price > 0 && (
+                    <span className="text-xs text-[var(--ink-muted)]">ค่าลงทะเบียนรายวิชา</span>
+                  )}
+                </div>
+              )}
+
+              <div className="flex flex-col gap-3">
+                {isMember ? (
+                  <button
+                    type="button"
+                    onClick={handleRegister}
+                    className="ui-button-primary h-11 w-full text-sm"
+                  >
+                    ลงทะเบียนรายวิชา
+                  </button>
+                ) : (
+                  <Link
+                    href="/register"
+                    className="ui-button-primary h-11 w-full text-sm"
+                  >
+                    สมัครสมาชิกเพื่อลงทะเบียน
+                  </Link>
+                )}
+                <button
+                  type="button"
+                  aria-label={saved && isMember ? "ยกเลิกการบันทึก" : "บันทึกรายวิชานี้"}
+                  onClick={() => isMember && setSaved(!saved)}
+                  disabled={!isMember}
+                  title={!isMember ? "เข้าสู่ระบบเพื่อบันทึกรายวิชา" : undefined}
+                  className={`flex h-11 items-center justify-center gap-2 rounded-lg border text-sm font-medium transition ${
+                    !isMember
+                      ? "cursor-not-allowed border-[color:var(--border)] text-[var(--ink-subtle)] opacity-50"
+                      : saved
+                      ? "border-[color:var(--primary)] bg-[color:color-mix(in_oklch,var(--primary)_8%,white)] text-[color:var(--primary)]"
+                      : "border-[color:var(--border)] text-[var(--ink-muted)] hover:border-[color:var(--ring)] hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  {saved && isMember ? (
+                    <BookmarkCheck aria-hidden="true" className="h-4 w-4" />
+                  ) : (
+                    <Bookmark aria-hidden="true" className="h-4 w-4" />
+                  )}
+                  {saved && isMember ? "บันทึกแล้ว" : "บันทึกรายวิชา"}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleToggleGoal}
+                  disabled={!isMember}
+                  title={!isMember ? "เข้าสู่ระบบเพื่อตั้งเป้าหมาย" : undefined}
+                  className={`flex h-11 w-full items-center justify-center gap-2 rounded-lg border text-sm font-medium transition ${
+                    !isMember
+                      ? "cursor-not-allowed border-[color:var(--border)] text-[var(--ink-subtle)] opacity-50"
+                      : goalSet
+                      ? "border-[color:var(--secondary-foreground)] bg-[color:color-mix(in_oklch,var(--secondary)_12%,white)] text-[color:var(--secondary-foreground)]"
+                      : "border-[color:var(--border)] text-[var(--ink-muted)] hover:border-[color:var(--ring)] hover:text-[var(--foreground)]"
+                  }`}
+                >
+                  {goalSet && isMember ? (
+                    <CheckCircle2 aria-hidden="true" className="h-4 w-4" />
+                  ) : (
+                    <Target aria-hidden="true" className="h-4 w-4" />
+                  )}
+                  {goalSet && isMember ? "อยู่ในเป้าหมายแล้ว" : "เลือกเป็นเป้าหมายการเรียนรู้"}
+                </button>
+              </div>
+            </div>
+
+            {/* Key stats card */}
+            <div className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-5">
+              <h3 className="mb-3 text-sm font-semibold text-[var(--foreground)]">
+                ข้อมูลรายวิชา
+              </h3>
+              <dl className="flex flex-col gap-3">
+                <div className="flex items-center gap-3">
+                  <BookOpen
+                    aria-hidden="true"
+                    className="h-4 w-4 shrink-0 text-[var(--ink-subtle)]"
+                  />
+                  <dt className="text-sm text-[var(--ink-muted)]">หน่วยกิต</dt>
+                  <dd className="ml-auto text-sm font-semibold text-[var(--foreground)]">
+                    {subject.credits} หน่วยกิต
+                  </dd>
+                </div>
+                {subject.seats !== undefined && (
+                  <div className="flex items-center gap-3">
+                    <Users
+                      aria-hidden="true"
+                      className="h-4 w-4 shrink-0 text-[var(--ink-subtle)]"
+                    />
+                    <dt className="text-sm text-[var(--ink-muted)]">ที่นั่ง</dt>
+                    <dd className="ml-auto text-sm font-semibold text-[var(--foreground)]">
+                      {subject.enrolledCount ?? 0}/{subject.seats}
+                    </dd>
+                  </div>
+                )}
+                {subject.studyMode && (
+                  <div className="flex items-center gap-3">
+                    <Clock
+                      aria-hidden="true"
+                      className="h-4 w-4 shrink-0 text-[var(--ink-subtle)]"
+                    />
+                    <dt className="text-sm text-[var(--ink-muted)]">รูปแบบ</dt>
+                    <dd className="ml-auto text-sm font-semibold text-[var(--foreground)]">
+                      {getStudyModeLabel(subject.studyMode)}
+                    </dd>
+                  </div>
+                )}
+                {subject.status && (
+                  <div className="flex items-center gap-3">
+                    <BadgeCheck
+                      aria-hidden="true"
+                      className="h-4 w-4 shrink-0 text-[var(--ink-subtle)]"
+                    />
+                    <dt className="text-sm text-[var(--ink-muted)]">สถานะ</dt>
+                    <dd className="ml-auto">
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+                          isOpen
+                            ? "bg-green-50 text-green-700"
+                            : "bg-red-50 text-red-600"
+                        }`}
+                      >
+                        {isOpen ? "เปิดรับสมัคร" : "ปิดรับสมัคร"}
+                      </span>
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            </div>
+
+            {/* Teachers card */}
+            {subject.teachers && subject.teachers.length > 0 && (
+              <div className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-5">
+                <h3 className="mb-3 text-sm font-semibold text-[var(--foreground)]">
+                  ผู้สอน
+                </h3>
+                <ul className="flex flex-col gap-2">
+                  {subject.teachers.map((teacher, index) => (
+                    <li key={teacher} className="flex items-center gap-2.5">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--surface)] text-xs font-bold text-[var(--ink-muted)]">
+                        {index + 1}
+                      </span>
+                      <span className="text-sm text-[var(--foreground)]">{teacher}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </aside>
+      </div>
     </article>
   );
 }

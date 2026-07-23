@@ -1,9 +1,25 @@
+"use client";
+
 import Link from "next/link";
-import { AlertTriangle, Paperclip } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { AlertTriangle, Paperclip, CheckCircle2 } from "lucide-react";
 import { StatusPanel } from "@/components/finance/status-panel";
 import { SectionCard } from "@/components/finance/section-card";
+import { formatTHB } from "@/lib/finance/payment-state";
+import { CURRENT_TERM, useSessionData } from "@/lib/session/session-data";
 
 export function PendingVerification() {
+  const router = useRouter();
+  const { data, confirmPayment } = useSessionData();
+  const pending = data.payables.find((p) => p.state === "pending-verification");
+
+  function handleApprove() {
+    if (pending) {
+      confirmPayment(pending.id);
+    }
+    router.push("/finance/confirmed");
+  }
+
   return (
     <div className="space-y-6">
       <StatusPanel
@@ -31,13 +47,13 @@ export function PendingVerification() {
           <div>
             <dt className="text-sm text-[var(--ink-muted)]">จำนวนเงิน</dt>
             <dd className="mt-1 text-sm font-semibold text-[var(--foreground)]">
-              3,500 บาท
+              {pending ? formatTHB(pending.amount) : "-"}
             </dd>
           </div>
           <div>
             <dt className="text-sm text-[var(--ink-muted)]">วันที่ส่งหลักฐาน</dt>
             <dd className="mt-1 text-sm font-semibold text-[var(--foreground)]">
-              15 ก.ค. 2569
+              {CURRENT_TERM}
             </dd>
           </div>
           <div>
@@ -65,6 +81,32 @@ export function PendingVerification() {
           </a>
         </div>
       </SectionCard>
+
+      {/* Demo-only shortcut so the flow can be shown end-to-end without a real reviewer. */}
+      <div className="rounded-xl border border-dashed border-[color:color-mix(in_oklch,var(--secondary)_45%,white)] bg-[color:color-mix(in_oklch,var(--secondary)_10%,white)] p-5">
+        <div className="flex items-start gap-3">
+          <CheckCircle2
+            aria-hidden="true"
+            className="mt-0.5 h-5 w-5 shrink-0 text-[var(--secondary-foreground)]"
+          />
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-semibold text-[var(--foreground)]">
+              โหมดสาธิต — จำลองผลการตรวจสอบ
+            </p>
+            <p className="mt-1 text-sm leading-6 text-[var(--ink-muted)]">
+              ในระบบจริงเจ้าหน้าที่จะเป็นผู้อนุมัติ กดปุ่มนี้เพื่อจำลองว่าตรวจสอบผ่านแล้ว
+            </p>
+            <button
+              type="button"
+              onClick={handleApprove}
+              disabled={!pending}
+              className="ui-button-primary mt-4"
+            >
+              จำลองการอนุมัติการชำระเงิน
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

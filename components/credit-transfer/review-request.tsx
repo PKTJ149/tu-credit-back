@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Stepper } from "@/components/credit-transfer/stepper";
+import { useSessionData } from "@/lib/session/session-data";
 
 const requestDetailItems = [
   {
@@ -22,6 +23,7 @@ const requestDetailItems = [
 
 export function ReviewRequest() {
   const router = useRouter();
+  const { addTransfer } = useSessionData();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleConfirm() {
@@ -30,6 +32,9 @@ export function ReviewRequest() {
     await new Promise((resolve) => {
       window.setTimeout(resolve, 900);
     });
+
+    // Record the submitted request so it appears on the transfer hub/history.
+    addTransfer({ type: "in", title: "แคลคูลัส 1 · มหาวิทยาลัยเกษตรศาสตร์" });
 
     router.push("/transfer/confirmation");
   }

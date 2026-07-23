@@ -1,8 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { LogIn } from "lucide-react";
+import { useAuth } from "@/lib/auth/auth-context";
 
 type FormErrors = {
   identifier?: string;
@@ -13,6 +15,8 @@ type FormErrors = {
 const IDENTIFIER_PLACEHOLDER = "name@example.com หรือเลขประจำตัว";
 
 export function LoginForm() {
+  const router = useRouter();
+  const { login } = useAuth();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(true);
@@ -49,10 +53,8 @@ export function LoginForm() {
     });
 
     setIsSubmitting(false);
-    setErrors({
-      general:
-        "ยังไม่สามารถเข้าสู่ระบบด้วยข้อมูลนี้ได้ กรุณาตรวจสอบข้อมูลแล้วลองอีกครั้ง",
-    });
+    login(identifier);
+    router.push("/profile");
   }
 
   return (
