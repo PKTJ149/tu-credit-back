@@ -4,9 +4,9 @@ export default function RegistrationsPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-[var(--foreground)]">การลงทะเบียน</h1>
+        <h1 className="text-2xl font-semibold text-[var(--foreground)]">การลงทะเบียนเรียน</h1>
         <p className="mt-1 text-sm text-[var(--ink-muted)]">
-          ตรวจสอบการลงทะเบียนที่กำลังดำเนินการและล่าสุดของคุณ
+          ตรวจสอบรายการลงทะเบียนเรียนที่กำลังดำเนินการและล่าสุดของคุณ
         </p>
       </div>
       <MyRegistrations />

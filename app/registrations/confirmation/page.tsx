@@ -4,8 +4,8 @@ import { RegistrationConfirmation } from "@/components/finance/registration-conf
 export default function RegistrationConfirmationPage() {
   return (
     <MemberPageShell
-      title="ยืนยันการลงทะเบียน"
-      description="ตรวจสอบผลการลงทะเบียนและขั้นตอนถัดไปของคุณ"
+      title="ยืนยันการลงทะเบียนเรียน"
+      description="ตรวจสอบรายวิชา หน่วยกิต และค่าใช้จ่ายก่อนยืนยันการลงทะเบียนเรียน"
       currentNav="registrations"
     >
       <RegistrationConfirmation />

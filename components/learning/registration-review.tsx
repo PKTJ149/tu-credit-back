@@ -54,7 +54,7 @@ export function RegistrationReview() {
         <div className="border-t border-[color:var(--border)] p-5 sm:p-6">
           <p className="text-sm leading-7 text-[var(--ink-muted)]">
             การลงทะเบียนนี้มีค่าใช้จ่ายที่ต้องชำระ
-            ระบบจะพาคุณไปยังหน้ายืนยันการลงทะเบียนหลังจากกดปุ่มด้านล่าง
+            ระบบจะพาคุณไปยังหน้ายืนยันการลงทะเบียนเรียนหลังจากกดปุ่มด้านล่าง
           </p>
         </div>
       </div>
@@ -65,7 +65,7 @@ export function RegistrationReview() {
           className="mt-0.5 h-4 w-4 shrink-0 text-[var(--primary)]"
         />
         <p className="text-sm leading-7 text-[var(--foreground)]">
-          โปรดตรวจสอบว่าคุณไม่มีตารางเรียนที่ชนกันก่อนยืนยันการลงทะเบียน
+          โปรดตรวจสอบว่าคุณไม่มีตารางเรียนที่ชนกันก่อนยืนยันการลงทะเบียนเรียน
         </p>
       </div>
 

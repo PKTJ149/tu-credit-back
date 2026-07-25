@@ -4,8 +4,8 @@ import { RegistrationReview } from "@/components/learning/registration-review";
 export default function RegistrationReviewPage() {
   return (
     <MemberPageShell
-      title="ตรวจสอบการลงทะเบียน"
-      description="ตรวจสอบรายละเอียดด้านล่างก่อนยืนยันการลงทะเบียน"
+      title="ตรวจสอบการลงทะเบียนเรียน"
+      description="ตรวจสอบรายละเอียดด้านล่างก่อนยืนยันการลงทะเบียนเรียน"
       currentNav="learning"
     >
       <RegistrationReview />

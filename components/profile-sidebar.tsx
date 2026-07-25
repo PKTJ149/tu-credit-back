@@ -23,7 +23,7 @@ const accountMenus = [
 
 const activityMenus = [
   { icon: Compass, label: "เป้าหมายการเรียนรู้", href: "/profile/learning" },
-  { icon: ClipboardList, label: "การลงทะเบียน", href: "/profile/registrations" },
+  { icon: ClipboardList, label: "ลงทะเบียนเรียน", href: "/profile/registrations" },
   { icon: ArrowLeftRight, label: "เทียบโอนหน่วยกิต", href: "/profile/transfer" },
   { icon: Wallet, label: "การเงิน", href: "/profile/finance" },
   { icon: GraduationCap, label: "ผลการเรียน", href: "/profile/academic" },

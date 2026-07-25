@@ -8,7 +8,7 @@ export default function RegisterSuccessPage() {
       badge="สร้างบัญชีแล้ว"
       title="สร้างบัญชีเรียบร้อยแล้ว"
       description="คุณพร้อมไปขั้นตอนถัดไปแล้ว ระบบจะแนะนำสิ่งที่ต้องทำก่อนเริ่มใช้งาน Credit Bank"
-      panelBadge="ลงทะเบียนสำเร็จ"
+      panelBadge="สมัครสมาชิกสำเร็จ"
       panelTitle="สร้างบัญชีแล้ว"
       panelDescription="ระบบบันทึกข้อมูลบัญชีเบื้องต้นของคุณเรียบร้อยแล้ว"
       currentStep="register"

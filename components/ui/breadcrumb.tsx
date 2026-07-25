@@ -19,7 +19,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   "change-password": "เปลี่ยนรหัสผ่าน",
   settings: "ตั้งค่า",
   learning: "เป้าหมายการเรียนรู้",
-  registrations: "การลงทะเบียน",
+  registrations: "ลงทะเบียนเรียน",
   transfer: "เทียบโอนหน่วยกิต",
   finance: "การเงิน",
   academic: "ผลการเรียน",

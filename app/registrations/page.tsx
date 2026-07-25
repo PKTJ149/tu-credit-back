@@ -4,8 +4,8 @@ import { MyRegistrations } from "@/components/learning/my-registrations";
 export default function RegistrationsPage() {
   return (
     <MemberPageShell
-      title="การลงทะเบียนของฉัน"
-      description="ตรวจสอบการลงทะเบียนที่กำลังดำเนินการและล่าสุดของคุณ"
+      title="รายการลงทะเบียนเรียนของฉัน"
+      description="ตรวจสอบรายการลงทะเบียนเรียนที่กำลังดำเนินการและล่าสุดของคุณ"
       currentNav="registrations"
     >
       <MyRegistrations />

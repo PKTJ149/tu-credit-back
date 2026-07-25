@@ -68,10 +68,10 @@ export function RegistrationConfirmation() {
           </div>
           <div className="space-y-2">
             <h1 className="text-2xl font-semibold leading-9 text-[var(--foreground)]">
-              ตรวจสอบรายการลงทะเบียน
+              ตรวจสอบรายการลงทะเบียนเรียน
             </h1>
             <p className="text-sm leading-7 text-[var(--ink-muted)]">
-              ตรวจสอบรายวิชา หน่วยกิต และค่าใช้จ่ายก่อนยืนยันการลงทะเบียน
+              ตรวจสอบรายวิชา หน่วยกิต และค่าใช้จ่ายก่อนยืนยันการลงทะเบียนเรียน
               หลังจากยืนยันแล้ว ระบบจะพาคุณไปยังหน้าชำระเงิน
             </p>
           </div>
@@ -151,7 +151,7 @@ export function RegistrationConfirmation() {
             className="mt-0.5 h-5 w-5 shrink-0 text-[var(--primary)]"
           />
           <p className="text-sm leading-7 text-[var(--foreground)]">
-            กรุณายืนยันการลงทะเบียนก่อนดำเนินการชำระเงิน หากยกเลิก รายการนี้จะถูกนำออกจากรายการลงทะเบียนและยอดชำระของคุณ
+            กรุณายืนยันการลงทะเบียนเรียนก่อนดำเนินการชำระเงิน หากยกเลิก รายการนี้จะถูกนำออกจากรายการลงทะเบียนเรียนและยอดชำระของคุณ
           </p>
         </div>
 
