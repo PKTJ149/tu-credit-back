@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   GraduationCap,
@@ -12,6 +13,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import type { Program } from "@/lib/discovery/types";
+import { getTeachersByIds } from "@/lib/data/teachers";
 
 type ProgramCardProps = {
   program: Program;
@@ -38,7 +40,7 @@ export function ProgramCard({ program, detailBasePath = "/programs", canSave = t
     program.originalPrice > (program.totalPrice ?? 0);
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[var(--background)] shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[var(--background)] shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
 
       {/* Full-card clickable overlay */}
       <Link
@@ -50,14 +52,21 @@ export function ProgramCard({ program, detailBasePath = "/programs", canSave = t
       </Link>
 
       {/* ── Cover ── */}
-      <div className="relative flex aspect-video items-center justify-center bg-[color:color-mix(in_oklch,var(--secondary)_12%,white)]">
-        <GraduationCap
-          aria-hidden="true"
-          className="h-14 w-14 text-[var(--secondary-foreground)] opacity-[0.12]"
-        />
-        <span className="absolute bottom-2 right-3 text-[10px] text-[var(--ink-subtle)] opacity-50">
-          ภาพปก
-        </span>
+      <div className="relative flex aspect-video items-center justify-center overflow-hidden bg-[color:color-mix(in_oklch,var(--secondary)_12%,white)]">
+        {program.image ? (
+          <Image
+            src={program.image}
+            alt={program.name}
+            fill
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover"
+          />
+        ) : (
+          <GraduationCap
+            aria-hidden="true"
+            className="h-14 w-14 text-[var(--secondary-foreground)] opacity-[0.12]"
+          />
+        )}
 
         {/* Status badge */}
         {program.status && (
@@ -94,29 +103,34 @@ export function ProgramCard({ program, detailBasePath = "/programs", canSave = t
       </div>
 
       {/* ── Body ── */}
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex min-h-[14rem] flex-1 flex-col p-4">
         <span className={`mb-3 self-start rounded-full px-3 py-1 text-xs font-medium ${badgeStyle}`}>
           {typeLabel}
         </span>
 
-        <h3 className="mb-1 line-clamp-2 text-lg font-bold leading-tight text-[var(--foreground)]">
+        <h3 className="mb-1 min-h-[2.75rem] line-clamp-2 text-lg font-bold leading-tight text-[var(--foreground)]">
           {program.name}
         </h3>
 
-        <div className="mb-12 flex flex-col">
+        <div className="flex min-h-[2.75rem] flex-col">
           <p className="line-clamp-1 text-sm text-[var(--ink-subtle)]">{program.faculty}</p>
-          {program.teachers && program.teachers.length > 0 && (
-            <p className="line-clamp-1 text-xs text-[var(--ink-muted)]">
-              <span className="font-semibold text-[var(--ink-subtle)]">ผู้สอน :</span>{" "}
-              {program.teachers.slice(0, 2).join(" · ")}
-              {program.teachers.length > 2 && (
-                <span className="text-[var(--ink-subtle)]"> +{program.teachers.length - 2}</span>
-              )}
-            </p>
-          )}
+          {(() => {
+            const programTeachers = getTeachersByIds(program.teacherIds);
+            return (
+              programTeachers.length > 0 && (
+                <p className="line-clamp-1 text-xs text-[var(--ink-muted)]">
+                  <span className="font-semibold text-[var(--ink-subtle)]">ผู้สอน :</span>{" "}
+                  {programTeachers.slice(0, 2).map((t) => t.name).join(" · ")}
+                  {programTeachers.length > 2 && (
+                    <span className="text-[var(--ink-subtle)]"> +{programTeachers.length - 2}</span>
+                  )}
+                </p>
+              )
+            );
+          })()}
         </div>
 
-        <div className="flex items-center divide-x divide-[color:var(--border)] text-xs">
+        <div className="mt-auto flex items-center divide-x divide-[color:var(--border)] text-xs">
           <div className="flex items-center gap-1 pr-3">
             <BookOpen aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-[var(--ink-subtle)]" />
             <span className="font-bold text-[var(--foreground)]">{program.credits}</span>
@@ -143,7 +157,7 @@ export function ProgramCard({ program, detailBasePath = "/programs", canSave = t
       </div>
 
       {/* ── Footer ── */}
-      <div className="flex items-center justify-between border-t border-[color:var(--border)] bg-[var(--surface)] px-4 pb-4 pt-3">
+      <div className="flex min-h-20 items-center justify-between border-t border-[color:var(--border)] bg-[var(--surface)] px-4 pb-4 pt-3">
         <div className="flex flex-col gap-0">
           <span className="text-[11px] text-[var(--ink-subtle)]">รวมทุกรายวิชา</span>
           <div className="flex items-baseline gap-2">

@@ -2,104 +2,26 @@ import Link from "next/link";
 import { ChevronRight, MapPin, Clock } from "lucide-react";
 import { ProgramCard } from "@/components/discovery/program-card";
 import { HomeBanner } from "@/components/discovery/home-banner";
-import type { Program } from "@/lib/discovery/types";
+import { programs } from "@/lib/data/programs";
 
-const recommendedPrograms: Program[] = [
-  {
-    id: "p1",
-    slug: "software-development",
-    name: "หลักสูตรประกาศนียบัตรการพัฒนาซอฟต์แวร์",
-    credits: 18,
-    level: "ประกาศนียบัตร",
-    type: "ประกาศนียบัตร",
-    faculty: "คณะวิทยาการเรียนรู้และศึกษาศาสตร์",
-    summary: "เส้นทางการเรียนรู้สำหรับผู้ที่ต้องการทักษะการพัฒนาซอฟต์แวร์อย่างเป็นระบบ",
-    teachers: ["ผศ.ดร. สมชาย ใจดี", "อ.ดร. วันดี มีสุข"],
-    seats: 40, enrolledCount: 28, status: "open",
-    totalPrice: 9000, originalPrice: 12000, duration: "6 เดือน",
-  },
-  {
-    id: "p2",
-    slug: "data-analytics",
-    name: "หลักสูตรประกาศนียบัตรการวิเคราะห์ข้อมูล",
-    credits: 15,
-    level: "ประกาศนียบัตร",
-    type: "ประกาศนียบัตร",
-    faculty: "คณะวิทยาศาสตร์และเทคโนโลยี",
-    summary: "เรียนรู้การวิเคราะห์และนำเสนอข้อมูลเพื่อการตัดสินใจ",
-    teachers: ["รศ.ดร. วันดี มีสุข", "อ.ดร. เอกชัย ดีมาก"],
-    seats: 35, enrolledCount: 20, status: "open",
-    totalPrice: 7500, duration: "5 เดือน",
-  },
-  {
-    id: "p3",
-    slug: "digital-marketing",
-    name: "หลักสูตรประกาศนียบัตรการตลาดดิจิทัล",
-    credits: 12,
-    level: "ประกาศนียบัตร",
-    type: "ประกาศนียบัตร",
-    faculty: "คณะพาณิชยศาสตร์และการบัญชี",
-    summary: "ปูพื้นฐานการตลาดยุคดิจิทัลสำหรับผู้ประกอบการและนักการตลาด",
-    teachers: ["อ.ดร. สุดา รักเรียน"],
-    seats: 40, enrolledCount: 40, status: "closed",
-    totalPrice: 6000, duration: "4 เดือน",
-  },
-  {
-    id: "p4",
-    slug: "public-speaking-workshop",
-    name: "อบรมเชิงปฏิบัติการการพูดในที่สาธารณะ",
-    credits: 3,
-    level: "อบรมระยะสั้น",
-    type: "อบรมระยะสั้น",
-    faculty: "คณะศิลปศาสตร์",
-    summary: "ฝึกทักษะการพูดและการนำเสนออย่างมั่นใจ",
-    teachers: ["ผศ. อรทัย พูดเก่ง"],
-    seats: 25, enrolledCount: 18, status: "open",
-    totalPrice: 1500, duration: "3 วัน",
-  },
+/* Both lists pull real programs (real images, teachers, pricing) by slug
+   instead of duplicating mock data — keeps homepage cards in sync with
+   /programs and avoids linking to slugs that don't exist. */
+const RECOMMENDED_SLUGS = [
+  "software-development",
+  "data-analytics",
+  "digital-marketing",
+  "public-speaking-workshop",
 ];
+const LATEST_SLUGS = ["ai-fundamentals", "ux-ui-design", "environmental-sustainability"];
 
-const latestPrograms: Program[] = [
-  {
-    id: "pn1",
-    slug: "ai-fundamentals",
-    name: "หลักสูตร AI สำหรับผู้บริหาร",
-    credits: 6,
-    level: "อบรมระยะสั้น",
-    type: "อบรมระยะสั้น",
-    faculty: "คณะวิทยาศาสตร์และเทคโนโลยี",
-    summary: "ความรู้ AI เชิงกลยุทธ์สำหรับผู้บริหารและผู้ตัดสินใจ",
-    teachers: ["ศ.ดร. เทคโน วิเคราะห์"],
-    seats: 30, enrolledCount: 5, status: "open",
-    totalPrice: 4500, duration: "2 เดือน",
-  },
-  {
-    id: "pn2",
-    slug: "ux-research",
-    name: "หลักสูตรการวิจัย UX สำหรับมืออาชีพ",
-    credits: 9,
-    level: "ประกาศนียบัตร",
-    type: "ประกาศนียบัตร",
-    faculty: "คณะสถาปัตยกรรมศาสตร์และการผังเมือง",
-    summary: "เรียนรู้กระบวนการวิจัยผู้ใช้งานเพื่อออกแบบประสบการณ์ที่ดี",
-    teachers: ["อ.ดร. ออกแบบ ดีงาม"],
-    seats: 20, enrolledCount: 3, status: "open",
-    totalPrice: 5500, duration: "3 เดือน",
-  },
-  {
-    id: "pn3",
-    slug: "supply-chain-management",
-    name: "หลักสูตรการจัดการโซ่อุปทาน",
-    credits: 12,
-    level: "ประกาศนียบัตร",
-    type: "ประกาศนียบัตร",
-    faculty: "คณะพาณิชยศาสตร์และการบัญชี",
-    summary: "เรียนรู้การวางแผนและจัดการห่วงโซ่อุปทานในยุคดิจิทัล",
-    teachers: ["รศ.ดร. บริหาร จัดการ"],
-    seats: 25, enrolledCount: 2, status: "open",
-    totalPrice: 8000, duration: "4 เดือน",
-  },
-];
+const recommendedPrograms = RECOMMENDED_SLUGS.map((slug) =>
+  programs.find((p) => p.slug === slug),
+).filter((p) => p !== undefined);
+
+const latestPrograms = LATEST_SLUGS.map((slug) =>
+  programs.find((p) => p.slug === slug),
+).filter((p) => p !== undefined);
 
 const newsItems = [
   {
@@ -214,27 +136,7 @@ export function Home() {
     <div className="flex flex-col gap-16 lg:gap-20">
 
       {/* ── Hero Banner ── */}
-      <HomeBanner
-        hero={
-          <div className="flex max-w-xl flex-col gap-6">
-            <h1 className="text-3xl font-semibold text-[var(--foreground)] [text-wrap:balance] sm:text-4xl lg:text-5xl">
-              สะสมและเทียบโอนหน่วยกิตกับ Credit Bank มหาวิทยาลัยธรรมศาสตร์
-            </h1>
-            <p className="max-w-[55ch] text-base leading-7 text-[var(--ink-muted)] sm:text-lg sm:leading-8">
-              Credit Bank ช่วยให้คุณเรียนรู้อย่างยืดหยุ่น สะสมหน่วยกิตจากหลักสูตรและรายวิชาที่หลากหลาย
-              และเทียบโอนผลการเรียนได้อย่างเป็นระบบ ไม่ว่าคุณจะเป็นนักศึกษาปัจจุบันหรือผู้เรียนภายนอก
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/programs" className="ui-button-primary h-11 px-6 text-sm">
-                เริ่มสำรวจหลักสูตร
-              </Link>
-              <Link href="/subjects" className="ui-button-secondary h-11 px-6 text-sm">
-                ดูรายวิชาทั้งหมด
-              </Link>
-            </div>
-          </div>
-        }
-      />
+      <HomeBanner />
 
 
       {/* ── Recommended Programs (slidable) ── */}

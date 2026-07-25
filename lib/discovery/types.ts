@@ -1,15 +1,25 @@
-export type SubjectCategory = {
-  id: string;
-  name: string;
-  nameEn?: string;
-  subjects: Subject[];
+export type ScheduleLocation = {
+  venue: string;
+  building: string;
+  room: string;
 };
 
 export type ScheduleItem = {
   date: string;
+  time?: string;
   topic: string;
   teacher: string;
   status: "upcoming" | "ongoing" | "completed";
+  mode?: "online" | "onsite";
+  studyLink?: string;
+  location?: ScheduleLocation;
+};
+
+export type SubjectDocument = {
+  name: string;
+  fileType: "pdf" | "pptx" | "xlsx" | "docx";
+  size: string;
+  url: string;
 };
 
 export type Subject = {
@@ -22,11 +32,12 @@ export type Subject = {
   credits: number;
   faculty: string;
   summary: string;
+  image?: string;
   price?: number;
   studyMode?: "online" | "onsite" | "hybrid";
   startDate?: string;
   endDate?: string;
-  teachers?: string[];
+  teacherIds?: string[];
   seats?: number;
   enrolledCount?: number;
   status?: "open" | "closed";
@@ -35,6 +46,15 @@ export type Subject = {
   qualification?: string;
   description?: string;
   scheduleItems?: ScheduleItem[];
+  documents?: SubjectDocument[];
+};
+
+export type Teacher = {
+  id: string;
+  name: string;
+  title?: string;
+  educationHistory?: string[];
+  workingHistory?: string[];
 };
 
 export type Program = {
@@ -45,17 +65,17 @@ export type Program = {
   level: string;
   faculty: string;
   summary: string;
+  image?: string;
   description?: string;
   seats?: number;
   enrolledCount?: number;
-  teachers?: string[];
+  teacherIds?: string[];
   status?: "open" | "closed";
   type?: string;
   totalPrice?: number;
   originalPrice?: number;
   duration?: string;
-  subjects?: Subject[];
-  subjectCategories?: SubjectCategory[];
+  subjectIds?: string[];
   qualification?: string;
   careerPaths?: string[];
   outcomes?: string[];

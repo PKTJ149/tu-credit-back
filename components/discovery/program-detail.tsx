@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -16,9 +17,12 @@ import {
   BadgeCheck,
   Target,
 } from "lucide-react";
-import type { Program } from "@/lib/discovery/types";
+import type { Program, Subject } from "@/lib/discovery/types";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { useSessionData } from "@/lib/session/session-data";
+import { getTeacherInitial } from "@/lib/discovery/teacher-utils";
+import { getTeachersByIds } from "@/lib/data/teachers";
+import { getSubjectsByIds } from "@/lib/data/subjects";
 
 const TABS = ["ภาพรวม", "รายวิชา", "รีวิวและความคิดเห็น"] as const;
 type Tab = (typeof TABS)[number];
@@ -36,6 +40,43 @@ function getTypeBadgeStyle(type: string): string {
   if (type.includes("ประกาศนียบัตร")) return "bg-blue-50 text-blue-700";
   if (type.includes("อบรมระยะสั้น")) return "bg-emerald-50 text-emerald-700";
   return "bg-[color:color-mix(in_oklch,var(--secondary)_40%,white)] text-[var(--secondary-foreground)]";
+}
+
+const FALLBACK_SUBJECT_CATEGORY = "ไม่ระบุหมวดวิชา";
+
+function groupSubjectsByCategory(subjects: Subject[]) {
+  return subjects.reduce<Array<{ category: string; subjects: Subject[] }>>((groups, subject) => {
+    const category = subject.category ?? FALLBACK_SUBJECT_CATEGORY;
+    const existingGroup = groups.find((group) => group.category === category);
+
+    if (existingGroup) {
+      existingGroup.subjects.push(subject);
+    } else {
+      groups.push({ category, subjects: [subject] });
+    }
+
+    return groups;
+  }, []);
+}
+
+function getStudyModeLabel(mode?: Subject["studyMode"]) {
+  if (mode === "online") return "ออนไลน์";
+  if (mode === "onsite") return "ในชั้นเรียน";
+  if (mode === "hybrid") return "ผสมผสาน";
+  return "ยังไม่ระบุรูปแบบ";
+}
+
+function getStudyModeBadgeStyle(mode?: Subject["studyMode"]) {
+  if (mode === "online") return "border-blue-200 bg-blue-50 text-blue-700";
+  if (mode === "onsite") return "border-amber-200 bg-amber-50 text-amber-700";
+  if (mode === "hybrid") return "border-violet-200 bg-violet-50 text-violet-700";
+  return "border-[color:var(--border)] bg-[var(--surface)] text-[var(--ink-muted)]";
+}
+
+function getSubjectStatusLabel(status?: Subject["status"]) {
+  if (status === "open") return "เปิดรับ";
+  if (status === "closed") return "ปิดรับ";
+  return "รอประกาศ";
 }
 
 export function ProgramDetail({
@@ -79,20 +120,22 @@ export function ProgramDetail({
   }
 
   const isOpen = program.status !== "closed";
+  const programTeachers = getTeachersByIds(program.teacherIds);
   const typeLabel = program.type ?? program.level;
   const badgeStyle = getTypeBadgeStyle(typeLabel);
   const hasDiscount =
     program.originalPrice !== undefined &&
     program.originalPrice > (program.totalPrice ?? 0);
 
-  /* count all subjects (flat or categorised) */
-  const totalSubjectCount = program.subjectCategories
-    ? program.subjectCategories.reduce((n, c) => n + c.subjects.length, 0)
-    : (program.subjects?.length ?? 0);
-
+  const programSubjects = getSubjectsByIds(program.subjectIds);
+  const subjectGroups = groupSubjectsByCategory(programSubjects);
+  const totalSubjectCredits = programSubjects.reduce(
+    (total, subject) => total + subject.credits,
+    0,
+  );
   const subjectTabLabel =
-    totalSubjectCount > 0
-      ? `รายวิชา (${totalSubjectCount})`
+    programSubjects.length > 0
+      ? `รายวิชา (${programSubjects.length})`
       : "รายวิชา";
 
   return (
@@ -111,13 +154,21 @@ export function ProgramDetail({
 
       {/* Banner */}
       <div className="relative mb-6 flex aspect-[4/1] items-center justify-center overflow-hidden rounded-2xl bg-[color:color-mix(in_oklch,var(--secondary)_20%,white)]">
-        <GraduationCap
-          aria-hidden="true"
-          className="h-16 w-16 text-[var(--secondary-foreground)] opacity-10"
-        />
-        <span className="absolute bottom-3 right-4 text-[10px] font-medium text-[var(--ink-subtle)] opacity-60">
-          ภาพปก
-        </span>
+        {program.image ? (
+          <Image
+            src={program.image}
+            alt={program.name}
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover"
+          />
+        ) : (
+          <GraduationCap
+            aria-hidden="true"
+            className="h-16 w-16 text-[var(--secondary-foreground)] opacity-10"
+          />
+        )}
         {program.status && (
           <span
             className={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs font-semibold ${
@@ -256,9 +307,13 @@ export function ProgramDetail({
                     <h2 className="mb-3 text-base font-semibold text-[var(--foreground)]">
                       เกี่ยวกับหลักสูตร
                     </h2>
-                    <p className="text-sm leading-7 text-[var(--ink-muted)]">
-                      {program.description}
-                    </p>
+                    <div className="flex flex-col gap-3">
+                      {program.description.split("\n\n").map((paragraph, idx) => (
+                        <p key={idx} className="text-sm leading-7 text-[var(--ink-muted)]">
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
                   </section>
                 )}
 
@@ -315,177 +370,126 @@ export function ProgramDetail({
                     </div>
                   </section>
                 )}
+
               </div>
             )}
 
             {/* ── รายวิชา ── */}
             {activeTab === "รายวิชา" && (
-              <div className="flex flex-col gap-4">
-                {/* Categorised subjects */}
-                {program.subjectCategories && program.subjectCategories.length > 0 ? (
+              <div className="flex flex-col gap-5">
+                {programSubjects.length > 0 ? (
                   <>
-                    <p className="text-sm text-[var(--ink-muted)]">
-                      หลักสูตรนี้ประกอบด้วย{" "}
-                      <strong className="text-[var(--foreground)]">
-                        {totalSubjectCount} รายวิชา
-                      </strong>{" "}
-                      รวม{" "}
-                      <strong className="text-[var(--foreground)]">
-                        {program.credits} หน่วยกิต
-                      </strong>
-                      {program.totalPrice !== undefined && (
-                        <>
-                          {" "}· ค่าใช้จ่ายรวม{" "}
-                          <strong className="text-[var(--foreground)]">
-                            ฿{program.totalPrice.toLocaleString()}
-                          </strong>
-                        </>
-                      )}
-                    </p>
-
-                    {program.subjectCategories.map((category, catIdx) => {
-                      const catCredits = category.subjects.reduce(
-                        (n, s) => n + s.credits,
-                        0,
-                      );
-                      const colorSchemes = [
-                        { sectionBg: "bg-blue-50/60", headerBg: "bg-blue-100", headingColor: "text-blue-800", badgeClass: "bg-blue-200 text-blue-800" },
-                        { sectionBg: "bg-emerald-50/60", headerBg: "bg-emerald-100", headingColor: "text-emerald-800", badgeClass: "bg-emerald-200 text-emerald-800" },
-                        { sectionBg: "bg-purple-50/60", headerBg: "bg-purple-100", headingColor: "text-purple-800", badgeClass: "bg-purple-200 text-purple-800" },
-                        { sectionBg: "bg-amber-50/60", headerBg: "bg-amber-100", headingColor: "text-amber-800", badgeClass: "bg-amber-200 text-amber-800" },
-                      ];
-                      const colors = colorSchemes[catIdx % colorSchemes.length];
-                      return (
-                        <div
-                          key={category.id}
-                          className={`overflow-hidden rounded-xl border border-[color:var(--border)] ${colors.sectionBg}`}
-                        >
-                          {/* Category header */}
-                          <div className={`flex items-center justify-between ${colors.headerBg} px-4 py-3`}>
-                            <div>
-                              <span className={`text-sm font-semibold ${colors.headingColor}`}>
-                                {category.name}
-                              </span>
-                              {category.nameEn && (
-                                <span className="ml-2 text-xs text-[var(--ink-muted)]">
-                                  {category.nameEn}
-                                </span>
-                              )}
-                            </div>
-                            <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${colors.badgeClass}`}>
-                              {category.subjects.length} วิชา · {catCredits} หน่วยกิต
-                            </span>
-                          </div>
-
-                          {/* 2-column subject grid */}
-                          <div className="grid grid-cols-1 divide-y divide-[color:var(--border)] sm:grid-cols-2 sm:divide-y-0">
-                            {category.subjects.map((subject, idx) => {
-                              const isRightCol = idx % 2 === 1;
-                              const isLastRow =
-                                idx >= category.subjects.length - (category.subjects.length % 2 === 0 ? 2 : 1);
-                              return (
-                                <div
-                                  key={subject.id}
-                                  className={`flex items-start justify-between gap-4 px-4 py-3 ${
-                                    isRightCol
-                                      ? "sm:border-l sm:border-[color:var(--border)]"
-                                      : ""
-                                  } ${
-                                    !isLastRow
-                                      ? "sm:border-b sm:border-[color:var(--border)]"
-                                      : ""
-                                  }`}
-                                >
-                                  {/* Left: name, EN name, code */}
-                                  <div className="min-w-0">
-                                    <p className="text-sm font-medium leading-snug text-[var(--foreground)]">
-                                      {subject.name}
-                                    </p>
-                                    {subject.nameEn && (
-                                      <p className="mt-0.5 text-xs text-[var(--ink-muted)]">
-                                        {subject.nameEn}
-                                      </p>
-                                    )}
-                                    {subject.code && (
-                                      <span className="mt-1 inline-flex items-center rounded bg-[color:color-mix(in_oklch,var(--secondary)_20%,white)] px-1.5 py-0.5 font-mono text-[10px] font-medium text-[var(--ink-muted)]">
-                                        {subject.code}
-                                      </span>
-                                    )}
-                                  </div>
-                                  {/* Right: price (prominent) + credits */}
-                                  <div className="shrink-0 text-right">
-                                    {subject.price !== undefined && (
-                                      <p className="text-sm font-bold text-[color:var(--primary)]">
-                                        ฿{subject.price.toLocaleString()}
-                                      </p>
-                                    )}
-                                    <p className="text-xs font-medium text-[var(--ink-muted)]">
-                                      {subject.credits} หน่วยกิต
-                                    </p>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
+                    <section className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-5">
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                          <h2 className="text-base font-semibold text-[var(--foreground)]">
+                            โครงสร้างรายวิชาในหลักสูตร
+                          </h2>
+                          <p className="mt-1 text-sm leading-6 text-[var(--ink-muted)]">
+                            รายวิชาถูกจัดกลุ่มตามหมวดวิชา เพื่อให้เห็นเส้นทางการเรียนและหน่วยกิตที่ต้องเก็บครบทั้งหลักสูตร
+                          </p>
                         </div>
-                      );
-                    })}
-                  </>
-                ) : program.subjects && program.subjects.length > 0 ? (
-                  /* Flat subjects (legacy fallback) */
-                  <>
-                    <p className="text-sm text-[var(--ink-muted)]">
-                      หลักสูตรนี้ประกอบด้วย {program.subjects.length} รายวิชา รวม{" "}
-                      {program.credits} หน่วยกิต
-                    </p>
-                    <div className="overflow-hidden rounded-xl border border-[color:var(--border)]">
-                      <div className="grid grid-cols-1 divide-y divide-[color:var(--border)] sm:grid-cols-2 sm:divide-y-0">
-                        {program.subjects.map((subject, idx) => {
-                          const isRightCol = idx % 2 === 1;
-                          const isLastRow =
-                            idx >= program.subjects!.length - (program.subjects!.length % 2 === 0 ? 2 : 1);
-                          return (
-                            <div
-                              key={subject.id}
-                              className={`flex items-start justify-between gap-4 px-4 py-3 ${
-                                isRightCol
-                                  ? "sm:border-l sm:border-[color:var(--border)]"
-                                  : ""
-                              } ${
-                                !isLastRow
-                                  ? "sm:border-b sm:border-[color:var(--border)]"
-                                  : ""
-                              }`}
-                            >
-                              <div className="min-w-0">
-                                <p className="text-sm font-medium leading-snug text-[var(--foreground)]">
-                                  {subject.name}
-                                </p>
-                                {subject.nameEn && (
-                                  <p className="mt-0.5 text-xs text-[var(--ink-muted)]">
-                                    {subject.nameEn}
-                                  </p>
-                                )}
-                                {subject.code && (
-                                  <p className="mt-0.5 font-mono text-[11px] text-[var(--ink-subtle)]">
-                                    {subject.code}
-                                  </p>
-                                )}
-                              </div>
-                              <div className="shrink-0 text-right">
-                                {subject.price !== undefined && (
-                                  <p className="text-sm font-bold text-[color:var(--primary)]">
-                                    ฿{subject.price.toLocaleString()}
-                                  </p>
-                                )}
-                                <p className="text-xs font-medium text-[var(--ink-muted)]">
-                                  {subject.credits} หน่วยกิต
+                        <dl className="grid shrink-0 grid-cols-2 gap-2 text-sm sm:min-w-64">
+                          <div className="rounded-lg bg-[var(--surface)] px-3 py-2">
+                            <dt className="text-xs text-[var(--ink-subtle)]">รายวิชาทั้งหมด</dt>
+                            <dd className="mt-0.5 font-semibold text-[var(--foreground)]">
+                              {programSubjects.length} รายวิชา
+                            </dd>
+                          </div>
+                          <div className="rounded-lg bg-[var(--surface)] px-3 py-2">
+                            <dt className="text-xs text-[var(--ink-subtle)]">หน่วยกิตรวม</dt>
+                            <dd className="mt-0.5 font-semibold text-[var(--foreground)]">
+                              {totalSubjectCredits} / {program.credits}
+                            </dd>
+                          </div>
+                        </dl>
+                      </div>
+                    </section>
+
+                    <div className="flex flex-col gap-4">
+                      {subjectGroups.map((group) => {
+                        const groupCredits = group.subjects.reduce(
+                          (total, subject) => total + subject.credits,
+                          0,
+                        );
+
+                        return (
+                          <section
+                            key={group.category}
+                            className="overflow-hidden rounded-xl border border-[color:var(--border)] bg-[var(--background)]"
+                          >
+                            <div className="flex flex-col gap-2 border-b border-[color:var(--border)] bg-[var(--surface)] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                              <div>
+                                <h3 className="text-sm font-semibold text-[var(--foreground)]">
+                                  {group.category}
+                                </h3>
+                                <p className="mt-0.5 text-xs text-[var(--ink-muted)]">
+                                  {group.subjects.length} รายวิชา · {groupCredits} หน่วยกิต
                                 </p>
                               </div>
                             </div>
-                          );
-                        })}
-                      </div>
+
+                            <ul className="divide-y divide-[color:var(--border)]">
+                              {group.subjects.map((subject) => (
+                                <li key={subject.id}>
+                                  <Link
+                                    href={`${subjectDetailBasePath}/${subject.slug}`}
+                                    className="group grid gap-4 px-5 py-4 transition-colors hover:bg-[color:color-mix(in_oklch,var(--surface)_65%,white)] md:grid-cols-[minmax(0,1fr)_auto]"
+                                  >
+                                    <div className="min-w-0">
+                                      <div className="flex flex-wrap items-center gap-2">
+                                        {subject.code && (
+                                          <span className="rounded-full bg-[color:color-mix(in_oklch,var(--primary)_8%,white)] px-2.5 py-1 text-xs font-semibold text-[color:var(--primary)]">
+                                            {subject.code}
+                                          </span>
+                                        )}
+                                        <span className="text-xs font-medium text-[var(--ink-subtle)]">
+                                          {getSubjectStatusLabel(subject.status)}
+                                        </span>
+                                      </div>
+                                      <h4 className="mt-2 text-base font-semibold leading-snug text-[var(--foreground)] group-hover:text-[color:var(--primary)]">
+                                        {subject.name}
+                                      </h4>
+                                      {subject.nameEn && (
+                                        <p className="mt-1 text-sm italic text-[var(--ink-muted)]">
+                                          {subject.nameEn}
+                                        </p>
+                                      )}
+                                      <p className="mt-2 line-clamp-2 text-sm leading-6 text-[var(--ink-muted)]">
+                                        {subject.summary}
+                                      </p>
+                                    </div>
+
+                                    <div className="flex flex-wrap items-center gap-3 text-sm text-[var(--ink-muted)] md:justify-end">
+                                      <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                                        <BookOpen aria-hidden="true" className="h-4 w-4" />
+                                        {subject.credits} หน่วยกิต
+                                      </span>
+                                      <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                                        <Clock aria-hidden="true" className="h-4 w-4" />
+                                        {subject.duration ?? "-"}
+                                      </span>
+                                      <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                                        <Users aria-hidden="true" className="h-4 w-4" />
+                                        {subject.seats !== undefined ? `${subject.enrolledCount ?? 0}/${subject.seats}` : "-"}
+                                      </span>
+                                      <span
+                                        className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-medium ${getStudyModeBadgeStyle(subject.studyMode)}`}
+                                      >
+                                        {getStudyModeLabel(subject.studyMode)}
+                                      </span>
+                                      <ChevronRight
+                                        aria-hidden="true"
+                                        className="h-4 w-4 text-[var(--ink-subtle)] transition-transform group-hover:translate-x-0.5 group-hover:text-[color:var(--primary)]"
+                                      />
+                                    </div>
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </section>
+                        );
+                      })}
                     </div>
                   </>
                 ) : (
@@ -666,16 +670,39 @@ export function ProgramDetail({
             </div>
 
             {/* Teachers card */}
-            {program.teachers && program.teachers.length > 0 && (
+            {programTeachers.length > 0 && (
               <div className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-5">
                 <h3 className="mb-3 text-sm font-semibold text-[var(--foreground)]">
                   ผู้สอน
                 </h3>
-                <ul className="flex flex-col gap-2">
-                  {program.teachers.map((teacher, index) => (
-                    <li key={teacher} className="flex items-center gap-2.5">
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--surface)] text-xs font-bold text-[var(--ink-muted)]">{index + 1}</span>
-                      <span className="text-sm text-[var(--foreground)]">{teacher}</span>
+                <ul className="flex flex-col divide-y divide-[color:var(--border)]">
+                  {programTeachers.map((teacher) => (
+                    <li key={teacher.id} className="first:pt-0 py-3">
+                      <Link
+                        href={`/teachers/${teacher.id}?from=program:${program.slug}`}
+                        className="group flex items-center gap-2.5 rounded-lg -m-1 p-1 transition-colors hover:bg-[var(--surface)]"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color:color-mix(in_oklch,var(--secondary)_20%,white)] text-xs font-bold text-[var(--secondary-foreground)]"
+                        >
+                          {getTeacherInitial(teacher.name)}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-baseline justify-between gap-2">
+                            <p className="truncate text-sm font-medium text-[var(--foreground)] group-hover:text-[color:var(--primary)]">
+                              {teacher.name}
+                            </p>
+                            <ChevronRight
+                              aria-hidden="true"
+                              className="h-3.5 w-3.5 shrink-0 text-[var(--ink-subtle)] opacity-0 transition-opacity group-hover:opacity-100"
+                            />
+                          </div>
+                          {teacher.title && (
+                            <p className="truncate text-xs text-[var(--ink-subtle)]">{teacher.title}</p>
+                          )}
+                        </div>
+                      </Link>
                     </li>
                   ))}
                 </ul>

@@ -152,6 +152,8 @@ type SessionDataContextValue = {
   data: SessionData;
   /** Register for a program/subject; creates a registration + a payable. */
   registerForItem: (input: RegisterInput) => void;
+  /** Cancel a pending registration and remove its payable. */
+  cancelRegistration: (registrationId: string) => void;
   /** Move a payable to "waiting for verification" (proof uploaded). */
   submitPayment: (payableId: string) => void;
   /** Approve a payment (demo shortcut); marks it confirmed + registration active. */
@@ -253,6 +255,14 @@ export function SessionDataProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  const cancelRegistration = useCallback((registrationId: string) => {
+    setData((prev) => ({
+      ...prev,
+      registrations: prev.registrations.filter((r) => r.id !== registrationId),
+      payables: prev.payables.filter((p) => p.registrationId !== registrationId),
+    }));
+  }, []);
+
   const submitPayment = useCallback((payableId: string) => {
     setData((prev) => ({
       ...prev,
@@ -332,6 +342,7 @@ export function SessionDataProvider({ children }: { children: ReactNode }) {
       isReady,
       data,
       registerForItem,
+      cancelRegistration,
       submitPayment,
       confirmPayment,
       addGoal,
@@ -344,6 +355,7 @@ export function SessionDataProvider({ children }: { children: ReactNode }) {
       isReady,
       data,
       registerForItem,
+      cancelRegistration,
       submitPayment,
       confirmPayment,
       addGoal,

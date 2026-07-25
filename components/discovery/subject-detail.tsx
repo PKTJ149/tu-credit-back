@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -16,10 +17,15 @@ import {
   CheckCircle2,
   BadgeCheck,
   Target,
+  ExternalLink,
+  FileText,
+  Download,
 } from "lucide-react";
 import type { Subject, ScheduleItem } from "@/lib/discovery/types";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { useSessionData } from "@/lib/session/session-data";
+import { getTeachersByIds } from "@/lib/data/teachers";
+import { getTeacherInitial } from "@/lib/discovery/teacher-utils";
 
 const TABS = ["ภาพรวม", "รีวิวและความคิดเห็น"] as const;
 type Tab = (typeof TABS)[number];
@@ -56,6 +62,7 @@ export function SubjectDetail({ subject, mode = "public" }: SubjectDetailProps) 
   const [saved, setSaved] = useState(false);
   const isMember = mode === "member";
   const isOpen = subject.status !== "closed";
+  const subjectTeachers = getTeachersByIds(subject.teacherIds);
 
   // Is this subject already one of the learner's goals?
   const existingGoal = data.goals.find((g) => g.slug === subject.slug);
@@ -106,13 +113,21 @@ export function SubjectDetail({ subject, mode = "public" }: SubjectDetailProps) 
 
       {/* Banner */}
       <div className="relative mb-6 flex aspect-[4/1] items-center justify-center overflow-hidden rounded-2xl bg-[color:color-mix(in_oklch,var(--secondary)_20%,white)]">
-        <BookOpen
-          aria-hidden="true"
-          className="h-16 w-16 text-[var(--secondary-foreground)] opacity-10"
-        />
-        <span className="absolute bottom-3 right-4 text-[10px] font-medium text-[var(--ink-subtle)] opacity-60">
-          ภาพปก
-        </span>
+        {subject.image ? (
+          <Image
+            src={subject.image}
+            alt={subject.name}
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover"
+          />
+        ) : (
+          <BookOpen
+            aria-hidden="true"
+            className="h-16 w-16 text-[var(--secondary-foreground)] opacity-10"
+          />
+        )}
         <div className="absolute left-4 top-4 flex items-center gap-2">
           {subject.status && (
             <span
@@ -261,9 +276,13 @@ export function SubjectDetail({ subject, mode = "public" }: SubjectDetailProps) 
                     <h2 className="mb-3 text-base font-semibold text-[var(--foreground)]">
                       เกี่ยวกับรายวิชา
                     </h2>
-                    <p className="text-sm leading-7 text-[var(--ink-muted)]">
-                      {subject.description ?? subject.summary}
-                    </p>
+                    <div className="flex flex-col gap-3">
+                      {(subject.description ?? subject.summary).split("\n\n").map((paragraph, idx) => (
+                        <p key={idx} className="text-sm leading-7 text-[var(--ink-muted)]">
+                          {paragraph}
+                        </p>
+                      ))}
+                    </div>
                   </section>
                 )}
 
@@ -368,13 +387,16 @@ export function SubjectDetail({ subject, mode = "public" }: SubjectDetailProps) 
                         <thead>
                           <tr className="border-b border-[color:var(--border)]">
                             <th className="pb-3 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-[var(--ink-subtle)]">
-                              วันที่
+                              วันที่ / เวลา
                             </th>
                             <th className="pb-3 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-[var(--ink-subtle)]">
                               หัวข้อ
                             </th>
                             <th className="pb-3 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-[var(--ink-subtle)]">
                               ผู้สอน
+                            </th>
+                            <th className="pb-3 pr-4 text-left text-xs font-semibold uppercase tracking-wide text-[var(--ink-subtle)]">
+                              {subject.studyMode === "onsite" ? "สถานที่เรียน" : "ช่องทางเรียน"}
                             </th>
                             <th className="pb-3 text-left text-xs font-semibold uppercase tracking-wide text-[var(--ink-subtle)]">
                               สถานะ
@@ -387,7 +409,10 @@ export function SubjectDetail({ subject, mode = "public" }: SubjectDetailProps) 
                             return (
                               <tr key={idx}>
                                 <td className="whitespace-nowrap py-3 pr-4 text-sm text-[var(--foreground)]">
-                                  {item.date}
+                                  <p>{item.date}</p>
+                                  {item.time && (
+                                    <p className="text-xs text-[var(--ink-subtle)]">{item.time} น.</p>
+                                  )}
                                 </td>
                                 <td className="py-3 pr-4 text-sm text-[var(--ink-muted)]">
                                   {item.topic}
@@ -395,9 +420,38 @@ export function SubjectDetail({ subject, mode = "public" }: SubjectDetailProps) 
                                 <td className="whitespace-nowrap py-3 pr-4 text-sm text-[var(--ink-muted)]">
                                   {item.teacher}
                                 </td>
-                                <td className="py-3">
+                                <td className="py-3 pr-4 text-sm text-[var(--ink-muted)]">
+                                  {item.mode === "online" && item.studyLink && (
+                                    <a
+                                      href={item.studyLink}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1.5 rounded-lg border border-[color:var(--border)] px-2.5 py-1.5 text-xs font-medium text-[color:var(--primary)] transition-colors hover:border-[color:var(--ring)] hover:bg-[var(--surface)]"
+                                    >
+                                      <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
+                                      เข้าเรียนออนไลน์
+                                    </a>
+                                  )}
+                                  {item.mode === "onsite" && item.location && (
+                                    <div className="flex items-start gap-1.5 whitespace-nowrap">
+                                      <MapPin
+                                        aria-hidden="true"
+                                        className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--ink-subtle)]"
+                                      />
+                                      <div className="flex flex-col">
+                                        <span className="font-medium text-[var(--foreground)]">
+                                          {item.location.building}
+                                        </span>
+                                        <span className="text-xs text-[var(--ink-subtle)]">
+                                          {item.location.room} · {item.location.venue.replace("มหาวิทยาลัยธรรมศาสตร์ ", "")}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  )}
+                                </td>
+                                <td className="whitespace-nowrap py-3">
                                   <span
-                                    className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${badge.className}`}
+                                    className={`inline-flex items-center whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-semibold ${badge.className}`}
                                   >
                                     {badge.label}
                                   </span>
@@ -543,13 +597,25 @@ export function SubjectDetail({ subject, mode = "public" }: SubjectDetailProps) 
                 )}
                 {subject.studyMode && (
                   <div className="flex items-center gap-3">
-                    <Clock
+                    <MonitorPlay
                       aria-hidden="true"
                       className="h-4 w-4 shrink-0 text-[var(--ink-subtle)]"
                     />
                     <dt className="text-sm text-[var(--ink-muted)]">รูปแบบ</dt>
                     <dd className="ml-auto text-sm font-semibold text-[var(--foreground)]">
                       {getStudyModeLabel(subject.studyMode)}
+                    </dd>
+                  </div>
+                )}
+                {subject.duration && (
+                  <div className="flex items-center gap-3">
+                    <Clock
+                      aria-hidden="true"
+                      className="h-4 w-4 shrink-0 text-[var(--ink-subtle)]"
+                    />
+                    <dt className="text-sm text-[var(--ink-muted)]">ระยะเวลา</dt>
+                    <dd className="ml-auto text-sm font-semibold text-[var(--foreground)]">
+                      {subject.duration}
                     </dd>
                   </div>
                 )}
@@ -576,19 +642,73 @@ export function SubjectDetail({ subject, mode = "public" }: SubjectDetailProps) 
               </dl>
             </div>
 
+            {/* Documents card */}
+            {subject.documents && subject.documents.length > 0 && (
+              <div className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-5">
+                <h3 className="mb-3 text-sm font-semibold text-[var(--foreground)]">
+                  เอกสารประกอบการเรียน
+                </h3>
+                <ul className="flex flex-col gap-1">
+                  {subject.documents.map((doc) => (
+                    <li key={doc.name}>
+                      <a
+                        href={doc.url}
+                        download
+                        className="group -m-1 flex items-center gap-2.5 rounded-lg p-2 transition-colors hover:bg-[var(--surface)]"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[color:color-mix(in_oklch,var(--secondary)_20%,white)]"
+                        >
+                          <FileText className="h-4 w-4 text-[var(--secondary-foreground)]" />
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium text-[var(--foreground)] group-hover:text-[color:var(--primary)]">
+                            {doc.name}
+                          </p>
+                          <p className="text-xs text-[var(--ink-subtle)]">
+                            {doc.fileType.toUpperCase()} · {doc.size}
+                          </p>
+                        </div>
+                        <Download
+                          aria-hidden="true"
+                          className="h-4 w-4 shrink-0 text-[var(--ink-subtle)] transition-colors group-hover:text-[color:var(--primary)]"
+                        />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* Teachers card */}
-            {subject.teachers && subject.teachers.length > 0 && (
+            {subjectTeachers.length > 0 && (
               <div className="rounded-xl border border-[color:var(--border)] bg-[var(--background)] p-5">
                 <h3 className="mb-3 text-sm font-semibold text-[var(--foreground)]">
                   ผู้สอน
                 </h3>
-                <ul className="flex flex-col gap-2">
-                  {subject.teachers.map((teacher, index) => (
-                    <li key={teacher} className="flex items-center gap-2.5">
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--surface)] text-xs font-bold text-[var(--ink-muted)]">
-                        {index + 1}
-                      </span>
-                      <span className="text-sm text-[var(--foreground)]">{teacher}</span>
+                <ul className="flex flex-col divide-y divide-[color:var(--border)]">
+                  {subjectTeachers.map((teacher) => (
+                    <li key={teacher.id} className="first:pt-0 py-3">
+                      <Link
+                        href={`/teachers/${teacher.id}?from=subject:${subject.slug}`}
+                        className="group flex items-center gap-2.5 rounded-lg -m-1 p-1 transition-colors hover:bg-[var(--surface)]"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color:color-mix(in_oklch,var(--secondary)_20%,white)] text-xs font-bold text-[var(--secondary-foreground)]"
+                        >
+                          {getTeacherInitial(teacher.name)}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium text-[var(--foreground)] group-hover:text-[color:var(--primary)]">
+                            {teacher.name}
+                          </p>
+                          {teacher.title && (
+                            <p className="truncate text-xs text-[var(--ink-subtle)]">{teacher.title}</p>
+                          )}
+                        </div>
+                      </Link>
                     </li>
                   ))}
                 </ul>

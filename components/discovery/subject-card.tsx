@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   BookOpen,
@@ -32,7 +33,7 @@ export function SubjectCard({ subject, detailBasePath = "/subjects", canSave = t
   const [saved, setSaved] = useState(false);
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[var(--background)] shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[var(--background)] shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
 
       {/* Full-card clickable overlay */}
       <Link
@@ -44,14 +45,21 @@ export function SubjectCard({ subject, detailBasePath = "/subjects", canSave = t
       </Link>
 
       {/* ── Cover ── */}
-      <div className="relative flex aspect-video items-center justify-center bg-[color:color-mix(in_oklch,var(--primary)_10%,white)]">
-        <BookOpen
-          aria-hidden="true"
-          className="h-14 w-14 text-[var(--primary)] opacity-[0.12]"
-        />
-        <span className="absolute bottom-2 right-3 text-[10px] text-[var(--ink-subtle)] opacity-50">
-          ภาพปก
-        </span>
+      <div className="relative flex aspect-video items-center justify-center overflow-hidden bg-[color:color-mix(in_oklch,var(--primary)_10%,white)]">
+        {subject.image ? (
+          <Image
+            src={subject.image}
+            alt={subject.name}
+            fill
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+            className="object-cover"
+          />
+        ) : (
+          <BookOpen
+            aria-hidden="true"
+            className="h-14 w-14 text-[var(--primary)] opacity-[0.12]"
+          />
+        )}
 
         {/* Subject code badge */}
         {subject.code && (
@@ -82,7 +90,7 @@ export function SubjectCard({ subject, detailBasePath = "/subjects", canSave = t
       </div>
 
       {/* ── Body ── */}
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex min-h-[14rem] flex-1 flex-col p-4">
         {subject.category && (
           <span
             className={`mb-3 self-start rounded-full px-3 py-1 text-xs font-medium ${getCategoryBadgeStyle(subject.category)}`}
@@ -91,15 +99,13 @@ export function SubjectCard({ subject, detailBasePath = "/subjects", canSave = t
           </span>
         )}
 
-        <h3 className="mb-1 line-clamp-1 text-lg font-bold leading-tight text-[var(--foreground)]">
+        <h3 className="mb-1 min-h-[1.375rem] line-clamp-1 text-lg font-bold leading-tight text-[var(--foreground)]">
           {subject.name}
         </h3>
 
-        {subject.nameEn && (
-          <p className="mb-3 line-clamp-1 text-xs italic text-[var(--ink-subtle)]">
-            {subject.nameEn}
-          </p>
-        )}
+        <p className="mb-3 min-h-4 line-clamp-1 text-xs italic text-[var(--ink-subtle)]">
+          {subject.nameEn ?? ""}
+        </p>
 
         {subject.summary && (
           <p className="line-clamp-2 text-sm leading-6 text-[var(--ink-muted)]">
@@ -130,7 +136,7 @@ export function SubjectCard({ subject, detailBasePath = "/subjects", canSave = t
       </div>
 
       {/* ── Footer ── */}
-      <div className="flex items-center justify-between border-t border-[color:var(--border)] bg-[var(--surface)] px-4 pb-4 pt-3">
+      <div className="flex min-h-20 items-center justify-between border-t border-[color:var(--border)] bg-[var(--surface)] px-4 pb-4 pt-3">
         <div className="flex flex-col gap-0">
           <span className="text-[11px] text-[var(--ink-subtle)]">ค่าลงทะเบียน</span>
           <span

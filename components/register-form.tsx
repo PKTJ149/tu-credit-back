@@ -20,6 +20,14 @@ type RegisterErrors = {
   consent?: string;
 };
 
+const departmentOptions = [
+  "คณะวิทยาการเรียนรู้และศึกษาศาสตร์",
+  "คณะวิทยาศาสตร์และเทคโนโลยี",
+  "คณะพาณิชยศาสตร์และการบัญชี",
+  "คณะศิลปศาสตร์",
+  "คณะสาธารณสุขศาสตร์",
+];
+
 export function RegisterForm() {
   const router = useRouter();
   const [userType, setUserType] = useState<UserType>("student");
@@ -47,7 +55,7 @@ export function RegisterForm() {
 
     if (userType === "student") {
       if (!studentId.trim()) next.studentId = "กรุณากรอกรหัสนักศึกษา";
-      if (!department.trim()) next.department = "กรุณากรอกคณะ / สาขาวิชา";
+      if (!department.trim()) next.department = "กรุณาเลือกคณะ / สาขาวิชา";
       if (!tuEmail.trim() || !tuEmail.endsWith("@tu.ac.th"))
         next.tuEmail = "กรุณาใช้อีเมลมหาวิทยาลัย (@tu.ac.th)";
     } else {
@@ -105,28 +113,30 @@ export function RegisterForm() {
             ข้อมูลนักศึกษา มธ.
           </p>
 
-          <Field
-            id="studentId"
-            label="รหัสนักศึกษา"
-            value={studentId}
-            onChange={setStudentId}
-            error={errors.studentId}
-            placeholder="เช่น 6900122332"
-          />
-
           <div className="grid gap-4 sm:grid-cols-2">
             <Field id="firstName" label="ชื่อ" value={firstName} onChange={setFirstName} error={errors.firstName} />
             <Field id="lastName" label="นามสกุล" value={lastName} onChange={setLastName} error={errors.lastName} />
           </div>
 
-          <Field
-            id="department"
-            label="คณะ / สาขาวิชา"
-            value={department}
-            onChange={setDepartment}
-            error={errors.department}
-            placeholder="เช่น คณะวิศวกรรมศาสตร์ สาขาวิทยาการคอมพิวเตอร์"
-          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field
+              id="studentId"
+              label="รหัสนักศึกษา"
+              value={studentId}
+              onChange={setStudentId}
+              error={errors.studentId}
+              placeholder="เช่น 6900122332"
+            />
+            <SelectField
+              id="department"
+              label="คณะ / สาขาวิชา"
+              value={department}
+              onChange={setDepartment}
+              error={errors.department}
+              placeholder="เลือกคณะ / สาขาวิชา"
+              options={departmentOptions}
+            />
+          </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <Field
@@ -286,6 +296,56 @@ function TypeCard({ active, onClick, icon, label, description }: TypeCardProps) 
         <p className="mt-0.5 text-xs leading-5 text-[var(--ink-muted)]">{description}</p>
       </div>
     </button>
+  );
+}
+
+// ── SelectField ───────────────────────────────────────────────────────────────
+type SelectFieldProps = {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: string[];
+  error?: string;
+  helper?: string;
+  placeholder?: string;
+};
+
+function SelectField({
+  id,
+  label,
+  value,
+  onChange,
+  options,
+  error,
+  helper,
+  placeholder = "เลือกข้อมูล",
+}: SelectFieldProps) {
+  return (
+    <div className="space-y-2">
+      <label htmlFor={id} className="text-sm font-medium text-[var(--foreground)]">
+        {label}
+      </label>
+      <select
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-invalid={error ? "true" : "false"}
+        className="ui-input"
+      >
+        <option value="">{placeholder}</option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+      {error ? (
+        <p className="ui-error-text">{error}</p>
+      ) : helper ? (
+        <p className="ui-helper-text">{helper}</p>
+      ) : null}
+    </div>
   );
 }
 
