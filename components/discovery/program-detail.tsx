@@ -85,10 +85,11 @@ export function ProgramDetail({
   subjectDetailBasePath = "/subjects",
 }: ProgramDetailProps) {
   const router = useRouter();
-  const { data, registerForItem, addGoal, removeGoal } = useSessionData();
+  const { data, registerForItem, addGoal, removeGoal, isSavedItem, toggleSavedItem } =
+    useSessionData();
   const [activeTab, setActiveTab] = useState<Tab>("ภาพรวม");
-  const [saved, setSaved] = useState(false);
   const isMember = mode === "member";
+  const saved = isSavedItem("program", program.slug);
 
   // Is this program already one of the learner's goals?
   const existingGoal = data.goals.find((g) => g.slug === program.slug);
@@ -117,6 +118,19 @@ export function ProgramDetail({
         credits: program.credits,
       });
     }
+  }
+
+  function handleToggleSaved() {
+    if (!isMember) return;
+    toggleSavedItem({
+      itemType: "program",
+      slug: program.slug,
+      name: program.name,
+      detail: program.faculty,
+      credits: program.credits,
+      amount: program.totalPrice,
+      image: program.image,
+    });
   }
 
   const isOpen = program.status !== "closed";
@@ -221,7 +235,7 @@ export function ProgramDetail({
               )}
               <button
                 type="button"
-                onClick={() => isMember && setSaved(!saved)}
+                onClick={handleToggleSaved}
                 disabled={!isMember}
                 title={!isMember ? "เข้าสู่ระบบเพื่อบันทึกหลักสูตร" : undefined}
                 className={`flex h-11 w-full items-center justify-center gap-2 rounded-lg border text-sm font-medium transition ${
@@ -573,7 +587,7 @@ export function ProgramDetail({
                 <button
                   type="button"
                   aria-label={saved && isMember ? "ยกเลิกการบันทึก" : "บันทึกหลักสูตรนี้"}
-                  onClick={() => isMember && setSaved(!saved)}
+                  onClick={handleToggleSaved}
                   disabled={!isMember}
                   title={!isMember ? "เข้าสู่ระบบเพื่อบันทึกหลักสูตร" : undefined}
                   className={`flex h-11 items-center justify-center gap-2 rounded-lg border text-sm font-medium transition ${

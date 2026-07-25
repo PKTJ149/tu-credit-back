@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -14,6 +13,7 @@ import {
 } from "lucide-react";
 import type { Program } from "@/lib/discovery/types";
 import { getTeachersByIds } from "@/lib/data/teachers";
+import { useSessionData } from "@/lib/session/session-data";
 
 type ProgramCardProps = {
   program: Program;
@@ -30,8 +30,9 @@ function getTypeBadgeStyle(type: string): string {
   return "bg-amber-50 text-amber-700";
 }
 
-export function ProgramCard({ program, detailBasePath = "/programs", canSave = true }: ProgramCardProps) {
-  const [saved, setSaved] = useState(false);
+export function ProgramCard({ program, detailBasePath = "/programs", canSave = false }: ProgramCardProps) {
+  const { isSavedItem, toggleSavedItem } = useSessionData();
+  const saved = isSavedItem("program", program.slug);
   const isOpen = program.status !== "closed";
   const typeLabel = program.type ?? program.level;
   const badgeStyle = getTypeBadgeStyle(typeLabel);
@@ -86,7 +87,19 @@ export function ProgramCard({ program, detailBasePath = "/programs", canSave = t
           <button
             type="button"
             aria-label={saved ? "ยกเลิกการบันทึก" : "บันทึกหลักสูตรนี้"}
-            onClick={(e) => { e.preventDefault(); setSaved(!saved); }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleSavedItem({
+                itemType: "program",
+                slug: program.slug,
+                name: program.name,
+                detail: program.faculty,
+                credits: program.credits,
+                amount: program.totalPrice,
+                image: program.image,
+              });
+            }}
             className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border bg-white shadow-sm transition-all duration-200 ${
               saved
                 ? "border-[color:var(--primary)] text-[color:var(--primary)]"

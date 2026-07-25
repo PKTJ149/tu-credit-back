@@ -25,9 +25,14 @@ const STATUS_VALUE: Record<string, "open" | "closed"> = {
 type SubjectsListProps = {
   showHeading?: boolean;
   detailBasePath?: string;
+  canSave?: boolean;
 };
 
-export function SubjectsList({ showHeading = true, detailBasePath = "/subjects" }: SubjectsListProps) {
+export function SubjectsList({
+  showHeading = true,
+  detailBasePath = "/subjects",
+  canSave = false,
+}: SubjectsListProps) {
   const [searchValue, setSearchValue] = useState("");
   const [facultyValue, setFacultyValue] = useState("");
   const [categoryValue, setCategoryValue] = useState("");
@@ -294,7 +299,12 @@ export function SubjectsList({ showHeading = true, detailBasePath = "/subjects" 
               {/* Grid */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {paginatedSubjects.map((subject) => (
-                  <SubjectCard key={subject.id} subject={subject} detailBasePath={detailBasePath} canSave={false} />
+                  <SubjectCard
+                    key={subject.id}
+                    subject={subject}
+                    detailBasePath={detailBasePath}
+                    canSave={canSave}
+                  />
                 ))}
               </div>
 

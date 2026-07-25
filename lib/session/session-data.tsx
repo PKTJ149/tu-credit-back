@@ -78,11 +78,25 @@ export type LearnerGoal = {
   category: GoalCategory;
 };
 
+export type SavedLearningItem = {
+  id: string;
+  itemType: LearningItemType;
+  slug: string;
+  name: string;
+  nameEn?: string;
+  detail: string;
+  credits?: number;
+  amount?: number;
+  image?: string;
+  savedAt: string;
+};
+
 /** Everything a learner accumulates in the demo. */
 type SessionData = {
   registrations: LearnerRegistration[];
   payables: LearnerPayable[];
   goals: LearnerGoal[];
+  savedItems: SavedLearningItem[];
   transfers: TransferRequest[];
   academicRecords: AcademicRecord[];
 };
@@ -93,6 +107,7 @@ function makeEmptyData(): SessionData {
     registrations: [],
     payables: [],
     goals: [],
+    savedItems: [],
     transfers: [],
     academicRecords: seedAcademicRecords,
   };
@@ -141,6 +156,8 @@ export type AddGoalInput = {
   category?: GoalCategory;
 };
 
+export type SaveItemInput = Omit<SavedLearningItem, "id" | "savedAt">;
+
 /** Input for adding a submitted transfer request. */
 export type AddTransferInput = {
   type: TransferRequest["type"];
@@ -162,12 +179,20 @@ type SessionDataContextValue = {
   addGoal: (input: AddGoalInput) => void;
   /** Remove a learning goal entirely. */
   removeGoal: (goalId: string) => void;
+  /** Save a program/subject for later. */
+  saveItem: (input: SaveItemInput) => void;
+  /** Remove a saved program/subject. */
+  removeSavedItem: (itemType: LearningItemType, slug: string) => void;
+  /** Toggle a saved program/subject. */
+  toggleSavedItem: (input: SaveItemInput) => void;
   /** Add a submitted transfer request to the history. */
   addTransfer: (input: AddTransferInput) => void;
   /** Reset everything back to a brand-new learner. */
   resetDemo: () => void;
   /** Is a given program/subject slug already a learning goal? */
   isGoal: (slug: string) => boolean;
+  /** Is a given program/subject slug already saved? */
+  isSavedItem: (itemType: LearningItemType, slug: string) => boolean;
 };
 
 const SessionDataContext = createContext<SessionDataContextValue | null>(null);
@@ -186,6 +211,20 @@ function makeId(prefix: string): string {
   ).toString(36)}`;
 }
 
+function normalizeSessionData(raw: Partial<SessionData>): SessionData {
+  const empty = makeEmptyData();
+  return {
+    registrations: Array.isArray(raw.registrations) ? raw.registrations : empty.registrations,
+    payables: Array.isArray(raw.payables) ? raw.payables : empty.payables,
+    goals: Array.isArray(raw.goals) ? raw.goals : empty.goals,
+    savedItems: Array.isArray(raw.savedItems) ? raw.savedItems : empty.savedItems,
+    transfers: Array.isArray(raw.transfers) ? raw.transfers : empty.transfers,
+    academicRecords: Array.isArray(raw.academicRecords)
+      ? raw.academicRecords
+      : empty.academicRecords,
+  };
+}
+
 export function SessionDataProvider({ children }: { children: ReactNode }) {
   const { isReady: authReady, isAuthenticated } = useAuth();
   const [data, setData] = useState<SessionData>(makeEmptyData);
@@ -198,7 +237,7 @@ export function SessionDataProvider({ children }: { children: ReactNode }) {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (raw) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setData(JSON.parse(raw) as SessionData);
+        setData(normalizeSessionData(JSON.parse(raw) as Partial<SessionData>));
       }
     } catch {
       // Corrupt/blocked storage — start fresh.
@@ -315,6 +354,71 @@ export function SessionDataProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
+  const saveItem = useCallback((input: SaveItemInput) => {
+    setData((prev) => {
+      if (
+        prev.savedItems.some(
+          (item) => item.itemType === input.itemType && item.slug === input.slug,
+        )
+      ) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        savedItems: [
+          {
+            id: makeId("saved"),
+            ...input,
+            savedAt: new Date().toISOString(),
+          },
+          ...prev.savedItems,
+        ],
+      };
+    });
+  }, []);
+
+  const removeSavedItem = useCallback((itemType: LearningItemType, slug: string) => {
+    setData((prev) => ({
+      ...prev,
+      savedItems: prev.savedItems.filter(
+        (item) => item.itemType !== itemType || item.slug !== slug,
+      ),
+    }));
+  }, []);
+
+  const toggleSavedItem = useCallback(
+    (input: SaveItemInput) => {
+      setData((prev) => {
+        const alreadySaved = prev.savedItems.some(
+          (item) => item.itemType === input.itemType && item.slug === input.slug,
+        );
+
+        if (alreadySaved) {
+          return {
+            ...prev,
+            savedItems: prev.savedItems.filter(
+              (item) => item.itemType !== input.itemType || item.slug !== input.slug,
+            ),
+          };
+        }
+
+        return {
+          ...prev,
+          savedItems: [
+            {
+              id: makeId("saved"),
+              ...input,
+              savedAt: new Date().toISOString(),
+            },
+            ...prev.savedItems,
+          ],
+        };
+      });
+    },
+    [],
+  );
+
   const addTransfer = useCallback((input: AddTransferInput) => {
     setData((prev) => {
       const transfer: TransferRequest = {
@@ -337,6 +441,12 @@ export function SessionDataProvider({ children }: { children: ReactNode }) {
     [data.goals],
   );
 
+  const isSavedItem = useCallback(
+    (itemType: LearningItemType, slug: string) =>
+      data.savedItems.some((item) => item.itemType === itemType && item.slug === slug),
+    [data.savedItems],
+  );
+
   const value = useMemo<SessionDataContextValue>(
     () => ({
       isReady,
@@ -347,9 +457,13 @@ export function SessionDataProvider({ children }: { children: ReactNode }) {
       confirmPayment,
       addGoal,
       removeGoal,
+      saveItem,
+      removeSavedItem,
+      toggleSavedItem,
       addTransfer,
       resetDemo,
       isGoal,
+      isSavedItem,
     }),
     [
       isReady,
@@ -360,9 +474,13 @@ export function SessionDataProvider({ children }: { children: ReactNode }) {
       confirmPayment,
       addGoal,
       removeGoal,
+      saveItem,
+      removeSavedItem,
+      toggleSavedItem,
       addTransfer,
       resetDemo,
       isGoal,
+      isSavedItem,
     ],
   );
 

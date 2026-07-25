@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -12,6 +11,7 @@ import {
   Clock,
 } from "lucide-react";
 import type { Subject } from "@/lib/discovery/types";
+import { useSessionData } from "@/lib/session/session-data";
 
 type SubjectCardProps = {
   subject: Subject;
@@ -29,8 +29,9 @@ function getCategoryBadgeStyle(category?: string): string {
   return "bg-emerald-50 text-emerald-700";
 }
 
-export function SubjectCard({ subject, detailBasePath = "/subjects", canSave = true }: SubjectCardProps) {
-  const [saved, setSaved] = useState(false);
+export function SubjectCard({ subject, detailBasePath = "/subjects", canSave = false }: SubjectCardProps) {
+  const { isSavedItem, toggleSavedItem } = useSessionData();
+  const saved = isSavedItem("subject", subject.slug);
 
   return (
     <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[var(--background)] shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
@@ -73,7 +74,20 @@ export function SubjectCard({ subject, detailBasePath = "/subjects", canSave = t
           <button
             type="button"
             aria-label={saved ? "ยกเลิกการบันทึก" : "บันทึกรายวิชานี้"}
-            onClick={(e) => { e.preventDefault(); setSaved(!saved); }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleSavedItem({
+                itemType: "subject",
+                slug: subject.slug,
+                name: subject.name,
+                nameEn: subject.nameEn,
+                detail: subject.faculty,
+                credits: subject.credits,
+                amount: subject.price,
+                image: subject.image,
+              });
+            }}
             className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border bg-white shadow-sm transition-all duration-200 ${
               saved
                 ? "border-[color:var(--primary)] text-[color:var(--primary)]"

@@ -8,7 +8,7 @@ export default function MemberProgramsPage() {
       description="สำรวจหลักสูตรที่เปิดสอนในระบบ Credit Bank และใช้ประกอบการวางแผนเป้าหมายการเรียนรู้"
       currentNav="programs"
     >
-      <ProgramsList showHeading={false} detailBasePath="/member/programs" />
+      <ProgramsList showHeading={false} detailBasePath="/member/programs" canSave />
     </MemberPageShell>
   );
 }

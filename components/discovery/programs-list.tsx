@@ -15,9 +15,14 @@ const facultyOptions = Array.from(new Set(programs.map((p) => p.faculty)));
 type ProgramsListProps = {
   showHeading?: boolean;
   detailBasePath?: string;
+  canSave?: boolean;
 };
 
-export function ProgramsList({ showHeading = true, detailBasePath = "/programs" }: ProgramsListProps) {
+export function ProgramsList({
+  showHeading = true,
+  detailBasePath = "/programs",
+  canSave = false,
+}: ProgramsListProps) {
   const [searchValue, setSearchValue] = useState("");
   const [levelFilter, setLevelFilter] = useState("");
   const [facultyFilter, setFacultyFilter] = useState("");
@@ -247,7 +252,12 @@ export function ProgramsList({ showHeading = true, detailBasePath = "/programs" 
               {/* Grid */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {paginatedPrograms.map((program) => (
-                  <ProgramCard key={program.id} program={program} detailBasePath={detailBasePath} canSave={false} />
+                  <ProgramCard
+                    key={program.id}
+                    program={program}
+                    detailBasePath={detailBasePath}
+                    canSave={canSave}
+                  />
                 ))}
               </div>
 

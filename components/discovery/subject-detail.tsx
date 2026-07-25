@@ -57,10 +57,11 @@ function getScheduleStatusBadge(status: ScheduleItem["status"]): {
 
 export function SubjectDetail({ subject, mode = "public" }: SubjectDetailProps) {
   const router = useRouter();
-  const { data, registerForItem, addGoal, removeGoal } = useSessionData();
+  const { data, registerForItem, addGoal, removeGoal, isSavedItem, toggleSavedItem } =
+    useSessionData();
   const [activeTab, setActiveTab] = useState<Tab>("ภาพรวม");
-  const [saved, setSaved] = useState(false);
   const isMember = mode === "member";
+  const saved = isSavedItem("subject", subject.slug);
   const isOpen = subject.status !== "closed";
   const subjectTeachers = getTeachersByIds(subject.teacherIds);
 
@@ -94,6 +95,20 @@ export function SubjectDetail({ subject, mode = "public" }: SubjectDetailProps) 
         category: undefined,
       });
     }
+  }
+
+  function handleToggleSaved() {
+    if (!isMember) return;
+    toggleSavedItem({
+      itemType: "subject",
+      slug: subject.slug,
+      name: subject.name,
+      nameEn: subject.nameEn,
+      detail: subject.faculty,
+      credits: subject.credits,
+      amount: subject.price,
+      image: subject.image,
+    });
   }
 
 
@@ -193,7 +208,7 @@ export function SubjectDetail({ subject, mode = "public" }: SubjectDetailProps) 
               )}
               <button
                 type="button"
-                onClick={() => isMember && setSaved(!saved)}
+                onClick={handleToggleSaved}
                 disabled={!isMember}
                 title={!isMember ? "เข้าสู่ระบบเพื่อบันทึกรายวิชา" : undefined}
                 className={`flex h-11 w-full items-center justify-center gap-2 rounded-lg border text-sm font-medium transition ${
@@ -526,7 +541,7 @@ export function SubjectDetail({ subject, mode = "public" }: SubjectDetailProps) 
                 <button
                   type="button"
                   aria-label={saved && isMember ? "ยกเลิกการบันทึก" : "บันทึกรายวิชานี้"}
-                  onClick={() => isMember && setSaved(!saved)}
+                  onClick={handleToggleSaved}
                   disabled={!isMember}
                   title={!isMember ? "เข้าสู่ระบบเพื่อบันทึกรายวิชา" : undefined}
                   className={`flex h-11 items-center justify-center gap-2 rounded-lg border text-sm font-medium transition ${

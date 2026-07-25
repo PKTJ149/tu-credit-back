@@ -8,7 +8,7 @@ export default function MemberSubjectsPage() {
       description="ค้นหาและเปรียบเทียบรายวิชาที่เกี่ยวข้องกับเป้าหมายหลักสูตรก่อนดำเนินการลงทะเบียน"
       currentNav="subjects"
     >
-      <SubjectsList showHeading={false} detailBasePath="/member/subjects" />
+      <SubjectsList showHeading={false} detailBasePath="/member/subjects" canSave />
     </MemberPageShell>
   );
 }
