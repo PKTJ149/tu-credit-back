@@ -28,7 +28,7 @@ const actions = [
     icon: Wallet,
     title: "ตรวจสอบการเงิน",
     description: "ดูยอดค้างชำระ ประวัติการชำระเงิน และดาวน์โหลดเอกสารทางการเงิน",
-    href: "/finance",
+    href: "/profile/finance",
     cta: "ดูสถานะการเงิน",
   },
 ];

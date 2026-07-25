@@ -73,7 +73,7 @@ export function ProofSubmitted() {
         <Link href="/finance/pending" className="ui-button-primary w-full sm:w-auto">
           ดูสถานะการชำระเงิน
         </Link>
-        <Link href="/finance" className="ui-button-secondary w-full sm:w-auto">
+        <Link href="/profile/finance" className="ui-button-secondary w-full sm:w-auto">
           กลับไปหน้าการเงิน
         </Link>
       </div>

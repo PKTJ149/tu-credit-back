@@ -21,7 +21,7 @@ export function PaymentInstructions() {
         <Link href="/finance/submit-proof" className="ui-button-primary w-full sm:w-auto sm:min-w-56">
           ส่งหลักฐานการชำระเงิน
         </Link>
-        <Link href="/finance" className="ui-button-secondary w-full sm:w-auto">
+        <Link href="/profile/finance" className="ui-button-secondary w-full sm:w-auto">
           กลับไปหน้าการเงิน
         </Link>
       </div>

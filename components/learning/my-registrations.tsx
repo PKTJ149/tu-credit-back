@@ -36,7 +36,7 @@ export function MyRegistrations() {
             </p>
           </div>
           <Link
-            href="/finance"
+            href="/profile/finance"
             className="inline-flex h-9 shrink-0 items-center justify-center rounded-lg bg-[var(--primary)] px-4 text-sm font-medium text-[var(--primary-foreground)] hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
           >
             ไปที่หน้าการเงิน

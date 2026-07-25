@@ -62,7 +62,7 @@ export function PaymentConfirmed() {
 
       <div>
         <Link
-          href="/finance"
+          href="/profile/finance"
           className="inline-flex h-11 items-center text-sm font-medium text-[var(--ink-muted)] underline-offset-4 hover:text-[var(--foreground)] hover:underline focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[var(--focus-ring)] rounded-md"
         >
           กลับไปหน้ารายการลงทะเบียน

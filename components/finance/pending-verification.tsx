@@ -73,7 +73,7 @@ export function PendingVerification() {
         </p>
 
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
-          <Link href="/finance" className="ui-button-primary">
+          <Link href="/profile/finance" className="ui-button-primary">
             กลับไปหน้าการเงิน
           </Link>
           <a href="#help" className="ui-button-secondary">

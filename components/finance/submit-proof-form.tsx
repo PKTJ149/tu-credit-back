@@ -188,7 +188,7 @@ export function SubmitProofForm() {
             {isSaving ? "กำลังส่งหลักฐาน..." : "ส่งหลักฐาน"}
           </button>
 
-          <Link href="/finance" className="ui-button-secondary">
+          <Link href="/profile/finance" className="ui-button-secondary">
             กลับไปหน้าการเงิน
           </Link>
         </div>

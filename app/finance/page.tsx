@@ -1,14 +1,5 @@
-import { MemberPageShell } from "@/components/member-page-shell";
-import { FinanceDashboard } from "@/components/finance/finance-dashboard";
+import { redirect } from "next/navigation";
 
 export default function FinancePage() {
-  return (
-    <MemberPageShell
-      title="การเงิน"
-      description="ตรวจสอบยอดค้างชำระและสถานะการชำระเงินของคุณได้ที่นี่"
-      currentNav="finance"
-    >
-      <FinanceDashboard />
-    </MemberPageShell>
-  );
+  redirect("/profile/finance");
 }

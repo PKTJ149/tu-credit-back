@@ -26,7 +26,7 @@ export function DocumentsArchive({ documents }: DocumentsArchiveProps) {
           <p className="text-sm leading-7 text-[var(--ink-muted)]">
             ยังไม่มีเอกสารทางการเงินให้ดาวน์โหลดในขณะนี้
           </p>
-          <Link href="/finance" className="ui-button-secondary">
+          <Link href="/profile/finance" className="ui-button-secondary">
             ดูสถานะการเงิน
           </Link>
         </div>
