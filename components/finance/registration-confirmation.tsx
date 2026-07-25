@@ -51,7 +51,7 @@ export function RegistrationConfirmation() {
     : `/member/subjects/${latest.slug}`;
 
   function handleConfirmRegistration() {
-    router.push(paymentRequired ? "/finance/instructions" : "/registrations");
+    router.push(paymentRequired ? "/profile/finance/instructions" : "/registrations");
   }
 
   function handleCancelRegistration() {

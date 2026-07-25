@@ -1,14 +1,5 @@
-import { MemberPageShell } from "@/components/member-page-shell";
-import { PaymentConfirmed } from "@/components/finance/payment-confirmed";
+import { redirect } from "next/navigation";
 
 export default function PaymentConfirmedPage() {
-  return (
-    <MemberPageShell
-      title="ยืนยันการชำระเงินแล้ว"
-      description="ตรวจสอบสรุปการชำระเงินและดาวน์โหลดเอกสารทางการเงินของคุณ"
-      currentNav="finance"
-    >
-      <PaymentConfirmed />
-    </MemberPageShell>
-  );
+  redirect("/profile/finance/confirmed");
 }

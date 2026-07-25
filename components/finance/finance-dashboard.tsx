@@ -56,7 +56,7 @@ export function FinanceDashboard() {
             title="มีรายการที่ต้องชำระเงิน"
             body="คุณมียอดค้างชำระที่ต้องดำเนินการ ตรวจสอบรายละเอียดด้านล่างแล้วไปที่ขั้นตอนการชำระเงิน"
           >
-            <Link href="/finance/instructions" className="ui-button-primary">
+            <Link href="/profile/finance/instructions" className="ui-button-primary">
               ดูวิธีการชำระเงิน
             </Link>
           </StatusPanel>
@@ -85,7 +85,7 @@ export function FinanceDashboard() {
                   key={item.id}
                   item={item}
                   actionLabel="ดำเนินการต่อ"
-                  actionHref="/finance/instructions"
+                  actionHref="/profile/finance/instructions"
                 />
               ))}
             </div>
@@ -126,7 +126,7 @@ export function FinanceDashboard() {
                 ))}
               </div>
               <Link
-                href="/finance/documents"
+                href="/profile/finance/documents"
                 className="mt-4 inline-flex text-sm font-medium text-[var(--primary)] hover:underline focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
               >
                 ดูเอกสารทั้งหมด

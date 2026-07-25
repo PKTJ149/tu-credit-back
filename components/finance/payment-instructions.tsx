@@ -18,7 +18,7 @@ export function PaymentInstructions() {
       />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Link href="/finance/submit-proof" className="ui-button-primary w-full sm:w-auto sm:min-w-56">
+        <Link href="/profile/finance/submit-proof" className="ui-button-primary w-full sm:w-auto sm:min-w-56">
           ส่งหลักฐานการชำระเงิน
         </Link>
         <Link href="/profile/finance" className="ui-button-secondary w-full sm:w-auto">

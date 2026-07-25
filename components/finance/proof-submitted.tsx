@@ -70,7 +70,7 @@ export function ProofSubmitted() {
       </section>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <Link href="/finance/pending" className="ui-button-primary w-full sm:w-auto">
+        <Link href="/profile/finance/pending" className="ui-button-primary w-full sm:w-auto">
           ดูสถานะการชำระเงิน
         </Link>
         <Link href="/profile/finance" className="ui-button-secondary w-full sm:w-auto">

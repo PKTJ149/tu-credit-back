@@ -17,7 +17,7 @@ export function PendingVerification() {
     if (pending) {
       confirmPayment(pending.id);
     }
-    router.push("/finance/confirmed");
+    router.push("/profile/finance/confirmed");
   }
 
   return (

@@ -47,7 +47,7 @@ export function PaymentRejected() {
       </SectionCard>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <Link href="/finance/submit-proof" className="ui-button-primary w-full sm:w-auto">
+        <Link href="/profile/finance/submit-proof" className="ui-button-primary w-full sm:w-auto">
           ส่งหลักฐานที่แก้ไขแล้ว
         </Link>
         <a href="#help" className="ui-button-secondary w-full sm:w-auto">

@@ -67,7 +67,7 @@ export function SubmitProofForm() {
       submitPayment(target.id);
     }
 
-    router.push("/finance/proof-submitted");
+    router.push("/profile/finance/proof-submitted");
   }
 
   return (
