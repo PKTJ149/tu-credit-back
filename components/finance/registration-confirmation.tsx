@@ -217,7 +217,7 @@ export function RegistrationConfirmation() {
               ยอดที่ต้องชำระ
             </span>
             <span className="text-right text-lg font-bold text-[var(--primary)]">
-              {formatTHB(latest.amount)}
+              {formatTHB(subjectTotal)}
             </span>
           </div>
         </div>
