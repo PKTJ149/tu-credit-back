@@ -67,7 +67,7 @@ export function RegistrationConfirmation() {
       amount: subjectTotal,
       selectedSubjectIds: program ? selectedSubjectIds : undefined,
     });
-    router.push(paymentRequired ? "/profile/finance/instructions" : "/registrations");
+    router.push(paymentRequired ? "/profile/finance" : "/registrations");
   }
 
   function handleCancelRegistration() {

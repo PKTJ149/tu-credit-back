@@ -1,4 +1,4 @@
-export type RegistrationStatus = "awaiting-payment" | "active" | "completed";
+export type RegistrationStatus = "awaiting-payment" | "active" | "completed" | "cancelled";
 
 type RegistrationStatusInfo = {
   label: string;
@@ -19,6 +19,11 @@ export const registrationStatusInfo: Record<RegistrationStatus, RegistrationStat
   },
   completed: {
     label: "เสร็จสิ้น",
+    badgeBg: "bg-[color:color-mix(in_oklch,var(--muted)_70%,white)]",
+    badgeText: "text-[var(--ink-subtle)]",
+  },
+  cancelled: {
+    label: "ยกเลิก",
     badgeBg: "bg-[color:color-mix(in_oklch,var(--muted)_70%,white)]",
     badgeText: "text-[var(--ink-subtle)]",
   },

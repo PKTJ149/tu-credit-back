@@ -105,14 +105,132 @@ type SessionData = {
 /** A brand-new learner: empty except for pre-seeded academic history. */
 function makeEmptyData(): SessionData {
   return {
-    registrations: [],
-    payables: [],
+    registrations: seedRegistrations,
+    payables: seedPayables,
     goals: [],
     savedItems: [],
     transfers: [],
     academicRecords: seedAcademicRecords,
   };
 }
+
+const seedRegistrations: LearnerRegistration[] = [
+  {
+    id: "demo-reg-software",
+    itemName: "หลักสูตรประกาศนียบัตรการพัฒนาซอฟต์แวร์",
+    itemType: "program",
+    slug: "software-development",
+    selectedSubjectIds: ["s1", "s4", "s7"],
+    term: CURRENT_TERM,
+    amount: 4500,
+    status: "awaiting-payment",
+    payableId: "demo-pay-software",
+  },
+  {
+    id: "demo-reg-data",
+    itemName: "หลักสูตรประกาศนียบัตรการวิเคราะห์ข้อมูล",
+    itemType: "program",
+    slug: "data-analytics",
+    selectedSubjectIds: ["s2", "s10", "s12"],
+    term: CURRENT_TERM,
+    amount: 7500,
+    status: "awaiting-payment",
+    payableId: "demo-pay-data",
+  },
+  {
+    id: "demo-reg-digital-marketing-subject",
+    itemName: "หลักการตลาดดิจิทัล",
+    itemType: "subject",
+    slug: "digital-marketing-principles",
+    term: CURRENT_TERM,
+    amount: 1500,
+    status: "awaiting-payment",
+    payableId: "demo-pay-digital-marketing-subject",
+  },
+  {
+    id: "demo-reg-public-speaking",
+    itemName: "อบรมเชิงปฏิบัติการการพูดในที่สาธารณะ",
+    itemType: "program",
+    slug: "public-speaking-workshop",
+    selectedSubjectIds: ["s13"],
+    term: "ภาคเรียนที่ 2/2568",
+    amount: 1500,
+    status: "active",
+    payableId: "demo-pay-public-speaking",
+  },
+  {
+    id: "demo-reg-finance",
+    itemName: "อบรมความรู้ทางการเงินเบื้องต้น",
+    itemType: "program",
+    slug: "financial-literacy-workshop",
+    selectedSubjectIds: ["s18"],
+    term: "ภาคเรียนที่ 2/2568",
+    amount: 1500,
+    status: "active",
+    payableId: "demo-pay-finance",
+  },
+  {
+    id: "demo-reg-statistics",
+    itemName: "สถิติเบื้องต้นสำหรับนักวิจัย",
+    itemType: "subject",
+    slug: "intro-statistics",
+    term: "ภาคเรียนที่ 1/2568",
+    amount: 1500,
+    status: "active",
+    payableId: "demo-pay-statistics",
+  },
+];
+
+const seedPayables: LearnerPayable[] = [
+  {
+    id: "demo-pay-software",
+    name: "หลักสูตรประกาศนียบัตรการพัฒนาซอฟต์แวร์",
+    amount: 4500,
+    currency: "THB",
+    state: "payment-required",
+    registrationId: "demo-reg-software",
+  },
+  {
+    id: "demo-pay-data",
+    name: "หลักสูตรประกาศนียบัตรการวิเคราะห์ข้อมูล",
+    amount: 7500,
+    currency: "THB",
+    state: "payment-required",
+    registrationId: "demo-reg-data",
+  },
+  {
+    id: "demo-pay-digital-marketing-subject",
+    name: "หลักการตลาดดิจิทัล",
+    amount: 1500,
+    currency: "THB",
+    state: "payment-required",
+    registrationId: "demo-reg-digital-marketing-subject",
+  },
+  {
+    id: "demo-pay-public-speaking",
+    name: "อบรมเชิงปฏิบัติการการพูดในที่สาธารณะ",
+    amount: 1500,
+    currency: "THB",
+    state: "payment-confirmed",
+    registrationId: "demo-reg-public-speaking",
+  },
+  {
+    id: "demo-pay-finance",
+    name: "อบรมความรู้ทางการเงินเบื้องต้น",
+    amount: 1500,
+    currency: "THB",
+    state: "payment-confirmed",
+    registrationId: "demo-reg-finance",
+  },
+  {
+    id: "demo-pay-statistics",
+    name: "สถิติเบื้องต้นสำหรับนักวิจัย",
+    amount: 1500,
+    currency: "THB",
+    state: "payment-confirmed",
+    registrationId: "demo-reg-statistics",
+  },
+];
 
 /** Pre-seeded past grades so the academic-progress page has something to show. */
 const seedAcademicRecords: AcademicRecord[] = [
@@ -175,7 +293,7 @@ type SessionDataContextValue = {
     registrationId: string,
     input: { amount: number; selectedSubjectIds?: string[] },
   ) => void;
-  /** Cancel a pending registration and remove its payable. */
+  /** Cancel a pending registration and mark its payable as cancelled. */
   cancelRegistration: (registrationId: string) => void;
   /** Move a payable to "waiting for verification" (proof uploaded). */
   submitPayment: (payableId: string) => void;
@@ -326,8 +444,16 @@ export function SessionDataProvider({ children }: { children: ReactNode }) {
   const cancelRegistration = useCallback((registrationId: string) => {
     setData((prev) => ({
       ...prev,
-      registrations: prev.registrations.filter((r) => r.id !== registrationId),
-      payables: prev.payables.filter((p) => p.registrationId !== registrationId),
+      registrations: prev.registrations.map((registration) =>
+        registration.id === registrationId
+          ? { ...registration, status: "cancelled" }
+          : registration,
+      ),
+      payables: prev.payables.map((payable) =>
+        payable.registrationId === registrationId
+          ? { ...payable, state: "payment-cancelled" }
+          : payable,
+      ),
     }));
   }, []);
 

@@ -15,6 +15,7 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
+import { useSessionData } from "@/lib/session/session-data";
 
 const accountMenus = [
   { icon: User, label: "ข้อมูลส่วนตัว", href: "/profile" },
@@ -42,10 +43,12 @@ function NavLink({
   href,
   icon: Icon,
   label,
+  showAlert = false,
 }: {
   href: string;
   icon: React.ElementType;
   label: string;
+  showAlert?: boolean;
 }) {
   const active = useIsActive(href);
   return (
@@ -59,12 +62,21 @@ function NavLink({
       }`}
     >
       <Icon aria-hidden="true" className="h-[18px] w-[18px] shrink-0" />
-      {label}
+      <span className="min-w-0 flex-1">{label}</span>
+      {showAlert ? (
+        <span
+          aria-label="มีรายการที่ต้องชำระ"
+          className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-red-600 shadow-[0_0_0_4px_rgba(220,38,38,0.12)]"
+        />
+      ) : null}
     </Link>
   );
 }
 
 export function ProfileSidebar() {
+  const { data } = useSessionData();
+  const hasFinanceAlert = data.payables.some((item) => item.state === "payment-required");
+
   return (
     <aside className="hidden w-56 shrink-0 self-stretch lg:flex lg:flex-col">
       <div className="flex flex-1 flex-col">
@@ -88,7 +100,13 @@ export function ProfileSidebar() {
           </p>
           <nav aria-label="เมนูกิจกรรม" className="space-y-0.5">
             {activityMenus.map((item) => (
-              <NavLink key={item.href} href={item.href} icon={item.icon} label={item.label} />
+              <NavLink
+                key={item.href}
+                href={item.href}
+                icon={item.icon}
+                label={item.label}
+                showAlert={item.href === "/profile/finance" && hasFinanceAlert}
+              />
             ))}
           </nav>
         </div>
@@ -113,7 +131,9 @@ export function ProfileSidebar() {
 
 export function ProfileMobileTabs() {
   const pathname = usePathname();
+  const { data } = useSessionData();
   const allMenus = [...accountMenus, ...activityMenus];
+  const hasFinanceAlert = data.payables.some((item) => item.state === "payment-required");
 
   function isActive(href: string) {
     if (href === "/profile") return pathname === "/profile";
@@ -138,6 +158,12 @@ export function ProfileMobileTabs() {
             >
               <Icon aria-hidden="true" className="h-4 w-4" />
               {item.label}
+              {item.href === "/profile/finance" && hasFinanceAlert ? (
+                <span
+                  aria-label="มีรายการที่ต้องชำระ"
+                  className="h-2.5 w-2.5 shrink-0 animate-pulse rounded-full bg-red-600 shadow-[0_0_0_4px_rgba(220,38,38,0.12)]"
+                />
+              ) : null}
             </Link>
           );
         })}
