@@ -337,9 +337,20 @@ function makeId(prefix: string): string {
 
 function normalizeSessionData(raw: Partial<SessionData>): SessionData {
   const empty = makeEmptyData();
+  const registrations = Array.isArray(raw.registrations) ? raw.registrations : empty.registrations;
+  const payables = Array.isArray(raw.payables) ? raw.payables : empty.payables;
+  const registrationIds = new Set(registrations.map((item) => item.id));
+  const payableIds = new Set(payables.map((item) => item.id));
+
   return {
-    registrations: Array.isArray(raw.registrations) ? raw.registrations : empty.registrations,
-    payables: Array.isArray(raw.payables) ? raw.payables : empty.payables,
+    registrations: [
+      ...registrations,
+      ...seedRegistrations.filter((item) => !registrationIds.has(item.id)),
+    ],
+    payables: [
+      ...payables,
+      ...seedPayables.filter((item) => !payableIds.has(item.id)),
+    ],
     goals: Array.isArray(raw.goals) ? raw.goals : empty.goals,
     savedItems: Array.isArray(raw.savedItems) ? raw.savedItems : empty.savedItems,
     transfers: Array.isArray(raw.transfers) ? raw.transfers : empty.transfers,

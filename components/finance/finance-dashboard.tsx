@@ -136,7 +136,7 @@ export function FinanceDashboard() {
                     key={payable.id}
                     className="rounded-lg border border-[color:var(--border)] bg-[var(--background)] p-4"
                   >
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_auto] lg:items-start">
                       <button
                         type="button"
                         onClick={() =>
@@ -166,7 +166,7 @@ export function FinanceDashboard() {
                         </div>
                       </button>
 
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:justify-end">
+                      <div className="flex flex-wrap items-center gap-3 lg:justify-end">
                         <span className="font-mono text-base font-semibold text-[var(--foreground)]">
                           {formatTHB(payable.amount)}
                         </span>
@@ -178,11 +178,36 @@ export function FinanceDashboard() {
                           <StatusBadge state={payable.state} />
                         )}
                       </div>
+
+                      <div className="flex flex-wrap gap-2 lg:min-w-36 lg:justify-end">
+                        {payable.state !== "payment-cancelled" ? (
+                          <button
+                            type="button"
+                            onClick={() => cancelRegistration(payable.registrationId)}
+                            className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-[color:var(--border)] px-3 text-xs font-medium text-[var(--ink-muted)] transition hover:border-red-200 hover:text-red-600 focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
+                          >
+                            <X aria-hidden="true" className="h-3.5 w-3.5" />
+                            ยกเลิก
+                          </button>
+                        ) : null}
+                        {action ? (
+                          <Link
+                            href={action.href}
+                            className={`inline-flex h-9 items-center justify-center rounded-lg px-4 text-xs font-semibold transition focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)] ${
+                              payable.state === "payment-required"
+                                ? "bg-[var(--primary)] text-[var(--primary-foreground)] hover:opacity-90"
+                                : "border border-[color:var(--border)] bg-[var(--background)] text-[var(--foreground)] hover:border-[color:var(--ring)] hover:bg-[var(--surface)]"
+                            }`}
+                          >
+                            {action.label}
+                          </Link>
+                        ) : null}
+                      </div>
                     </div>
 
                     {expanded ? (
                       <div className="mt-4 rounded-lg border border-[color:var(--border)] bg-[var(--surface)]">
-                        <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-3 border-b border-[color:var(--border)] px-3 py-2 text-xs font-semibold text-[var(--ink-muted)]">
+                        <div className="grid grid-cols-[minmax(0,1fr)_6rem_7rem] gap-3 border-b border-[color:var(--border)] px-3 py-2 text-xs font-semibold text-[var(--ink-muted)]">
                           <span>รายวิชาที่เลือก</span>
                           <span className="text-right">หน่วยกิต</span>
                           <span className="text-right">ราคา</span>
@@ -191,7 +216,7 @@ export function FinanceDashboard() {
                           {selectedSubjects.map((subject) => (
                             <div
                               key={subject.id}
-                              className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-3 px-3 py-2 text-xs"
+                              className="grid grid-cols-[minmax(0,1fr)_6rem_7rem] items-center gap-3 px-3 py-2 text-xs"
                             >
                               <div className="min-w-0">
                                 <p className="line-clamp-1 font-medium text-[var(--foreground)]">
@@ -202,7 +227,7 @@ export function FinanceDashboard() {
                               <span className="whitespace-nowrap text-right text-[var(--foreground)]">
                                 {subject.credits} หน่วยกิต
                               </span>
-                              <span className="whitespace-nowrap rounded-full bg-[var(--background)] px-2 py-1 text-right font-semibold text-[var(--primary)]">
+                              <span className="justify-self-end whitespace-nowrap rounded-full bg-[var(--background)] px-2 py-1 text-right font-semibold text-[var(--primary)]">
                                 {formatTHB(subject.price ?? 0)}
                               </span>
                             </div>
@@ -210,27 +235,6 @@ export function FinanceDashboard() {
                         </div>
                       </div>
                     ) : null}
-
-                    <div className="mt-4 flex flex-col gap-2 border-t border-[color:var(--border)] pt-4 sm:flex-row sm:justify-end">
-                      {payable.state !== "payment-cancelled" ? (
-                        <button
-                          type="button"
-                          onClick={() => cancelRegistration(payable.registrationId)}
-                          className="inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-[color:var(--border)] px-3 text-xs font-medium text-[var(--ink-muted)] transition hover:border-red-200 hover:text-red-600 focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
-                        >
-                          <X aria-hidden="true" className="h-3.5 w-3.5" />
-                          ยกเลิกรายการ
-                        </button>
-                      ) : null}
-                      {action ? (
-                        <Link
-                          href={action.href}
-                          className="inline-flex h-9 items-center justify-center rounded-lg bg-[var(--primary)] px-4 text-xs font-semibold text-[var(--primary-foreground)] transition hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
-                        >
-                          {action.label}
-                        </Link>
-                      ) : null}
-                    </div>
                   </article>
                 );
               })}
