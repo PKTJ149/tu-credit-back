@@ -1,11 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import { PaymentInstructionCard } from "@/components/finance/payment-instruction-card";
+import { useSessionData } from "@/lib/session/session-data";
 
 export function PaymentInstructions() {
+  const { data } = useSessionData();
+  const payable = data.payables.find((item) => item.state === "payment-required");
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <PaymentInstructionCard
-        amount={3500}
+        amount={payable?.amount ?? 0}
         bankName="ธนาคารกรุงไทย"
         accountNumber="123-4-56789-0"
         accountName="มหาวิทยาลัยธรรมศาสตร์ (Credit Bank)"

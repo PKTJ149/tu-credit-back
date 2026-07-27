@@ -52,6 +52,7 @@ export type LearnerRegistration = {
   itemName: string;
   itemType: LearningItemType;
   slug: string;
+  selectedSubjectIds?: string[];
   term: string;
   amount: number;
   status: RegistrationStatus;
@@ -169,6 +170,11 @@ type SessionDataContextValue = {
   data: SessionData;
   /** Register for a program/subject; creates a registration + a payable. */
   registerForItem: (input: RegisterInput) => void;
+  /** Update a pending registration after choosing specific subjects. */
+  updateRegistrationSelection: (
+    registrationId: string,
+    input: { amount: number; selectedSubjectIds?: string[] },
+  ) => void;
   /** Cancel a pending registration and remove its payable. */
   cancelRegistration: (registrationId: string) => void;
   /** Move a payable to "waiting for verification" (proof uploaded). */
@@ -293,6 +299,29 @@ export function SessionDataProvider({ children }: { children: ReactNode }) {
       };
     });
   }, []);
+
+  const updateRegistrationSelection = useCallback(
+    (registrationId: string, input: { amount: number; selectedSubjectIds?: string[] }) => {
+      setData((prev) => ({
+        ...prev,
+        registrations: prev.registrations.map((registration) =>
+          registration.id === registrationId
+            ? {
+                ...registration,
+                amount: input.amount,
+                selectedSubjectIds: input.selectedSubjectIds,
+              }
+            : registration,
+        ),
+        payables: prev.payables.map((payable) =>
+          payable.registrationId === registrationId
+            ? { ...payable, amount: input.amount }
+            : payable,
+        ),
+      }));
+    },
+    [],
+  );
 
   const cancelRegistration = useCallback((registrationId: string) => {
     setData((prev) => ({
@@ -452,6 +481,7 @@ export function SessionDataProvider({ children }: { children: ReactNode }) {
       isReady,
       data,
       registerForItem,
+      updateRegistrationSelection,
       cancelRegistration,
       submitPayment,
       confirmPayment,
@@ -469,6 +499,7 @@ export function SessionDataProvider({ children }: { children: ReactNode }) {
       isReady,
       data,
       registerForItem,
+      updateRegistrationSelection,
       cancelRegistration,
       submitPayment,
       confirmPayment,
