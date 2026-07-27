@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Compass,
-  ClipboardList,
   BookmarkCheck,
   ArrowLeftRight,
   Wallet,
@@ -26,7 +25,6 @@ const accountMenus = [
 const activityMenus = [
   { icon: Compass, label: "เป้าหมายการเรียนรู้", href: "/profile/learning" },
   { icon: BookmarkCheck, label: "รายการที่บันทึกไว้", href: "/profile/saved" },
-  { icon: ClipboardList, label: "ลงทะเบียนเรียน", href: "/profile/registrations" },
   { icon: ArrowLeftRight, label: "เทียบโอนหน่วยกิต", href: "/profile/transfer" },
   { icon: Wallet, label: "การเงิน", href: "/profile/finance" },
   { icon: GraduationCap, label: "ผลการเรียน", href: "/profile/academic" },

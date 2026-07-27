@@ -375,6 +375,13 @@ export function FinanceDashboard() {
                 <Upload aria-hidden="true" className="h-4 w-4" />
                 ส่งหลักฐานการชำระเงิน
               </Link>
+              <Link
+                href="/profile/finance/pending"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-[color:var(--border)] bg-[var(--background)] px-4 text-sm font-semibold text-[var(--foreground)] transition hover:border-[color:var(--ring)] hover:bg-[var(--surface)] focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
+              >
+                <CheckCircle2 aria-hidden="true" className="h-4 w-4" />
+                ดูสถานะการชำระเงิน
+              </Link>
             </div>
           </section>
         ) : null}
