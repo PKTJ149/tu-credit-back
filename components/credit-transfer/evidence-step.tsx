@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { FileUploadField } from "@/components/finance/file-upload-field";
-import { Stepper } from "@/components/credit-transfer/stepper";
 
 type EvidenceErrors = {
   evidenceFile?: string;
@@ -17,7 +16,11 @@ const checklistItems = [
   "รองรับไฟล์ภาพ (JPG, PNG) หรือ PDF ขนาดไม่เกิน 10MB",
 ];
 
-export function EvidenceStep() {
+type EvidenceStepProps = {
+  basePath?: string;
+};
+
+export function EvidenceStep({ basePath = "/transfer" }: EvidenceStepProps) {
   const router = useRouter();
   const [evidenceFile, setEvidenceFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<EvidenceErrors>({});
@@ -46,13 +49,11 @@ export function EvidenceStep() {
 
     setIsChecking(false);
 
-    router.push("/transfer/review");
+    router.push(`${basePath}/review`);
   }
 
   return (
     <div>
-      <Stepper currentStepIndex={2} />
-
       <div className="grid gap-6 xl:grid-cols-[17rem_minmax(0,1fr)]">
         <aside className="space-y-5 rounded-xl border border-[color:var(--border)] bg-[color:color-mix(in_oklch,var(--secondary)_16%,white)] p-5">
           <div className="space-y-3">
@@ -93,7 +94,7 @@ export function EvidenceStep() {
               {isChecking ? "กำลังตรวจสอบไฟล์..." : "ดำเนินการต่อไปยังการตรวจทาน"}
             </button>
 
-            <Link href="/transfer/request" className="ui-button-secondary">
+            <Link href={`${basePath}/request`} className="ui-button-secondary">
               ย้อนกลับ
             </Link>
           </div>

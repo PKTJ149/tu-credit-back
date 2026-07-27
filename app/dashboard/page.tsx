@@ -21,7 +21,7 @@ const actions = [
     icon: ArrowLeftRight,
     title: "เทียบโอนหน่วยกิต",
     description: "นำผลการเรียนจากสถาบันอื่นมาใช้ หรือส่งผลการเรียนออกไปยังสถาบันปลายทาง",
-    href: "/transfer/type",
+    href: "/transfer",
     cta: "เริ่มคำขอ",
   },
   {

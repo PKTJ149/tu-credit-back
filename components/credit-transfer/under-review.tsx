@@ -2,7 +2,11 @@ import Link from "next/link";
 import { Lock, Paperclip } from "lucide-react";
 import { TransferStatusPanel } from "@/components/credit-transfer/transfer-status-panel";
 
-export function UnderReview() {
+type UnderReviewProps = {
+  basePath?: string;
+};
+
+export function UnderReview({ basePath = "/transfer" }: UnderReviewProps) {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <TransferStatusPanel
@@ -45,7 +49,7 @@ export function UnderReview() {
       </p>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <Link href="/transfer/history" className="ui-button-primary w-full sm:w-auto">
+        <Link href={`${basePath}/history`} className="ui-button-primary w-full sm:w-auto">
           กลับไปหน้าประวัติคำขอ
         </Link>
         <a href="#help" className="ui-button-secondary w-full sm:w-auto">

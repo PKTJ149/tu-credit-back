@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { TransferStatusPanel } from "@/components/credit-transfer/transfer-status-panel";
 
-export function ChangesRequested() {
+type ChangesRequestedProps = {
+  basePath?: string;
+};
+
+export function ChangesRequested({ basePath = "/transfer" }: ChangesRequestedProps) {
   return (
     <div className="space-y-6">
       <TransferStatusPanel
@@ -27,10 +31,10 @@ export function ChangesRequested() {
       </section>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <Link href="/transfer/evidence" className="ui-button-primary w-full sm:w-auto">
+        <Link href={`${basePath}/evidence`} className="ui-button-primary w-full sm:w-auto">
           แก้ไขและส่งคำขอใหม่
         </Link>
-        <Link href="/transfer/history" className="ui-button-secondary w-full sm:w-auto">
+        <Link href={`${basePath}/history`} className="ui-button-secondary w-full sm:w-auto">
           กลับไปหน้าประวัติคำขอ
         </Link>
       </div>

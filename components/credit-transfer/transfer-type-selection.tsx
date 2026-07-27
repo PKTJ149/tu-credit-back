@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Circle, CircleCheck } from "lucide-react";
-import { Stepper } from "@/components/credit-transfer/stepper";
 import type { TransferType } from "@/lib/credit-transfer/transfer-state";
 
 type TransferTypeOption = {
@@ -28,19 +27,21 @@ const options: TransferTypeOption[] = [
   },
 ];
 
-export function TransferTypeSelection() {
+type TransferTypeSelectionProps = {
+  basePath?: string;
+};
+
+export function TransferTypeSelection({ basePath = "/transfer" }: TransferTypeSelectionProps) {
   const router = useRouter();
   const [selected, setSelected] = useState<TransferType | null>(null);
 
   function handleContinue() {
     if (!selected) return;
-    router.push(`/transfer/request?direction=${selected}`);
+    router.push(`${basePath}/request?direction=${selected}`);
   }
 
   return (
     <div>
-      <Stepper currentStepIndex={0} />
-
       <div className="grid gap-4 sm:grid-cols-2">
         {options.map((option) => {
           const isSelected = selected === option.type;

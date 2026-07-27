@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { TransferStatusPanel } from "@/components/credit-transfer/transfer-status-panel";
 
-export function Withdrawn() {
+type WithdrawnProps = {
+  basePath?: string;
+};
+
+export function Withdrawn({ basePath = "/transfer" }: WithdrawnProps) {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <TransferStatusPanel
@@ -16,7 +20,7 @@ export function Withdrawn() {
       </p>
 
       <div>
-        <Link href="/transfer/history" className="ui-button-primary w-full sm:w-auto">
+        <Link href={`${basePath}/history`} className="ui-button-primary w-full sm:w-auto">
           กลับไปหน้าประวัติคำขอ
         </Link>
       </div>

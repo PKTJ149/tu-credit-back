@@ -9,6 +9,7 @@ type FileUploadFieldProps = {
   hint?: string;
   error?: string;
   fileName?: string;
+  emptyText?: string;
   onFileSelected: (file: File | null) => void;
 };
 
@@ -18,6 +19,7 @@ export function FileUploadField({
   hint,
   error,
   fileName,
+  emptyText = "แตะเพื่อแนบไฟล์หลักฐานการชำระเงิน",
   onFileSelected,
 }: FileUploadFieldProps) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -57,7 +59,7 @@ export function FileUploadField({
         >
           <UploadCloud aria-hidden="true" className="h-6 w-6 text-[var(--ink-muted)]" />
           <span className="text-sm font-medium text-[var(--foreground)]">
-            แตะเพื่อแนบไฟล์หลักฐานการชำระเงิน
+            {emptyText}
           </span>
           {hint ? <span className="text-xs text-[var(--ink-subtle)]">{hint}</span> : null}
         </label>

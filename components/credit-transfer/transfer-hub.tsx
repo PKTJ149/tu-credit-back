@@ -7,7 +7,11 @@ import { TransferTypeCard } from "@/components/credit-transfer/transfer-type-car
 import { RequestRow } from "@/components/credit-transfer/request-row";
 import { useSessionData } from "@/lib/session/session-data";
 
-export function TransferHub() {
+type TransferHubProps = {
+  basePath?: string;
+};
+
+export function TransferHub({ basePath = "/transfer" }: TransferHubProps) {
   const { data } = useSessionData();
   const recentRequests = data.transfers;
 
@@ -30,7 +34,7 @@ export function TransferHub() {
             "รายวิชาหรือหน่วยกิตที่ต้องการเทียบโอน",
             "หลักฐานประกอบ เช่น ใบแสดงผลการเรียน",
           ]}
-          href="/transfer/type?direction=in"
+          href={`${basePath}/request?direction=in`}
           ctaLabel="เริ่มเทียบโอนเข้า"
         />
 
@@ -43,7 +47,7 @@ export function TransferHub() {
             "ชื่อและประเภทสถาบันปลายทาง",
             "รายละเอียดเพิ่มเติมตามที่ปลายทางกำหนด",
           ]}
-          href="/transfer/type?direction=out"
+          href={`${basePath}/request?direction=out`}
           ctaLabel="เริ่มเทียบโอนออก"
         />
       </div>
@@ -57,12 +61,12 @@ export function TransferHub() {
                   key={request.id}
                   request={request}
                   actionLabel="ดูรายละเอียด"
-                  actionHref="/transfer/history"
+                  actionHref={`${basePath}/history`}
                 />
               ))}
             </div>
             <Link
-              href="/transfer/history"
+              href={`${basePath}/history`}
               className="mt-4 inline-flex text-sm font-medium text-[var(--primary)] hover:underline focus:outline-none focus:ring-4 focus:ring-[var(--focus-ring)]"
             >
               ดูประวัติคำขอทั้งหมด

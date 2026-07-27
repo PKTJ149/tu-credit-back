@@ -83,5 +83,3 @@ export type TransferRequest = {
   submittedDate: string;
   state: TransferState;
 };
-
-export const stepperSteps = ["ประเภท", "รายละเอียด", "หลักฐาน", "ตรวจทาน", "ส่งคำขอแล้ว"] as const;

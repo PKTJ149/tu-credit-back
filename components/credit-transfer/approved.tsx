@@ -7,7 +7,11 @@ const approvedDetails = [
   { label: "วันที่อนุมัติ", value: "22 ก.ค. 2569" },
 ];
 
-export function Approved() {
+type ApprovedProps = {
+  basePath?: string;
+};
+
+export function Approved({ basePath = "/transfer" }: ApprovedProps) {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <TransferStatusPanel
@@ -41,7 +45,7 @@ export function Approved() {
       </section>
 
       <div>
-        <Link href="/transfer/history" className="ui-button-primary w-full sm:w-auto">
+        <Link href={`${basePath}/history`} className="ui-button-primary w-full sm:w-auto">
           กลับไปหน้าประวัติคำขอ
         </Link>
       </div>

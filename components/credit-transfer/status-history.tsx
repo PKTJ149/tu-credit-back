@@ -6,25 +6,26 @@ import type { TransferRequest, TransferState } from "@/lib/credit-transfer/trans
 
 type StatusHistoryProps = {
   requests: TransferRequest[];
+  basePath?: string;
 };
 
-const statusPageByState: Partial<Record<TransferState, string>> = {
-  "under-review": "/transfer/under-review",
-  "changes-requested": "/transfer/changes-requested",
-  approved: "/transfer/approved",
-  rejected: "/transfer/rejected",
-  withdrawn: "/transfer/withdrawn",
+const statusSegmentByState: Partial<Record<TransferState, string>> = {
+  "under-review": "under-review",
+  "changes-requested": "changes-requested",
+  approved: "approved",
+  rejected: "rejected",
+  withdrawn: "withdrawn",
 };
 
-function getDetailHref(state: TransferState) {
-  return statusPageByState[state] ?? "/transfer/confirmation";
+function getDetailHref(state: TransferState, basePath: string) {
+  return `${basePath}/${statusSegmentByState[state] ?? "confirmation"}`;
 }
 
-export function StatusHistory({ requests }: StatusHistoryProps) {
+export function StatusHistory({ requests, basePath = "/transfer" }: StatusHistoryProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex justify-end">
-        <Link href="/transfer" className="ui-button-primary">
+        <Link href={basePath} className="ui-button-primary">
           เริ่มคำขอใหม่
         </Link>
       </div>
@@ -41,7 +42,7 @@ export function StatusHistory({ requests }: StatusHistoryProps) {
                 key={request.id}
                 request={request}
                 actionLabel="ดูรายละเอียด"
-                actionHref={getDetailHref(request.state)}
+                actionHref={getDetailHref(request.state, basePath)}
               />
             ))}
           </div>

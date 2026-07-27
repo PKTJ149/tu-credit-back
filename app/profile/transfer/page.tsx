@@ -9,7 +9,7 @@ export default function TransferPage() {
           เลือกประเภทคำขอเทียบโอนและตรวจสอบสถานะคำขอที่ผ่านมา
         </p>
       </div>
-      <TransferHub />
+      <TransferHub basePath="/profile/transfer" />
     </div>
   );
 }

@@ -22,7 +22,7 @@ const publicNavItems = [
 
 // When signed in, shared pages point at the member versions of the flows.
 const memberNavItems = [
-  { label: "หน้าหลัก", href: "/profile" },
+  { label: "หน้าหลัก", href: "/" },
   { label: "หลักสูตร", href: "/member/programs" },
   { label: "รายวิชา", href: "/member/subjects" },
   { label: "ข่าวสาร", href: "/news" },

@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { TransferStatusPanel } from "@/components/credit-transfer/transfer-status-panel";
 
-export function Rejected() {
+type RejectedProps = {
+  basePath?: string;
+};
+
+export function Rejected({ basePath = "/transfer" }: RejectedProps) {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <TransferStatusPanel
@@ -25,7 +29,7 @@ export function Rejected() {
         <a href="#help" className="ui-button-primary w-full sm:w-auto">
           ติดต่อฝ่ายสนับสนุน
         </a>
-        <Link href="/transfer/history" className="ui-button-secondary w-full sm:w-auto">
+        <Link href={`${basePath}/history`} className="ui-button-secondary w-full sm:w-auto">
           กลับไปหน้าประวัติคำขอ
         </Link>
       </div>

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-export default async function TransferTypePage({
+export default async function ProfileTransferTypePage({
   searchParams,
 }: {
   searchParams: Promise<{ direction?: string }>;
@@ -8,5 +8,5 @@ export default async function TransferTypePage({
   const params = await searchParams;
   const direction = params.direction === "out" ? "out" : "in";
 
-  redirect(`/transfer/request?direction=${direction}`);
+  redirect(`/profile/transfer/request?direction=${direction}`);
 }

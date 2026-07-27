@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Stepper } from "@/components/credit-transfer/stepper";
 import { useSessionData } from "@/lib/session/session-data";
 
 const requestDetailItems = [
@@ -21,7 +20,11 @@ const requestDetailItems = [
   },
 ];
 
-export function ReviewRequest() {
+type ReviewRequestProps = {
+  basePath?: string;
+};
+
+export function ReviewRequest({ basePath = "/transfer" }: ReviewRequestProps) {
   const router = useRouter();
   const { addTransfer } = useSessionData();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,13 +39,11 @@ export function ReviewRequest() {
     // Record the submitted request so it appears on the transfer hub/history.
     addTransfer({ type: "in", title: "แคลคูลัส 1 · มหาวิทยาลัยเกษตรศาสตร์" });
 
-    router.push("/transfer/confirmation");
+    router.push(`${basePath}/confirmation`);
   }
 
   return (
     <div>
-      <Stepper currentStepIndex={3} />
-
       <div className="min-w-0 rounded-xl border border-[color:var(--border)] bg-[var(--background)]">
         <section className="space-y-3 p-5 sm:p-6">
           <div className="flex items-center justify-between gap-4">
@@ -50,7 +51,7 @@ export function ReviewRequest() {
               ประเภทคำขอ
             </h2>
             <Link
-              href="/transfer/type"
+              href={basePath}
               className="text-sm font-medium text-[var(--primary)]"
             >
               แก้ไข
@@ -67,7 +68,7 @@ export function ReviewRequest() {
               รายละเอียดคำขอ
             </h2>
             <Link
-              href="/transfer/request"
+              href={`${basePath}/request`}
               className="text-sm font-medium text-[var(--primary)]"
             >
               แก้ไข
@@ -93,7 +94,7 @@ export function ReviewRequest() {
               หลักฐานที่แนบ
             </h2>
             <Link
-              href="/transfer/evidence"
+              href={`${basePath}/evidence`}
               className="text-sm font-medium text-[var(--primary)]"
             >
               แก้ไข
@@ -116,7 +117,7 @@ export function ReviewRequest() {
         </button>
 
         <Link
-          href="/transfer/request"
+          href={`${basePath}/request`}
           className="ui-button-secondary w-full px-5 text-sm font-medium sm:w-auto"
         >
           แก้ไขคำขอ

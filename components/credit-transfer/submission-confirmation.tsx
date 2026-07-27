@@ -7,7 +7,11 @@ const submittedDetails = [
   { label: "ประเภทคำขอ", value: "เทียบโอนเข้า" },
 ];
 
-export function SubmissionConfirmation() {
+type SubmissionConfirmationProps = {
+  basePath?: string;
+};
+
+export function SubmissionConfirmation({ basePath = "/transfer" }: SubmissionConfirmationProps) {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <TransferStatusPanel
@@ -40,10 +44,10 @@ export function SubmissionConfirmation() {
       </p>
 
       <div className="flex flex-col gap-3 sm:flex-row">
-        <Link href="/transfer/history" className="ui-button-primary w-full sm:w-auto">
+        <Link href={`${basePath}/history`} className="ui-button-primary w-full sm:w-auto">
           ดูสถานะและประวัติคำขอ
         </Link>
-        <Link href="/transfer" className="ui-button-secondary w-full sm:w-auto">
+        <Link href={basePath} className="ui-button-secondary w-full sm:w-auto">
           กลับไปหน้าเทียบโอนหน่วยกิต
         </Link>
       </div>
