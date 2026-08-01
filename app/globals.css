@@ -67,6 +67,16 @@
   --ink-muted: oklch(0.38 0.012 49.3);
   --ink-subtle: oklch(0.48 0.012 49.3);
   --focus-ring: color-mix(in oklch, var(--ring) 28%, transparent);
+
+  /* Back office only.
+     The Tu Credit Bank palette is entirely warm (red-orange primary, gold
+     secondary), which reads well on the student site but collapses in a staff
+     approval queue: "approved" and "awaiting payment" land on adjacent hues and
+     stop being scannable down a dense table. Success gets its own hue so the
+     one thing an officer scans for is the one thing that separates. */
+  --success: oklch(0.52 0.11 152);
+  --success-ink: oklch(0.4 0.1 152);
+  --success-foreground: oklch(0.98 0.01 152);
 }
 
 .dark {
@@ -101,9 +111,19 @@
   --sidebar-accent-foreground: oklch(0.986 0.002 67.8);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.547 0.021 43.1);
+
+  --surface: oklch(0.185 0.006 49.3);
+  --surface-strong: oklch(0.235 0.008 49.3);
+  --ink-muted: oklch(0.78 0.012 49.3);
+  --ink-subtle: oklch(0.68 0.012 49.3);
+  --success: oklch(0.68 0.13 152);
+  --success-ink: oklch(0.82 0.11 152);
+  --success-foreground: oklch(0.16 0.02 152);
 }
 
 @theme inline {
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
