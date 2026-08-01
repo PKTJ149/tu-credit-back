@@ -43,7 +43,19 @@ so rather than solving it locally.
 | A status pill | `PaymentStatusBadge`, `TransferStatusBadge`, `RegistrationStatusBadge`, `StatusBadge` | `@/components/admin/status-badge` |
 | Buttons, inputs, selects, tabs, dialogs, dropdowns, avatars, checkboxes, textareas, tooltips, sheets, separators, toasts | shadcn primitives | `@/components/ui/*` |
 | Money | `formatTHB` | `@/lib/finance/payment-state` |
+| Dates | `formatThaiDate`, `formatThaiDateLong`, `daysBetween` | `@/lib/admin/format` |
+| Add/remove row list, checklist, field error, error summary | `StringListField`, `MultiSelectList`, `FieldError`, `FormErrorSummary` | `@/components/admin/form-fields` |
+| A subject's enrolment | `subjectEnrolment` | `@/lib/admin/mock-academic` |
 | Icons | `lucide-react` only |  |
+
+**Never render a raw ISO date.** `2026-07-30` is not a date a Thai officer reads;
+`30 ก.ค. 2569` is. Three areas each solved this differently during phase 1-3,
+which is how one task showed a date three ways — hence one module.
+
+**Never compute a subject's enrolment locally.** `Subject.enrolledCount` is
+unpopulated in the catalogue; `subjectEnrolment` derives it from live
+registrations and reports whether the number was derived. Two screens disagreeing
+about the same fact is worse than either number alone.
 
 `Panel` never nests inside another `Panel`. If content needs a boundary inside
 a panel, use `Separator` or a bordered list, not a second card.
@@ -98,6 +110,21 @@ novelty. The tool should disappear into the work.
 - **Density.** Staff sit with this all day. Table rows `py-2.5`, body `text-sm`,
   labels and metadata `text-xs`. Buttons stay `h-9` (`size="sm"` where tighter).
   Interactive targets never below 32px, and primary form actions stay `h-11`.
+- **Row height is the scarce resource.** `DataTable` cells are single-line by
+  default. A long value gets `truncate: "max-w-[26ch]"`, never a wrap — one
+  wrapped Thai program name costs every row in the table 40px, and a 12-row queue
+  then needs three screens. `wrap: true` exists for notes and reasons and should
+  stay rare. Measure it: a list row should land near 48px, not 120px.
+- **Actions must never require a sideways scroll.** Put row actions in a
+  `DropdownMenu` behind a single `MoreHorizontal` trigger rather than two or three
+  labelled buttons, and mark the column `stickyEnd: true` so it stays pinned to
+  the right edge while the rest of the table scrolls under it. A control an
+  officer cannot see is a control they do not have.
+- **Keep table labels short.** A cell is not a place to spell out a definition;
+  if a label needs the long form, keep a separate `*Long` map for detail screens.
+- **Validate on submit, not on blur.** Radix focuses a dialog's first field on
+  open and then moves focus, firing a blur nobody caused — validate-on-blur shows
+  an error before the officer has typed anything.
 - **Type.** One family (IBM Plex Sans Thai). Page title `text-xl font-semibold`,
   panel title `text-sm font-semibold`. No fluid/`clamp()` sizing. `IBM Plex Mono`
   only for reference codes and figures that benefit from tabular rhythm.
@@ -137,4 +164,7 @@ for consequences, not for editing.
 - Keyboard reachable end to end; visible focus on every control.
 - No horizontal page scroll at 375px, 768px, 1280px.
 - No console errors.
-- Copy is Thai, specific, and says what happens next.
+- Copy is Thai, specific, and says what happens next. The learner is
+  **ผู้เรียน**, never นักเรียน — the whole product uses the former.
+- Row height measured, not eyeballed, and no action column sitting off-screen at
+  1280px.

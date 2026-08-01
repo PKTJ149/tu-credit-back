@@ -51,6 +51,12 @@ export function ConfirmDialog({
   const [touched, setTouched] = useState(false);
 
   const missingReason = Boolean(reason?.required) && value.trim() === "";
+  /**
+   * Validation surfaces only after a submit attempt, never on blur. Radix
+   * focuses the first field when the dialog opens and then moves focus to the
+   * content, which fires a blur nobody caused — and an error message shown
+   * before the officer has typed anything reads as the dialog being broken.
+   */
   const showError = touched && missingReason;
 
   function handleConfirm() {
@@ -88,8 +94,10 @@ export function ConfirmDialog({
             <Textarea
               id="confirm-reason"
               value={value}
-              onChange={(e) => setValue(e.target.value)}
-              onBlur={() => setTouched(true)}
+              onChange={(e) => {
+                setValue(e.target.value);
+                if (touched) setTouched(false);
+              }}
               placeholder={reason.placeholder}
               rows={4}
               aria-invalid={showError}

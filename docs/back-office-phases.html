@@ -1,0 +1,525 @@
+<title>TU Credit Bank — ภาพรวมระบบหลังบ้าน (Back Office)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --primary:#B23A2E;        /* warm institutional red-orange */
+    --primary-soft:#F6E7E3;
+    --gold:#B08424;
+    --gold-soft:#F5EDD9;
+    --bg:#FAF9F6;
+    --surface:#FFFFFF;
+    --surface-2:#F3F1EC;
+    --ink:#2A2320;
+    --ink-muted:#6B615A;
+    --ink-subtle:#948A82;
+    --border:#E7E2D9;
+    --border-strong:#D8D1C5;
+    --success:#2E7D5B;
+    --success-soft:#E4F0EA;
+    --radius:12px;
+    --shadow:0 1px 2px rgba(42,35,32,.05), 0 8px 24px rgba(42,35,32,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"IBM Plex Sans Thai","Noto Sans Thai","Sarabun",system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg);color:var(--ink);
+    font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:20;
+    background:var(--surface);border-bottom:1px solid var(--border);
+    padding:14px 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:center;gap:11px;margin-right:auto}
+  .brand .mark{
+    width:36px;height:36px;border-radius:9px;background:var(--primary);
+    color:#fff;display:grid;place-items:center;font-weight:700;font-size:17px;flex:none;
+  }
+  .brand h1{font-size:15px;font-weight:700;margin:0;line-height:1.25}
+  .brand p{font-size:12px;color:var(--ink-subtle);margin:1px 0 0}
+  .phase-filter{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{
+    border:1px solid var(--border-strong);background:var(--surface);
+    color:var(--ink-muted);font:inherit;font-size:12.5px;font-weight:600;
+    padding:6px 12px;border-radius:999px;cursor:pointer;transition:all .15s;
+  }
+  .chip:hover{border-color:var(--primary);color:var(--primary)}
+  .chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
+
+  /* ---------- Layout ---------- */
+  .wrap{display:grid;grid-template-columns:288px 1fr;min-height:calc(100vh - 66px)}
+  .sidebar{
+    background:var(--surface);border-right:1px solid var(--border);
+    padding:16px 12px 40px;overflow-y:auto;
+  }
+  .content{padding:30px clamp(20px,4vw,52px) 80px;max-width:920px}
+
+  /* ---------- Sidebar groups ---------- */
+  .phase-group{margin-bottom:6px;border-radius:10px}
+  .phase-head{
+    width:100%;text-align:left;font:inherit;cursor:pointer;
+    background:transparent;border:0;padding:10px 10px;border-radius:9px;
+    display:flex;align-items:center;gap:9px;transition:background .15s;
+  }
+  .phase-head:hover{background:var(--surface-2)}
+  .phase-badge{
+    font-size:11px;font-weight:700;flex:none;
+    width:44px;height:22px;border-radius:6px;display:grid;place-items:center;
+    background:var(--primary-soft);color:var(--primary);letter-spacing:.3px;
+  }
+  .phase-head .pg-title{font-size:13px;font-weight:700;flex:1;line-height:1.3}
+  .caret{flex:none;color:var(--ink-subtle);transition:transform .18s;font-size:11px}
+  .phase-group.collapsed .caret{transform:rotate(-90deg)}
+  .phase-items{padding:2px 0 8px 6px}
+  .phase-group.collapsed .phase-items{display:none}
+  .subgroup-label{
+    font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;
+    color:var(--ink-subtle);padding:9px 10px 4px;
+  }
+  .nav-item{
+    width:100%;text-align:left;font:inherit;cursor:pointer;
+    background:transparent;border:0;border-radius:8px;
+    padding:7px 10px;display:flex;align-items:center;gap:8px;
+    color:var(--ink-muted);font-size:13.5px;transition:all .13s;
+  }
+  .nav-item:hover{background:var(--surface-2);color:var(--ink)}
+  .nav-item.active{background:var(--primary-soft);color:var(--primary);font-weight:600}
+  .nav-item .dot{width:6px;height:6px;border-radius:50%;background:var(--border-strong);flex:none}
+  .nav-item.active .dot{background:var(--primary)}
+  .nav-item .up{margin-left:auto;font-size:10px;color:var(--gold);font-weight:700}
+
+  /* ---------- Content ---------- */
+  .crumb{font-size:12.5px;color:var(--ink-subtle);margin-bottom:14px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+  .crumb b{color:var(--primary);font-weight:700}
+  .crumb .sep{color:var(--border-strong)}
+
+  .detail-head{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  h2.title{font-size:26px;font-weight:700;margin:0;letter-spacing:-.3px;line-height:1.25}
+  .status-tag{
+    font-size:12px;font-weight:700;padding:5px 11px;border-radius:999px;flex:none;margin-top:6px;
+  }
+  .status-tag.done{background:var(--success-soft);color:var(--success)}
+  .status-tag.upcoming{background:var(--gold-soft);color:var(--gold)}
+  .lead{font-size:16.5px;color:var(--ink);margin:14px 0 22px;line-height:1.7}
+
+  .roles-row{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 26px}
+  .role-pill{
+    font-size:12px;font-weight:600;padding:5px 12px;border-radius:8px;
+    background:var(--surface-2);color:var(--ink-muted);border:1px solid var(--border);
+    display:flex;align-items:center;gap:6px;
+  }
+  .role-pill .ico{width:14px;height:14px;border-radius:4px;background:var(--gold);flex:none}
+  .role-pill.admin .ico{background:var(--primary)}
+  .role-pill.teacher .ico{background:var(--success)}
+
+  .section{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:20px 22px;margin-bottom:16px;box-shadow:var(--shadow);
+  }
+  .section h3{
+    font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--ink-subtle);margin:0 0 12px;display:flex;align-items:center;gap:8px;
+  }
+  .section h3 .bar{width:16px;height:3px;border-radius:2px;background:var(--primary)}
+  .section p{margin:0;color:var(--ink)}
+  ul.actions{margin:0;padding:0;list-style:none;display:grid;gap:9px}
+  ul.actions li{display:flex;gap:11px;align-items:flex-start;font-size:14.5px}
+  ul.actions li .num{
+    flex:none;width:22px;height:22px;border-radius:6px;background:var(--primary-soft);
+    color:var(--primary);font-size:12px;font-weight:700;display:grid;place-items:center;margin-top:2px;
+  }
+  .why{background:var(--gold-soft);border-color:var(--border-strong)}
+  .why h3 .bar{background:var(--gold)}
+
+  .states{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .state-node{
+    font-size:12.5px;font-weight:600;padding:5px 11px;border-radius:7px;
+    background:var(--surface-2);border:1px solid var(--border);color:var(--ink-muted);
+  }
+  .state-node.start{background:var(--primary-soft);color:var(--primary);border-color:transparent}
+  .state-node.good{background:var(--success-soft);color:var(--success);border-color:transparent}
+  .state-node.bad{background:var(--primary-soft);color:var(--primary);border-color:transparent}
+  .arrow{color:var(--ink-subtle);font-size:13px}
+
+  /* ---------- Phase overview (landing) ---------- */
+  .overview-head{margin-bottom:26px}
+  .overview-head h2{font-size:27px;margin:0 0 8px;font-weight:700;letter-spacing:-.3px}
+  .overview-head p{margin:0;color:var(--ink-muted);font-size:16px;max-width:620px}
+  .phase-cards{display:grid;gap:14px}
+  .pcard{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+    padding:20px 22px;box-shadow:var(--shadow);cursor:pointer;transition:all .16s;
+    display:flex;gap:18px;align-items:flex-start;
+  }
+  .pcard:hover{border-color:var(--primary);transform:translateY(-1px)}
+  .pcard .pnum{
+    flex:none;width:52px;height:52px;border-radius:12px;background:var(--primary);color:#fff;
+    display:grid;place-items:center;font-weight:700;font-size:14px;text-align:center;line-height:1.1;
+  }
+  .pcard .pnum small{display:block;font-size:9px;opacity:.85;font-weight:600}
+  .pcard h3{margin:0 0 5px;font-size:18px;font-weight:700}
+  .pcard .pdesc{margin:0 0 10px;color:var(--ink-muted);font-size:14px}
+  .pcard .ptags{display:flex;gap:6px;flex-wrap:wrap}
+  .pcard .ptag{font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:6px;background:var(--surface-2);color:var(--ink-muted)}
+  .pcard .pstat{margin-left:auto;flex:none}
+
+  .note{font-size:13px;color:var(--ink-subtle);margin-top:22px;padding:14px 16px;background:var(--surface-2);border-radius:10px;line-height:1.6}
+
+  /* ---------- Mobile ---------- */
+  .menu-toggle{display:none}
+  @media(max-width:860px){
+    .wrap{grid-template-columns:1fr}
+    .sidebar{position:fixed;inset:66px 0 0 0;z-index:15;transform:translateX(-100%);transition:transform .2s;width:288px;border-right:1px solid var(--border)}
+    .sidebar.open{transform:translateX(0)}
+    .menu-toggle{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--border-strong);background:var(--surface);border-radius:9px;padding:7px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+    .content{max-width:100%}
+  }
+</style>
+
+<div class="topbar">
+  <button class="menu-toggle" id="menuToggle">☰ เมนู</button>
+  <div class="brand">
+    <div class="mark">TU</div>
+    <div>
+      <h1>TU Credit Bank — ระบบหลังบ้าน (Back Office)</h1>
+      <p>ภาพรวมการทำงานของแต่ละเมนู แยกตาม Phase 0–3</p>
+    </div>
+  </div>
+  <div class="phase-filter" id="phaseFilter"></div>
+</div>
+
+<div class="wrap">
+  <nav class="sidebar" id="sidebar"></nav>
+  <main class="content" id="content"></main>
+</div>
+
+<script>
+/* ============================================================
+   ข้อมูลทั้งหมดของระบบหลังบ้าน — จัดกลุ่มตาม Phase และเมนูจริง
+   (อิงจากหน้าที่ build ไว้จริงใน app/admin และ lib/admin/nav.ts)
+   ============================================================ */
+
+const ROLES = {
+  "super-admin": {th:"ผู้ดูแลระบบสูงสุด", cls:"admin"},
+  "officer":     {th:"เจ้าหน้าที่",       cls:""},
+  "teacher":     {th:"อาจารย์",           cls:"teacher"},
+};
+
+const PHASES = [
+  {
+    id:0, code:"P0", title:"วางระบบและสิทธิ์เข้าถึง",
+    desc:"รากฐานความปลอดภัยและโครงระบบที่ทุกเมนูวางอยู่ข้างบน — ต้องมีก่อนเสมอ",
+    status:"done",
+    groups:[
+      { label:null, items:[
+
+        { id:"staff-login", label:"เข้าสู่ระบบสำหรับเจ้าหน้าที่", roles:["super-admin","officer","teacher"], status:"done",
+          lead:"หน้าเข้าสู่ระบบแยกต่างหากจากฝั่งผู้เรียน เจ้าหน้าที่ทุกคนต้องล็อกอินก่อนจึงจะเข้าถึงหน้าหลังบ้านได้",
+          why:"เป็นด่านความปลอดภัยด่านแรก กันคนนอกออกจากข้อมูลการเงินและข้อมูลส่วนตัวของผู้เรียน บัญชีเจ้าหน้าที่ถูกสร้างโดยผู้ดูแลระบบเท่านั้น ไม่มีการสมัครเอง",
+          actions:["กรอกบัญชีและรหัสผ่านของเจ้าหน้าที่","ระบบจดจำบทบาทของผู้ใช้คนนั้น","พาเข้าสู่หน้าหลักและแสดงเฉพาะเมนูที่บทบาทนั้นมีสิทธิ์"] },
+
+        { id:"roles", label:"บทบาทและสิทธิ์การใช้งาน (3 บทบาท)", roles:["super-admin","officer","teacher"], status:"done",
+          lead:"ระบบแบ่งเจ้าหน้าที่เป็น 3 บทบาท แต่ละบทบาทเห็นเมนูไม่เท่ากันและทำสิ่งที่ต่างกัน",
+          why:"คนที่ลงทะเบียนผู้เรียนกับคนที่อนุมัติเงินไม่จำเป็นต้องเป็นสิทธิ์เดียวกัน การจำกัดตามบทบาทช่วยลดความผิดพลาดและป้องกันการใช้อำนาจเกินขอบเขต อาจารย์เห็นเฉพาะวิชาของตัวเอง มองไม่เห็นข้อมูลการเงินเลย",
+          roleTable:[
+            ["ผู้ดูแลระบบสูงสุด","เข้าถึงได้ทุกเมนู เป็นคนเดียวที่สร้างบัญชีเจ้าหน้าที่ กำหนดบทบาท และตัดสินค่าเทียบหน่วยกิตขั้นสุดท้าย"],
+            ["เจ้าหน้าที่","ดูแลการลงทะเบียน อนุมัติการชำระเงิน ตรวจคำขอเทียบโอน และข้อมูลผู้เรียน — ดูข้อมูลวิชาการได้แต่แก้ไม่ได้"],
+            ["อาจารย์","เห็นเฉพาะรายวิชา/หลักสูตรที่ตนรับผิดชอบ ดูรายชื่อ ตารางสอน และบันทึกผลการเรียน — ไม่เห็นราคาและข้อมูลการเงิน"],
+          ] },
+
+        { id:"dashboard", label:"หน้าหลัก / ภาพรวม", roles:["super-admin","officer","teacher"], status:"done",
+          lead:"หน้าแรกหลังล็อกอิน สรุป “สิ่งที่ต้องทำวันนี้” ตามบทบาทของผู้ใช้ เช่น จำนวนคำขอที่รออนุมัติ หรือคาบเรียนที่กำลังจะถึง",
+          why:"เจ้าหน้าที่เห็นงานค้างทั้งหมดในหน้าเดียว ไม่ต้องไล่เปิดทุกเมนูเพื่อตามงาน ลดโอกาสที่งานสำคัญจะตกหล่น",
+          actions:["แสดงตัวเลขงานค้างที่เกี่ยวกับบทบาทของผู้ใช้","คลิกเพื่อกระโดดไปยังเมนูที่ต้องจัดการทันที"] },
+
+        { id:"shell", label:"โครงระบบและชุดส่วนประกอบกลาง", roles:["super-admin","officer","teacher"], status:"done",
+          lead:"โครงหน้าจอกลาง (เมนูด้านข้าง แถบด้านบน ปุ่มสลับบทบาท) และชุดส่วนประกอบมาตรฐาน — ตาราง ป้ายสถานะ กล่องยืนยัน และการแจ้งเตือน — ที่ทุกเมนูนำไปใช้ซ้ำ",
+          why:"ทำให้ทุกหน้าหน้าตาและวิธีใช้งานเหมือนกันหมด เจ้าหน้าที่เรียนรู้ครั้งเดียวใช้ได้ทุกเมนู และทีมพัฒนาต่อยอดเมนูใหม่ได้เร็วเพราะไม่ต้องสร้างของซ้ำ",
+          actions:["เมนูข้างซ่อนเฉพาะสิ่งที่บทบาทนั้นเข้าไม่ได้โดยอัตโนมัติ","ทุกการกระทำสำคัญมีกล่องยืนยันก่อนเสมอ","ทุกผลลัพธ์แจ้งเตือนสั้น ๆ ว่าทำอะไรกับรายการไหน"] },
+
+        { id:"audit", label:"บันทึกการใช้งาน (Audit Log)", roles:["super-admin"], status:"upcoming",
+          lead:"บันทึกทุกการอนุมัติ ปฏิเสธ แก้ไข และลบ ว่าใครทำ เมื่อไหร่ และค่าก่อน–หลังเป็นอย่างไร",
+          why:"ระบบที่อนุมัติเรื่องเงินและข้อมูลวิชาการต้องตรวจสอบย้อนหลังได้ว่าใครทำอะไร — เป็นเครื่องมือรับผิดชอบและตรวจสอบ อยู่ในแผนเฟสถัดไป ยังไม่เปิดใช้",
+          actions:["บันทึกอัตโนมัติทุกครั้งที่มีการเปลี่ยนแปลงข้อมูลสำคัญ","ค้นย้อนหลังตามผู้ใช้ ช่วงเวลา หรือรายการ"] },
+      ]},
+    ]
+  },
+
+  {
+    id:1, code:"P1", title:"จัดการข้อมูลวิชาการ",
+    desc:"ข้อมูลตั้งต้นทั้งหมด — หลักสูตร รายวิชา อาจารย์ ตารางเรียน ทุกอย่างที่ผู้เรียนต้องเห็นก่อนจะลงทะเบียนได้",
+    status:"done",
+    groups:[
+      { label:"วิชาการ", items:[
+
+        { id:"programs", label:"หลักสูตร", roles:["super-admin","officer","teacher"], status:"done",
+          lead:"หลักสูตรทั้งหมดในระบบ Credit Bank — ค้นหา กรอง และเปิดดูรายละเอียดเพื่อแก้ไขข้อมูล จำนวนที่นั่ง และผู้สอน",
+          why:"หลักสูตรคือหน่วยขายหลักที่ผู้เรียนเห็นหน้าเว็บ การแก้ไขได้จากหลังบ้านหมายความว่าเจ้าหน้าที่ปรับข้อมูลได้เองโดยไม่ต้องรอทีมพัฒนาแก้โค้ด",
+          actions:["ค้นหาและกรองหลักสูตรตามเงื่อนไข","เปิดหน้ารายละเอียดเพื่อแก้ไขข้อมูล ที่นั่ง และผู้สอนที่ผูกไว้","จัดการสถานะหลักสูตร (เผยแพร่ / ฉบับร่าง / เก็บเข้าคลัง)"] },
+
+        { id:"subjects", label:"รายวิชา", roles:["super-admin","officer","teacher"], status:"done",
+          lead:"รายวิชาทั้งหมดในระบบ — ค้นหา กรอง และเปิดดูรายละเอียดเพื่อแก้ไขข้อมูล ตารางเรียน และผู้สอน",
+          why:"รายวิชาเป็นสิ่งที่ผู้เรียนเลือกลงและจ่ายเงินจริง ข้อมูลอย่างหมวดวิชา รูปแบบการเรียน (ออนไลน์/ในห้อง/ผสม) และราคา ต้องแก้ไขได้ตรงจุด",
+          actions:["ค้นหาและกรองรายวิชา","กำหนดหมวดวิชา รูปแบบการเรียน และราคา","จัดการตารางเรียนและเอกสารประกอบวิชาที่ผู้เรียนดาวน์โหลด"] },
+
+        { id:"teachers", label:"อาจารย์", roles:["super-admin","officer"], status:"done",
+          lead:"อาจารย์ทั้งหมดในระบบ พร้อมภาระงาน — จำนวนหลักสูตรและรายวิชาที่แต่ละคนรับผิดชอบ เรียงจากมากไปน้อย",
+          why:"เห็นภาระงานของอาจารย์ในภาพเดียว ช่วยเจ้าหน้าที่กระจายงานได้อย่างเป็นธรรมและรู้ว่าใครรับผิดชอบวิชาไหน",
+          actions:["ดูโปรไฟล์และภาระงานของอาจารย์แต่ละคน","ผูกอาจารย์เข้ากับหลักสูตรและรายวิชา","เชื่อมบัญชีอาจารย์กับวิชา เพื่อให้เขาล็อกอินแล้วเห็นเฉพาะวิชาของตัวเอง"] },
+
+        { id:"schedule", label:"ตารางเรียน", roles:["super-admin","officer","teacher"], status:"done",
+          lead:"คาบเรียนของทุกรายวิชา เรียงตามวันที่ใกล้ที่สุดก่อน เพื่อให้เห็นสิ่งที่กำลังจะเกิดขึ้นในภาพเดียว",
+          why:"รวมทุกคาบเรียนไว้ที่เดียว ป้องกันตารางชนและช่วยให้เจ้าหน้าที่เตรียมงานล่วงหน้าได้",
+          actions:["ดูคาบเรียนทั้งหมดเรียงตามเวลา","เพิ่ม แก้ไข หรือลบคาบเรียนของแต่ละวิชา","ปรับสถานะคาบเรียน (กำลังจะถึง → กำลังเรียน → เรียนจบแล้ว)"] },
+
+        { id:"capacity", label:"ที่นั่งและความจุ", roles:["super-admin","officer"], status:"done",
+          lead:"ภาพรวมที่นั่งของทุกวิชา — จำนวนที่รับได้ ที่ลงไปแล้ว และที่เหลือ พร้อมเตือนวิชาที่ใกล้เต็มหรือเต็มแล้ว",
+          why:"กันการรับเกินจำนวน และเป็นตัวป้อนให้ระบบ “รายชื่อรอที่นั่ง” ทำงาน — เห็นล่วงหน้าว่าวิชาไหนต้องเปิดรอบเพิ่มหรือขยายที่นั่ง",
+          actions:["ดูจำนวนที่นั่งรับได้ / ลงแล้ว / คงเหลือ ของทุกวิชา","เห็นสัญญาณเตือนวิชาที่ใกล้เต็มหรือเต็มแล้ว","เชื่อมกับระบบรายชื่อรอที่นั่งโดยตรง"] },
+
+        { id:"terms", label:"ภาคการศึกษา", roles:["super-admin"], status:"done",
+          lead:"จัดการช่วงการศึกษาและช่วงเปิดรับลงทะเบียนของแต่ละภาค เทียบกับวันที่ปัจจุบันเสมอ",
+          why:"เป็นตัวกำหนดว่า “ตอนนี้เปิดรับลงทะเบียนอยู่ไหม” ทั้งระบบ ควบคุมจากที่เดียวเพื่อไม่ให้แต่ละวิชาตั้งค่ากันเองจนสับสน",
+          actions:["กำหนดวันเริ่ม–สิ้นสุดของแต่ละภาคการศึกษา","ตั้งช่วงเปิด–ปิดรับลงทะเบียน","ระบบเทียบกับวันปัจจุบันเพื่อบอกสถานะของแต่ละภาคอัตโนมัติ"] },
+
+        { id:"grades", label:"บันทึกผลการเรียน", roles:["super-admin","teacher"], status:"upcoming",
+          lead:"หน้าให้อาจารย์บันทึกผลการเรียนเมื่อรายวิชาจบ ซึ่งจะไปสะสมเป็น “หน่วยกิตสะสม” ของผู้เรียน",
+          why:"หัวใจของคำว่า “ธนาคารหน่วยกิต” คือการสะสมหน่วยกิต — ยังไม่เปิดใช้ อยู่ในแผนถัดไป เมื่อมีแล้วจะเชื่อมต่อกับใบรับรองและ transcript",
+          actions:["อาจารย์กรอกผลการเรียนของผู้เรียนแต่ละคน","ผลที่บันทึกไปคำนวณหน่วยกิตสะสมให้อัตโนมัติ"] },
+      ]},
+    ]
+  },
+
+  {
+    id:2, code:"P2", title:"การลงทะเบียนและการเงิน",
+    desc:"งานที่เจ้าหน้าที่ทำทุกวัน — ดูแลผู้เรียน ตรวจการลงทะเบียน และอนุมัติเงินที่เข้ามาจริง",
+    status:"done",
+    groups:[
+      { label:"การลงทะเบียน", items:[
+
+        { id:"registrations", label:"รายการลงทะเบียน", roles:["super-admin","officer"], status:"done",
+          lead:"ทุกการลงทะเบียนของผู้เรียนในระบบ พร้อมสถานะการชำระเงินที่เชื่อมโยงกันในแถวเดียว",
+          why:"เห็นภาพรวมว่าใครลงอะไร จ่ายหรือยัง ในที่เดียว และแก้ไขด้วยมือได้เมื่อมีเคสพิเศษ เช่น ยกเลิกหรือย้ายวิชา",
+          actions:["ดูการลงทะเบียนทั้งหมดพร้อมสถานะการชำระเงิน","สั่งยกเลิก บังคับจบ หรือย้ายผู้เรียนระหว่างวิชาเมื่อจำเป็น"] },
+
+        { id:"students", label:"รายชื่อผู้เรียน", roles:["super-admin","officer"], status:"done",
+          lead:"ผู้เรียนทั้งหมดในระบบ Credit Bank พร้อมหน่วยกิตสะสมและสถานะการใช้งาน",
+          why:"เป็นสมุดรายชื่อกลาง เปิดดูประวัติการลงทะเบียนและการชำระเงินของผู้เรียนคนหนึ่งได้ครบในที่เดียว ตอบคำถามผู้เรียนได้ทันที",
+          actions:["ค้นหาและกรองผู้เรียนที่ลงทะเบียนไว้","เปิดโปรไฟล์เพื่อดูประวัติการลงทะเบียนและการชำระเงินทั้งหมด"] },
+
+        { id:"waitlist", label:"รายชื่อรอที่นั่ง", roles:["super-admin","officer"], status:"done",
+          lead:"ผู้เรียนที่รอที่นั่งในวิชาที่เต็มแล้ว เมื่อมีที่ว่าง เจ้าหน้าที่เสนอที่นั่งให้คนถัดไปในคิว",
+          why:"ไม่ปล่อยให้ที่นั่งว่างเสียเปล่าและจัดการคิวอย่างเป็นธรรม เมื่อเสนอที่นั่ง ผู้เรียนมีเวลาจำกัดในการตอบรับ ถ้าไม่ตอบสิทธิ์ตกไปคนถัดไปอัตโนมัติ",
+          actions:["ดูคิวรอที่นั่งของแต่ละวิชาตามลำดับ","กด “เสนอที่นั่ง” ให้ผู้เรียนคนถัดไปเมื่อมีที่ว่าง","ระบบตั้งเวลาให้ตอบรับ หมดเวลาแล้วส่งต่อคนถัดไปเอง"] },
+      ]},
+
+      { label:"การเงิน", items:[
+
+        { id:"payments", label:"คิวรออนุมัติการชำระเงิน", roles:["super-admin","officer"], status:"done",
+          lead:"หลักฐานการชำระเงินที่ผู้เรียนส่งเข้ามาและยังไม่ได้ตรวจสอบ เรียงจากรายการที่รอมานานที่สุดก่อน",
+          why:"นี่คือโจทย์ตั้งต้นของทั้งระบบหลังบ้าน — จุดที่เงินจริงถูกยืนยัน การปฏิเสธต้องระบุเหตุผลเสมอ ผู้เรียนจะได้รู้ว่าต้องแก้อะไรและส่งใหม่ได้",
+          actions:["ตรวจสลิป จำนวนเงิน วันที่ และหมายเหตุที่ผู้เรียนส่งมา","กด “อนุมัติ” เพื่อยืนยันการชำระเงิน","กด “ไม่อนุมัติ” โดยต้องระบุเหตุผล (ผู้เรียนจะเห็นเหตุผลนั้น)"],
+          states:[["รอชำระ","start"],["รอตรวจสอบ",""],["ยืนยันแล้ว","good"],["ไม่อนุมัติ","bad"]] },
+
+        { id:"payments-all", label:"รายการชำระเงินทั้งหมด", roles:["super-admin","officer"], status:"done",
+          lead:"ประวัติการชำระเงินทุกสถานะของทุกรายการ ใช้ค้นหาและกรองเพื่อตรวจสอบย้อนหลัง",
+          why:"เป็นบันทึกทางการเงินฉบับเต็ม ตอบคำถามอย่าง “รายการนี้จ่ายเมื่อไหร่ สถานะอะไร” และเป็นฐานสำหรับการกระทบยอดรายได้",
+          actions:["ค้นหาและกรองการชำระเงินตามสถานะหรือคำค้น","เปิดดูรายละเอียดของแต่ละรายการเพื่อตรวจสอบย้อนหลัง"] },
+
+        { id:"refunds", label:"การคืนเงิน", roles:["super-admin","officer"], status:"done",
+          lead:"ติดตามการคืนเงินที่ดำเนินการไปแล้ว และบันทึกการคืนเงินใหม่สำหรับการชำระเงินที่ยืนยันแล้ว",
+          why:"ปิดช่องว่างสำคัญ — เดิมระบบมีสถานะ “คืนเงินแล้ว” แต่ไม่มีที่กดจริง ตอนนี้มีขั้นตอนชัดเจนและย้อนกลับไม่ได้ เพื่อกันการคืนซ้ำ",
+          actions:["ดูรายการคืนเงินที่เคยทำไปแล้ว","บันทึกการคืนเงินใหม่จากรายการที่ยืนยันแล้ว","ยืนยันผ่านกล่องเตือนเพราะเป็นการกระทำที่ย้อนกลับไม่ได้"] },
+
+        { id:"bank-accounts", label:"ตั้งค่าบัญชีธนาคาร", roles:["super-admin"], status:"done",
+          lead:"รายละเอียดบัญชีเหล่านี้จะแสดงให้ผู้เรียนเห็นในหน้าคำแนะนำการชำระเงินโดยตรง ตรวจสอบให้ถูกต้องก่อนบันทึกทุกครั้ง",
+          why:"เดิมเลขบัญชีฝังอยู่ในโค้ด แก้ทีต้องรอ deploy ตอนนี้ผู้ดูแลแก้เองได้ทันที ลดความเสี่ยงที่ผู้เรียนโอนเข้าบัญชีผิด",
+          actions:["เพิ่ม แก้ไข หรือลบบัญชีรับโอน","ข้อมูลที่บันทึกแสดงให้ผู้เรียนเห็นในหน้าชำระเงินทันที"] },
+      ]},
+    ]
+  },
+
+  {
+    id:3, code:"P3", title:"เทียบโอนหน่วยกิต",
+    desc:"งานเฉพาะทางที่ต้องใช้ดุลยพินิจ — ตรวจคำขอนำหน่วยกิตเข้า/ออก และดูแลข้อตกลงกับสถาบันคู่ความร่วมมือ",
+    status:"done",
+    groups:[
+      { label:"เทียบโอนหน่วยกิต", items:[
+
+        { id:"transfers", label:"คำขอรอตรวจสอบ", roles:["super-admin","officer"], status:"done",
+          lead:"คำขอเทียบโอนหน่วยกิตที่ยังรอผลการพิจารณา เรียงจากวันที่ส่งคำขอเก่าที่สุดก่อน",
+          why:"ฝั่งผู้เรียนส่งคำขอได้ทั้งนำหน่วยกิตเข้าและออกอยู่แล้ว แต่เดิมไม่มีฝั่งเจ้าหน้าที่ตรวจเลย เมนูนี้คือด้านที่ขาดไป จุดเด่นคือมี 3 ทางเลือก ไม่ใช่แค่รับ/ไม่รับ",
+          actions:["เปิดคำขอเพื่อดูวิชา หน่วยกิต และหลักฐานที่แนบมา","ตัดสินผลได้ 3 แบบ: อนุมัติ / ไม่อนุมัติ / ขอข้อมูลเพิ่มเติม","อ้างอิงตารางเทียบหน่วยกิตกลางเวลาพิจารณา"],
+          states:[["รอตรวจสอบ","start"],["ขอข้อมูลเพิ่มเติม",""],["อนุมัติ","good"],["ไม่อนุมัติ","bad"]] },
+
+        { id:"transfers-history", label:"ประวัติคำขอ", roles:["super-admin","officer"], status:"done",
+          lead:"คำขอเทียบโอนทั้งหมด รวมที่อนุมัติ ไม่อนุมัติ และถอนคำขอแล้ว เก็บไว้เพื่อการตรวจสอบย้อนหลัง",
+          why:"ทุกการตัดสินเรื่องหน่วยกิตต้องตามรอยได้ว่าใครขออะไร ผลเป็นอย่างไร รวมถึงเคสที่ผู้เรียนถอนคำขอเอง",
+          actions:["ค้นหาและกรองคำขอตามสถานะ","เปิดดูรายละเอียดผลการพิจารณาย้อนหลัง"] },
+
+        { id:"transfers-institutions", label:"สถาบันคู่ความร่วมมือ", roles:["super-admin","officer"], status:"done",
+          lead:"สถาบันที่มีข้อตกลงเทียบโอนหน่วยกิตกับมหาวิทยาลัยธรรมศาสตร์",
+          why:"เดิมรายชื่อสถาบันฝังในโค้ด ตอนนี้เจ้าหน้าที่จัดการเองได้ — เพิ่มสถาบันใหม่หรือระงับสถาบันที่หมดข้อตกลงโดยไม่ต้องแก้โค้ด",
+          actions:["เพิ่มหรือแก้ไขข้อมูลสถาบันคู่ความร่วมมือ","เปิดใช้งานหรือระงับสถาบันตามสถานะข้อตกลง"] },
+
+        { id:"transfers-mapping", label:"ตารางเทียบหน่วยกิต", roles:["super-admin"], status:"done",
+          lead:"ค่าเทียบหน่วยกิตกลางที่เจ้าหน้าที่ใช้อ้างอิงเวลาตรวจคำขอ — แก้ไขที่นี่มีผลกับคำขอครั้งถัดไป ไม่ย้อนแก้คำขอที่ตัดสินไปแล้ว",
+          why:"หัวใจของการตัดสินคือ “วิชาจากสถาบันอื่นเท่ากับกี่หน่วยกิตของ TU” เก็บค่ากลางไว้ที่เดียวทำให้ทุกคนตัดสินบนมาตรฐานเดียวกัน สิทธิ์นี้อยู่ที่ผู้ดูแลระบบสูงสุดเท่านั้น",
+          actions:["กำหนดค่าเทียบหน่วยกิตระหว่างวิชาภายนอกกับวิชาของ TU","แก้ไขค่ากลาง มีผลกับการพิจารณาคำขอครั้งต่อไป"] },
+      ]},
+    ]
+  },
+];
+
+/* ============================================================ */
+
+const sidebar = document.getElementById("sidebar");
+const content = document.getElementById("content");
+const phaseFilter = document.getElementById("phaseFilter");
+let activeFilter = "all";
+let activeItem = null;
+
+// index items by id for quick lookup
+const itemIndex = {};
+PHASES.forEach(ph => ph.groups.forEach(g => g.items.forEach(it => {
+  itemIndex[it.id] = {...it, phase:ph};
+})));
+
+/* ---- phase filter chips ---- */
+function renderFilter(){
+  const chips = [["all","ทั้งหมด"], ...PHASES.map(p=>[String(p.id), "Phase "+p.id])];
+  phaseFilter.innerHTML = chips.map(([v,l])=>
+    `<button class="chip ${activeFilter===v?'active':''}" data-f="${v}">${l}</button>`).join("");
+  phaseFilter.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+    activeFilter=c.dataset.f; renderFilter(); renderSidebar();
+  });
+}
+
+/* ---- sidebar ---- */
+function renderSidebar(){
+  const visible = PHASES.filter(p=>activeFilter==="all"||String(p.id)===activeFilter);
+  sidebar.innerHTML = visible.map(ph=>{
+    const groupsHtml = ph.groups.map(g=>{
+      const label = g.label ? `<div class="subgroup-label">${g.label}</div>` : "";
+      const items = g.items.map(it=>`
+        <button class="nav-item ${activeItem===it.id?'active':''}" data-id="${it.id}">
+          <span class="dot"></span><span>${it.label}</span>
+          ${it.status==='upcoming'?'<span class="up">เร็ว ๆ นี้</span>':''}
+        </button>`).join("");
+      return label+items;
+    }).join("");
+    return `
+      <div class="phase-group" data-phase="${ph.id}">
+        <button class="phase-head">
+          <span class="phase-badge">P${ph.id}</span>
+          <span class="pg-title">${ph.title}</span>
+          <span class="caret">▼</span>
+        </button>
+        <div class="phase-items">${groupsHtml}</div>
+      </div>`;
+  }).join("");
+
+  // collapse toggle
+  sidebar.querySelectorAll(".phase-head").forEach(h=>{
+    h.onclick=()=>h.parentElement.classList.toggle("collapsed");
+  });
+  // item click
+  sidebar.querySelectorAll(".nav-item").forEach(b=>{
+    b.onclick=()=>{ selectItem(b.dataset.id); if(window.innerWidth<=860) sidebar.classList.remove("open"); };
+  });
+}
+
+/* ---- phase overview (landing) ---- */
+function renderOverview(){
+  activeItem=null; renderSidebar();
+  const cards = PHASES.map(ph=>{
+    const tags = ph.groups.flatMap(g=>g.items).slice(0,6).map(it=>`<span class="ptag">${it.label}</span>`).join("");
+    return `
+      <div class="pcard" data-phase="${ph.id}">
+        <div class="pnum"><small>PHASE</small>${ph.id}</div>
+        <div style="flex:1">
+          <h3>${ph.title}</h3>
+          <p class="pdesc">${ph.desc}</p>
+          <div class="ptags">${tags}</div>
+        </div>
+        <span class="status-tag done pstat">เสร็จแล้ว</span>
+      </div>`;
+  }).join("");
+  content.innerHTML = `
+    <div class="overview-head">
+      <h2>ระบบหลังบ้าน TU Credit Bank แบ่งเป็น 4 Phase</h2>
+      <p>แต่ละ Phase ต่อยอดจาก Phase ก่อนหน้า เริ่มจากรากฐานความปลอดภัย ไปสู่ข้อมูลวิชาการ งานประจำวัน และงานเฉพาะทาง คลิกที่การ์ดหรือเมนูด้านซ้ายเพื่อดูรายละเอียดของแต่ละเมนู</p>
+    </div>
+    <div class="phase-cards">${cards}</div>
+    <div class="note">หมายเหตุ: การแบ่ง Phase นี้อิงจากเมนูที่พัฒนาไว้จริงในระบบ และเรียงตามลำดับที่ระบบต้องพึ่งพากัน — ต้องมีข้อมูลวิชาการก่อน ผู้เรียนจึงลงทะเบียนและชำระเงินได้ เมนูที่ระบุ “เร็ว ๆ นี้” คือส่วนที่วางแผนไว้แต่ยังไม่เปิดใช้</div>`;
+  content.querySelectorAll(".pcard").forEach(c=>{
+    c.onclick=()=>{ const p=c.dataset.phase; const first=PHASES.find(x=>String(x.id)===p).groups[0].items[0]; selectItem(first.id); };
+  });
+  content.scrollTo?.(0,0); window.scrollTo(0,0);
+}
+
+/* ---- item detail ---- */
+function selectItem(id){
+  const it = itemIndex[id];
+  if(!it){ renderOverview(); return; }
+  activeItem=id; renderSidebar();
+
+  const group = it.phase.groups.find(g=>g.items.some(x=>x.id===id));
+  const roles = it.roles.map(r=>`<span class="role-pill ${ROLES[r].cls}"><span class="ico"></span>${ROLES[r].th}</span>`).join("");
+  const statusTag = it.status==='done'
+    ? `<span class="status-tag done">พัฒนาเสร็จแล้ว</span>`
+    : `<span class="status-tag upcoming">เร็ว ๆ นี้ (อยู่ในแผน)</span>`;
+
+  const actionsBlock = it.actions ? `
+    <div class="section">
+      <h3><span class="bar"></span>การทำงานหลัก</h3>
+      <ul class="actions">${it.actions.map((a,i)=>`<li><span class="num">${i+1}</span><span>${a}</span></li>`).join("")}</ul>
+    </div>` : "";
+
+  const roleTableBlock = it.roleTable ? `
+    <div class="section">
+      <h3><span class="bar"></span>สรุปสิทธิ์แต่ละบทบาท</h3>
+      <ul class="actions">${it.roleTable.map(([r,d])=>`<li><span class="num">•</span><span><b>${r}</b> — ${d}</span></li>`).join("")}</ul>
+    </div>` : "";
+
+  const statesBlock = it.states ? `
+    <div class="section">
+      <h3><span class="bar"></span>เส้นทางสถานะ</h3>
+      <div class="states">${it.states.map((s,i)=>
+        `<span class="state-node ${s[1]}">${s[0]}</span>${i<it.states.length-1?'<span class="arrow">→</span>':''}`).join("")}</div>
+    </div>` : "";
+
+  content.innerHTML = `
+    <div class="crumb">
+      <span style="cursor:pointer" id="toHome">ภาพรวมทั้งหมด</span>
+      <span class="sep">›</span><b>Phase ${it.phase.id} · ${it.phase.title}</b>
+      ${group.label?`<span class="sep">›</span><span>${group.label}</span>`:''}
+    </div>
+    <div class="detail-head">
+      <h2 class="title">${it.label}</h2>${statusTag}
+    </div>
+    <p class="lead">${it.lead}</p>
+    <div class="roles-row">${roles}</div>
+    <div class="section why">
+      <h3><span class="bar"></span>ทำไมเมนูนี้ถึงสำคัญ</h3>
+      <p>${it.why}</p>
+    </div>
+    ${roleTableBlock}
+    ${actionsBlock}
+    ${statesBlock}`;
+  document.getElementById("toHome").onclick=renderOverview;
+  window.scrollTo(0,0);
+}
+
+/* ---- mobile menu ---- */
+document.getElementById("menuToggle").onclick=()=>sidebar.classList.toggle("open");
+
+/* ---- init ---- */
+renderFilter();
+renderSidebar();
+renderOverview();
+</script>

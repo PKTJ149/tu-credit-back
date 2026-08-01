@@ -15,6 +15,27 @@ export type Column<T> = {
   width?: string;
   /** Hide below `md` when the column is secondary on narrow screens. */
   hideOnMobile?: boolean;
+  /**
+   * Clamp a long value to one line with an ellipsis, e.g. "max-w-[26ch]".
+   *
+   * Thai program and subject names run long, and left to themselves they wrap
+   * to three lines and triple the height of every row — a 12-row queue then
+   * needs four screens. Cells default to one line; this is how a column that
+   * cannot fit gets truncated instead of growing the row.
+   */
+  truncate?: string;
+  /**
+   * Opt out of single-line layout for a column that genuinely needs to wrap
+   * (a note, a reason). Costs row height, so it should be rare.
+   */
+  wrap?: boolean;
+  /**
+   * Pin the column to the right edge so it stays visible while the rest of the
+   * table scrolls under it. For the action column on a wide table: an officer
+   * should never have to scroll sideways to find the only control on the row.
+   * Use on the last column only.
+   */
+  stickyEnd?: boolean;
 };
 
 type DataTableProps<T> = {
@@ -64,6 +85,8 @@ export function DataTable<T>({
                   col.align === "end" ? "text-end" : "text-start",
                   col.width,
                   col.hideOnMobile && "hidden md:table-cell",
+                  col.stickyEnd &&
+                    "sticky end-0 z-10 bg-[var(--surface-strong)] before:absolute before:inset-y-0 before:start-0 before:w-px before:bg-[var(--border)] before:content-['']",
                 )}
               >
                 {col.header}
@@ -79,7 +102,7 @@ export function DataTable<T>({
               <tr
                 key={rowKey(row)}
                 className={cn(
-                  "border-b border-[var(--border)] transition-colors last:border-b-0",
+                  "group/row border-b border-[var(--border)] transition-colors last:border-b-0",
                   href && "hover:bg-[var(--surface)] focus-within:bg-[var(--surface)]",
                 )}
               >
@@ -88,8 +111,14 @@ export function DataTable<T>({
                     key={col.key}
                     className={cn(
                       "px-4 py-2.5 align-middle",
+                      // One line by default. Wrapping is the opt-in, not the
+                      // default, because row height is the scarce resource on
+                      // every screen a staff member works a queue from.
+                      col.wrap ? "whitespace-normal" : "whitespace-nowrap",
                       col.align === "end" ? "text-end" : "text-start",
                       col.hideOnMobile && "hidden md:table-cell",
+                      col.stickyEnd &&
+                        "sticky end-0 z-10 bg-[var(--background)] before:absolute before:inset-y-0 before:start-0 before:w-px before:bg-[var(--border)] before:content-[''] group-hover/row:bg-[var(--surface)]",
                     )}
                   >
                     {/* The link wraps the first cell only. A stretched link over
@@ -98,10 +127,15 @@ export function DataTable<T>({
                     {href && i === 0 ? (
                       <Link
                         href={href}
-                        className="-mx-1 inline-block rounded px-1 py-0.5 font-medium underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                        className={cn(
+                          "-mx-1 rounded px-1 py-0.5 font-medium underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+                          col.truncate ? cn("block truncate", col.truncate) : "inline-block",
+                        )}
                       >
                         {col.cell(row)}
                       </Link>
+                    ) : col.truncate ? (
+                      <span className={cn("block truncate", col.truncate)}>{col.cell(row)}</span>
                     ) : (
                       col.cell(row)
                     )}
