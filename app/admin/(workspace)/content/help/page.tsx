@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
-import { ArrowDown, ArrowUp, LifeBuoy, MoreHorizontal, Pencil, TrendingUp } from "lucide-react";
+import { LifeBuoy, MoreHorizontal, Pencil, TrendingUp } from "lucide-react";
 
 import { PageHeader } from "@/components/admin/page-header";
 import { Panel } from "@/components/admin/detail-panel";
@@ -31,6 +31,7 @@ import {
 } from "@/lib/admin/mock-pages";
 import type { HelpArticle } from "@/lib/admin/types";
 import { HelpArticleSheet, type HelpArticleFormValues } from "./help-article-sheet";
+import { ReorderControls } from "@/components/admin/reorder-controls";
 
 /** Re-index one category's `order` field to a contiguous 1..n after any
  *  reorder, add, or cross-category move — so a gap left behind by an article
@@ -196,27 +197,14 @@ export default function HelpCenterPage() {
                 header: "ลำดับ",
                 width: "w-24",
                 cell: (row) => (
-                  <div className="flex items-center gap-1">
-                    <span className="font-mono text-xs text-[var(--ink-muted)]">{row.order}</span>
-                    <Button
-                      size="icon-xs"
-                      variant="ghost"
-                      disabled={row.order === 1}
-                      onClick={() => moveArticle(categoryId, row.id, "up")}
-                      aria-label={`เลื่อนบทความ "${row.question}" ขึ้น`}
-                    >
-                      <ArrowUp className="size-3" aria-hidden />
-                    </Button>
-                    <Button
-                      size="icon-xs"
-                      variant="ghost"
-                      disabled={row.order === rows.length}
-                      onClick={() => moveArticle(categoryId, row.id, "down")}
-                      aria-label={`เลื่อนบทความ "${row.question}" ลง`}
-                    >
-                      <ArrowDown className="size-3" aria-hidden />
-                    </Button>
-                  </div>
+                  <ReorderControls
+                    position={row.order}
+                    itemLabel={row.question}
+                    canMoveUp={row.order > 1}
+                    canMoveDown={row.order < rows.length}
+                    onMoveUp={() => moveArticle(categoryId, row.id, "up")}
+                    onMoveDown={() => moveArticle(categoryId, row.id, "down")}
+                  />
                 ),
               },
               {

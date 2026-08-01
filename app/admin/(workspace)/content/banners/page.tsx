@@ -4,8 +4,6 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import {
-  ArrowDown,
-  ArrowUp,
   ImageOff,
   LayoutPanelTop,
   MoreHorizontal,
@@ -32,6 +30,7 @@ import type { HomeBanner } from "@/lib/admin/types";
 import { formatThaiDate } from "@/lib/admin/format";
 import { cn } from "@/lib/utils";
 import { BannerSheet, type BannerFormValues } from "./banner-sheet";
+import { ReorderControls } from "@/components/admin/reorder-controls";
 
 type SheetState = { mode: "add" | "edit"; banner?: HomeBanner };
 
@@ -130,31 +129,14 @@ export default function BannersPage() {
       cell: (b) => {
         const index = sorted.findIndex((x) => x.id === b.id);
         return (
-          <div className="flex items-center gap-1">
-            <span className="font-mono text-xs tabular-nums text-[var(--ink-subtle)]">{index + 1}</span>
-            <div className="flex flex-col">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-xs"
-                aria-label={`เลื่อน "${b.title}" ขึ้น`}
-                disabled={index === 0}
-                onClick={() => move(b, "up")}
-              >
-                <ArrowUp className="size-3" aria-hidden />
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon-xs"
-                aria-label={`เลื่อน "${b.title}" ลง`}
-                disabled={index === sorted.length - 1}
-                onClick={() => move(b, "down")}
-              >
-                <ArrowDown className="size-3" aria-hidden />
-              </Button>
-            </div>
-          </div>
+          <ReorderControls
+            position={index + 1}
+            itemLabel={b.title}
+            canMoveUp={index > 0}
+            canMoveDown={index < sorted.length - 1}
+            onMoveUp={() => move(b, "up")}
+            onMoveDown={() => move(b, "down")}
+          />
         );
       },
     },

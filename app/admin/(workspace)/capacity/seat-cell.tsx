@@ -27,7 +27,7 @@ export function SeatCell({ item, onSave }: SeatCellProps) {
       <div className="flex items-center gap-1.5">
         <span className="font-mono tabular-nums">{item.seats}</span>
         <Button
-          size="icon-xs"
+          size="icon-sm"
           variant="ghost"
           onClick={() => {
             setDraft(String(item.seats));
@@ -35,7 +35,7 @@ export function SeatCell({ item, onSave }: SeatCellProps) {
           }}
           aria-label={`แก้ไขจำนวนที่นั่งของ ${item.name}`}
         >
-          <Pencil className="size-3" aria-hidden />
+          <Pencil className="size-3.5" aria-hidden />
         </Button>
       </div>
     );

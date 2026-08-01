@@ -169,6 +169,25 @@
 
   .note{font-size:13px;color:var(--ink-subtle);margin-top:22px;padding:14px 16px;background:var(--surface-2);border-radius:10px;line-height:1.6}
 
+  /* ---------- Coverage / gap view ---------- */
+  .cov-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+  .cov-stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:15px 16px;box-shadow:var(--shadow);text-align:center}
+  .cov-stat .n{font-size:28px;font-weight:700;line-height:1}
+  .cov-stat .l{font-size:12.5px;color:var(--ink-muted);margin-top:6px}
+  .cov-table{width:100%;border-collapse:collapse;font-size:14px;min-width:520px}
+  .cov-table td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+  .cov-table tr:last-child td{border-bottom:0}
+  .cov-sec{font-weight:700;color:var(--primary);width:30px}
+  .cov-badge{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:6px;white-space:nowrap;display:inline-block}
+  .cov-badge.done{background:var(--success-soft);color:var(--success)}
+  .cov-badge.partial{background:var(--gold-soft);color:var(--gold)}
+  .cov-badge.none{background:var(--surface-2);color:var(--ink-subtle)}
+  .cov-note{color:var(--ink-muted);font-size:12.5px;line-height:1.5}
+  .db-item{display:flex;gap:13px;align-items:flex-start;padding:13px 0;border-bottom:1px solid var(--border)}
+  .db-item:last-child{border-bottom:0}
+  .db-item .di-ico{width:34px;height:34px;border-radius:8px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;font-weight:700;font-size:13px;flex:none}
+  @media(max-width:600px){.cov-summary{grid-template-columns:1fr}}
+
   /* ---------- Mobile ---------- */
   .menu-toggle{display:none}
   @media(max-width:860px){
@@ -259,7 +278,8 @@ const PHASES = [
         { id:"programs", label:"หลักสูตร", roles:["super-admin","officer","teacher"], status:"done",
           lead:"หลักสูตรทั้งหมดในระบบ Credit Bank — ค้นหา กรอง และเปิดดูรายละเอียดเพื่อแก้ไขข้อมูล จำนวนที่นั่ง และผู้สอน",
           why:"หลักสูตรคือหน่วยขายหลักที่ผู้เรียนเห็นหน้าเว็บ การแก้ไขได้จากหลังบ้านหมายความว่าเจ้าหน้าที่ปรับข้อมูลได้เองโดยไม่ต้องรอทีมพัฒนาแก้โค้ด",
-          actions:["ค้นหาและกรองหลักสูตรตามเงื่อนไข","เปิดหน้ารายละเอียดเพื่อแก้ไขข้อมูล ที่นั่ง และผู้สอนที่ผูกไว้","จัดการสถานะหลักสูตร (เผยแพร่ / ฉบับร่าง / เก็บเข้าคลัง)"] },
+          actions:["ค้นหาและกรองหลักสูตรตามเงื่อนไข","เปิดหน้ารายละเอียดเพื่อแก้ไขข้อมูล ที่นั่ง และผู้สอนที่ผูกไว้"],
+          note:"หมายเหตุ: workflow เผยแพร่ / ฉบับร่าง / เก็บเข้าคลัง ยังอยู่ในแผน ยังไม่ได้พัฒนาในโปรโตไทป์นี้" },
 
         { id:"subjects", label:"รายวิชา", roles:["super-admin","officer","teacher"], status:"done",
           lead:"รายวิชาทั้งหมดในระบบ — ค้นหา กรอง และเปิดดูรายละเอียดเพื่อแก้ไขข้อมูล ตารางเรียน และผู้สอน",
@@ -373,6 +393,184 @@ const PHASES = [
       ]},
     ]
   },
+
+  {
+    id:4, code:"P4", title:"ผลการเรียน & ใบรับรอง",
+    desc:"หัวใจของ “ธนาคารหน่วยกิต” — บันทึกผลการเรียน สะสมหน่วยกิต และออกใบรับรอง/ใบแสดงผลการเรียนได้จริง",
+    status:"done",
+    groups:[
+      { label:"ผลการเรียน", items:[
+
+        { id:"grades", label:"บันทึกผลการเรียน", roles:["super-admin","teacher"], status:"done",
+          lead:"หน้าให้อาจารย์บันทึกผลการเรียนของผู้เรียนเมื่อรายวิชาจบ แยกตามรายวิชาที่ตนรับผิดชอบ",
+          why:"เป็นจุดเริ่มของทุกอย่างในเฟสนี้ — ไม่มีผลการเรียน ก็ไม่มีหน่วยกิตสะสม ไม่มี GPA และไม่มีใบรับรอง อาจารย์เห็นเฉพาะวิชาของตัวเองเท่านั้น",
+          actions:["เลือกรายวิชาที่รับผิดชอบเพื่อเปิดรายชื่อผู้เรียน","กรอกผลการเรียนรายคนแล้วเผยแพร่","ผลที่เผยแพร่จะไปคำนวณหน่วยกิตสะสมและ GPA อัตโนมัติ"] },
+
+        { id:"credits", label:"หน่วยกิตสะสม", roles:["super-admin","officer"], status:"done",
+          lead:"หน่วยกิตที่บันทึกไว้ในระบบทะเบียน หน่วยกิตที่กำลังศึกษาอยู่ และ GPA ที่คำนวณจากผลการเรียนที่เผยแพร่แล้ว",
+          why:"เป็น “สมุดบัญชีหน่วยกิต” ของผู้เรียนแต่ละคน ตอบได้ทันทีว่าใครสะสมหน่วยกิตไปเท่าไร ใกล้ครบเกณฑ์รับใบรับรองหรือยัง",
+          actions:["ดูหน่วยกิตสะสม หน่วยกิตกำลังเรียน และ GPA ของผู้เรียน","อ้างอิงจากผลการเรียนที่เผยแพร่แล้วเท่านั้น"] },
+
+        { id:"certificates", label:"ใบรับรอง", roles:["super-admin","officer"], status:"done",
+          lead:"ผู้เรียนที่มีสิทธิ์รับใบรับรองจากผลการเรียนที่เผยแพร่และผ่านเกณฑ์ พร้อมใบที่ออกแล้วและที่เพิกถอนแล้ว",
+          why:"เดิมลิงก์ “ดูใบรับรอง” ทุกอันชี้ไปหน้าว่าง (ไม่มีของจริง) เมนูนี้ทำให้ออกใบรับรองได้จริงและเก็บประวัติว่าออก/เพิกถอนให้ใครบ้าง",
+          actions:["ดูรายชื่อผู้มีสิทธิ์รับใบรับรอง","ยืนยันการออกใบรับรอง","เพิกถอนใบที่ออกผิดพร้อมเก็บประวัติ"] },
+
+        { id:"transcripts", label:"ใบแสดงผลการเรียน", roles:["super-admin","officer"], status:"done",
+          lead:"เลือกผู้เรียนเพื่อดูตัวอย่างเอกสารใบแสดงผลการเรียนที่ระบบจะออกให้ ตามข้อมูลผลการเรียนที่มีอยู่",
+          why:"ทรานสคริปต์คือเอกสารทางการที่ผู้เรียนต้องใช้ต่อ เมนูนี้รวมผลการเรียนทั้งหมดเป็นเอกสารเดียวพร้อมออกให้",
+          actions:["เลือกผู้เรียนเพื่อดูตัวอย่างใบแสดงผลการเรียน","สร้างจากผลการเรียนที่มีในระบบ"] },
+      ]},
+    ]
+  },
+
+  {
+    id:5, code:"P5", title:"รีวิวและคะแนน",
+    desc:"ระบบรีวิว/ให้คะแนนหลักสูตรและรายวิชา พร้อมคิวตรวจก่อนเผยแพร่ขึ้นหน้าเว็บ",
+    status:"done",
+    groups:[
+      { label:"รีวิวและคะแนน", items:[
+
+        { id:"reviews", label:"คิวตรวจรีวิว", roles:["super-admin","officer"], status:"done",
+          lead:"รีวิวและคะแนนที่ผู้เรียนส่งเข้ามา รอเจ้าหน้าที่ตรวจก่อนแสดงบนหน้าเว็บ",
+          why:"เดิมแท็บรีวิวในหน้าหลักสูตร/รายวิชาเป็นช่องว่างเปล่า spec ตัดสินใจว่า “ทำจริง” — มีคิวตรวจเพื่อกันสแปมและข้อความไม่เหมาะสมก่อนขึ้นหน้าเว็บ และเฉพาะผู้ที่เรียนวิชานั้นจริงจึงรีวิวได้",
+          actions:["ดูรีวิวที่รอตรวจ","อนุมัติให้แสดง / ซ่อน / ลบ","รีวิวที่อนุมัติไปคิดเป็นคะแนนเฉลี่ยบนการ์ดหลักสูตรและรายวิชา"] },
+      ]},
+    ]
+  },
+
+  {
+    id:6, code:"P6", title:"เนื้อหาเว็บไซต์",
+    desc:"จัดการเนื้อหาบนเว็บฝั่งผู้เรียนได้เองโดยไม่ต้องแก้โค้ด — ข่าว แบนเนอร์ หลักสูตรแนะนำ ศูนย์ช่วยเหลือ หน้ากฎหมาย และคลังสื่อ",
+    status:"done",
+    groups:[
+      { label:"เนื้อหาเว็บไซต์", items:[
+
+        { id:"news", label:"ข่าวและกิจกรรม", roles:["super-admin","officer"], status:"done",
+          lead:"ข่าวสารและกิจกรรมทั้งหมดเป็นรายการเดียวกัน จัดหมวดด้วยฟิลด์หมวดหมู่ ไม่ใช่หน้าจอแยก",
+          why:"ตอบ Open Question ของ spec — “กิจกรรม” เป็นหมวดหนึ่งของข่าว ไม่ใช่ระบบแยก และแก้บั๊กเดิมที่ข่าวมี 2 แหล่งข้อมูลชนกัน ตอนนี้เจ้าหน้าที่เพิ่ม/แก้ข่าวเองได้",
+          actions:["สร้าง แก้ไข หรือเลิกเผยแพร่ข่าว/กิจกรรม","จัดหมวดหมู่ข่าว","เลิกเผยแพร่แล้วข้อมูลยังเก็บไว้ นำกลับมาเผยแพร่ใหม่ได้"] },
+
+        { id:"banners", label:"แบนเนอร์หน้าแรก", roles:["super-admin","officer"], status:"done",
+          lead:"ชุดสไลด์บน Hero Banner หน้าแรกจริง เรียงจากบนลงล่างตามลำดับที่กำหนด",
+          why:"ลำดับ ภาพ และช่วงเวลาที่แก้ที่นี่คือสิ่งที่ผู้เรียนเห็นทันที — ปรับแคมเปญหน้าแรกได้เองโดยไม่ต้อง deploy",
+          actions:["เพิ่ม / แก้ไข / ลบสไลด์แบนเนอร์","จัดลำดับการแสดง","ตั้งช่วงเวลาที่แสดง"] },
+
+        { id:"featured", label:"หลักสูตรแนะนำ", roles:["super-admin","officer"], status:"done",
+          lead:"ควบคุมหลักสูตร/รายวิชาที่แสดงบนหน้าแรก แทนที่การฝัง slug ไว้ในโค้ด",
+          why:"เดิมหลักสูตรแนะนำหน้าแรกฝังในโค้ด แก้ทีต้อง deploy ตอนนี้จัดเรียงและเปิด/ปิดได้เอง เห็นผลบนหน้าแรกทันที",
+          actions:["เลือกหลักสูตร/รายวิชาที่จะแนะนำ","จัดลำดับและเปิด/ปิดการแสดงบนหน้าแรก"] },
+
+        { id:"help", label:"ศูนย์ช่วยเหลือ", roles:["super-admin","officer"], status:"done",
+          lead:"จัดการคำถามที่พบบ่อย (FAQ) ตามหมวดหมู่ที่ผู้เรียนเห็นในหน้าศูนย์ช่วยเหลือจริง",
+          why:"เดิมมีแค่หมวดหมู่เปล่า ไม่มีบทความจริง ตอนนี้เจ้าหน้าที่เพิ่มคำถาม–คำตอบเองได้ ลดคำถามซ้ำที่เข้ามาหาทีม",
+          actions:["เพิ่ม / แก้ไข FAQ ตามหมวดหมู่","จัดลำดับคำถาม"] },
+
+        { id:"pages", label:"หน้าเนื้อหา", roles:["super-admin","officer"], status:"done",
+          lead:"หน้าข้อความล้วนที่เว็บแสดงจากเนื้อหานี้โดยตรง แทนที่จะฝังในโค้ด (เช่น หน้าเกี่ยวกับเรา)",
+          why:"หน้าอย่าง “เกี่ยวกับเรา” เดิมเป็นข้อความตายตัวในโค้ด แก้ทีต้อง deploy ตอนนี้แก้ได้เอง",
+          actions:["สร้าง / แก้ไขหน้าเนื้อหาแบบข้อความ","เผยแพร่โดยไม่ต้อง deploy"] },
+
+        { id:"legal", label:"นโยบายและข้อตกลง", roles:["super-admin"], status:"done",
+          lead:"เอกสารที่มีผลผูกพันกับผู้เรียน มีการควบคุมเวอร์ชัน — แก้แล้วสร้างเวอร์ชันใหม่เสมอ ไม่ทับฉบับที่ใช้อยู่",
+          why:"ปิดช่องโหว่ด้านกฎหมายที่ spec จัดเป็น Tier 1 — เดิมลิงก์ Privacy/Terms ชี้ไปหน้าที่ไม่มีอยู่ รวมถึง checkbox ยินยอมตอนสมัคร การคุมเวอร์ชันสำคัญเพราะต้องรู้ว่าผู้เรียนยอมรับฉบับไหน (เฉพาะผู้ดูแลระบบสูงสุด)",
+          actions:["แก้ไขนโยบายความเป็นส่วนตัว / เงื่อนไขการใช้งาน","ทุกการแก้สร้างเวอร์ชันใหม่ เก็บประวัติฉบับเดิมไว้"] },
+
+        { id:"media", label:"คลังสื่อ", roles:["super-admin","officer"], status:"done",
+          lead:"ไฟล์รูปภาพและเอกสารทั้งหมดที่เว็บใช้งาน พร้อมจุดที่แต่ละไฟล์ถูกอ้างอิงอยู่",
+          why:"เดิมทุกรูปเป็นไฟล์ตายตัวใน /public แก้ต้อง deploy ตอนนี้จัดการไฟล์ได้เอง และเห็นว่าไฟล์ไหนถูกใช้ที่ไหน กันการลบไฟล์ที่ยังใช้อยู่",
+          actions:["ดู / จัดการไฟล์รูปภาพและเอกสาร","เห็นจุดอ้างอิงของแต่ละไฟล์ก่อนตัดสินใจลบ"] },
+      ]},
+    ]
+  },
+
+  {
+    id:7, code:"P7", title:"รายงาน & การสื่อสาร",
+    desc:"มองเห็นภาพรวมเชิงธุรกิจและสื่อสารกับผู้เรียน — รายงานยอดลงทะเบียน/รายได้/ภาระอาจารย์ และระบบประกาศ/แจ้งเตือน",
+    status:"done",
+    groups:[
+      { label:"รายงาน", items:[
+
+        { id:"reports-enrollment", label:"ยอดลงทะเบียน", roles:["super-admin"], status:"done",
+          lead:"จำนวนการลงทะเบียนแยกตามมุมมองที่เลือก พร้อมสัดส่วนสถานะการชำระเงิน",
+          why:"ตัวเลข “ลงทะเบียนแล้ว” อย่างเดียวไม่บอกว่าใครจ่ายจริง รายงานนี้แยกให้เห็น ใช้รายงานต่อผู้บริหารหรือนายทะเบียนมหาวิทยาลัย (เฉพาะผู้ดูแลระบบสูงสุด)",
+          actions:["ดูยอดลงทะเบียนตามหลักสูตร/รายวิชา/ภาค","เห็นสัดส่วนสถานะการชำระเงินประกอบ"] },
+
+        { id:"reports-revenue", label:"รายได้", roles:["super-admin"], status:"done",
+          lead:"ยอดรับชำระที่ยืนยันแล้ว ค้างชำระ และคืนเงิน แยกตามหลักสูตรและภาคการศึกษา",
+          why:"เดิมตอบไม่ได้เลยว่า “เก็บเงินได้เท่าไร” เมนูนี้ตอบคำถามการเงินระดับผู้บริหารได้ในหน้าเดียว",
+          actions:["ดูรายได้แยกตามหลักสูตร/ภาค","แยกยอดยืนยันแล้ว / ค้างชำระ / คืนเงิน"] },
+
+        { id:"reports-workload", label:"ภาระงานอาจารย์", roles:["super-admin"], status:"done",
+          lead:"จำนวนหลักสูตรและรายวิชาที่อาจารย์แต่ละคนรับผิดชอบ พร้อมจำนวนผู้เรียนที่ดูแล",
+          why:"ช่วยกระจายงานสอนอย่างเป็นธรรม และวางแผนกำลังคนล่วงหน้า",
+          actions:["ดูภาระงานรายอาจารย์","เห็นจำนวนผู้เรียนรวมที่แต่ละคนดูแล"] },
+      ]},
+
+      { label:"การสื่อสาร", items:[
+
+        { id:"announcements", label:"ประกาศถึงผู้เรียน", roles:["super-admin","officer"], status:"done",
+          lead:"เขียนประกาศส่งถึงผู้เรียนทั้งหมด หรือเจาะกลุ่มเฉพาะหลักสูตร รายวิชา หรือภาคการศึกษา",
+          why:"ช่องทางสื่อสารทางการจากสถาบันถึงผู้เรียน เช่น แจ้งเปลี่ยนตารางหรือเปิดรับสมัคร โดยไม่ต้องพึ่งอีเมลภายนอก",
+          actions:["เขียนประกาศและเลือกกลุ่มเป้าหมาย","ส่งถึงผู้เรียนทั้งหมดหรือเฉพาะกลุ่ม"] },
+
+        { id:"notifications", label:"เทมเพลตการแจ้งเตือน", roles:["super-admin"], status:"done",
+          lead:"ข้อความเบื้องหลังการแจ้งเตือนอัตโนมัติของระบบ แก้ไขได้โดยไม่ต้องปล่อยเวอร์ชันใหม่",
+          why:"การแจ้งเตือนอย่าง “อนุมัติเงินแล้ว” หรือ “ยืนยันการลงทะเบียน” ควรปรับถ้อยคำได้เองโดยไม่ต้องแก้โค้ด (เฉพาะผู้ดูแลระบบสูงสุด)",
+          actions:["แก้ไขถ้อยคำเทมเพลตของการแจ้งเตือนแต่ละเหตุการณ์"] },
+      ]},
+    ]
+  },
+
+  {
+    id:8, code:"P8", title:"ตั้งค่าระบบ",
+    desc:"ศูนย์ควบคุมของทั้งระบบ — บัญชีเจ้าหน้าที่ ข้อมูลหลักกลาง ตั้งค่าทั่วไป และบันทึกการใช้งาน",
+    status:"done",
+    groups:[
+      { label:"ตั้งค่าระบบ", items:[
+
+        { id:"settings-staff", label:"บัญชีเจ้าหน้าที่", roles:["super-admin"], status:"done",
+          lead:"สร้างบัญชี กำหนดบทบาท และผูกบัญชีอาจารย์กับรายวิชาที่รับผิดชอบ ทุกการเปลี่ยนบทบาท/ระงับบัญชีต้องยืนยันก่อน",
+          why:"ปิดช่องว่างของ spec (A3) — เดิมมี 3 บทบาทแต่ไม่มีที่สร้างบัญชีจริง นี่คือที่ที่ผู้ดูแลระบบสร้าง/ปิด/รีเซ็ตบัญชีเจ้าหน้าที่ (เฉพาะผู้ดูแลระบบสูงสุด)",
+          actions:["สร้างบัญชีเจ้าหน้าที่และกำหนดบทบาท","ผูกบัญชีอาจารย์กับรายวิชาที่รับผิดชอบ","ระงับ / รีเซ็ตบัญชี พร้อมยืนยันก่อนมีผล"] },
+
+        { id:"settings-taxonomy", label:"ข้อมูลหลัก", roles:["super-admin"], status:"done",
+          lead:"ชุดข้อมูลกลางที่ทุกแบบฟอร์มในระบบควรอ้างอิง — คณะ ระดับการศึกษา หมวดวิชา และระดับคะแนน",
+          why:"ปิดช่องโหว่ของ spec (M) — เดิม “คณะ/ระดับการศึกษา” เก็บ 3 แบบไม่ตรงกันจนรายงานเพี้ยน เมนูนี้เป็นแหล่งข้อมูลกลางแหล่งเดียวที่ทุกฟอร์มดึงไปใช้ (เฉพาะผู้ดูแลระบบสูงสุด)",
+          actions:["จัดการรายชื่อคณะ ระดับการศึกษา หมวดวิชา และระดับคะแนน","ทุกแบบฟอร์มในระบบอ้างอิงจากที่นี่ที่เดียว"] },
+
+        { id:"settings-general", label:"ตั้งค่าทั่วไป", roles:["super-admin"], status:"done",
+          lead:"ค่าที่ควบคุมข้อมูลองค์กร ช่องทางติดต่อ พฤติกรรมการลงทะเบียน และความยินยอมทั่วทั้งเว็บ บันทึกทีละหมวด",
+          why:"รวมการตั้งค่าระดับเว็บไว้ที่เดียว เช่น ข้อมูลติดต่อและข้อความยินยอมที่เดิมฝังในโค้ด — บันทึกทีละหมวดเพื่อลดความเสี่ยงตอนหลายคนแก้พร้อมกัน",
+          actions:["แก้ข้อมูลองค์กรและช่องทางติดต่อ","ตั้งค่าพฤติกรรมการลงทะเบียนและข้อความยินยอม","บันทึกแยกทีละหมวด"] },
+
+        { id:"settings-audit", label:"บันทึกการใช้งาน", roles:["super-admin"], status:"done",
+          lead:"ประวัติการดำเนินการทั้งหมดของเจ้าหน้าที่ เรียงจากล่าสุดไปเก่าสุด เป็นข้อมูลอ่านอย่างเดียว แก้ไข/ลบไม่ได้",
+          why:"ปิดช่องว่างของ spec (A5) — ระบบที่อนุมัติเงินและผลการเรียนต้องตรวจย้อนหลังได้ว่าใครทำอะไร จงใจให้แก้ไม่ได้ เพราะบันทึกที่แก้ได้ย่อมไม่น่าเชื่อถือ (เฉพาะผู้ดูแลระบบสูงสุด)",
+          actions:["ดูประวัติการอนุมัติ / แก้ไข / ลบทั้งหมด","ค้นย้อนหลังตามเจ้าหน้าที่หรือช่วงเวลา","อ่านอย่างเดียว แก้ไขไม่ได้"] },
+      ]},
+    ]
+  },
+];
+
+/* ============================================================
+   เทียบ Phase 0–3 (ที่ build) กับ module spec ฉบับเต็ม (หมวด A–N)
+   ============================================================ */
+const COVERAGE = [
+  {sec:"A", name:"สิทธิ์เข้าถึง & บัญชีเจ้าหน้าที่", status:"done",    note:"Phase 0 + 8 — Login, 3 บทบาท, หน้าบัญชีเจ้าหน้าที่ (A3) และ Audit Log (A5) ครบแล้ว"},
+  {sec:"B", name:"ข้อมูลวิชาการ",                   status:"partial", note:"Phase 1 — เกือบครบ ติดแค่ workflow เผยแพร่/ฉบับร่าง (B1) และการอัปโหลดเอกสารประกอบวิชา (B4)"},
+  {sec:"C", name:"ผู้เรียน & การลงทะเบียน",          status:"done",    note:"Phase 2 — ครบ (การส่งออก Excel/CSV มีรายงานใน Phase 7 รองรับบางส่วน)"},
+  {sec:"D", name:"การเงิน",                          status:"partial", note:"Phase 2 + 7 — อนุมัติ/คืนเงิน/บัญชี/รายงานรายได้ครบ — เหลือการออกใบเสร็จ (D4) และแจ้งเตือนค้างชำระ (D7)"},
+  {sec:"E", name:"เนื้อหาเว็บไซต์ (ข่าว/กิจกรรม/แบนเนอร์)", status:"done", note:"Phase 6 — ข่าว/กิจกรรม แบนเนอร์ ศูนย์ช่วยเหลือ คลังสื่อ ครบแล้ว"},
+  {sec:"F", name:"รายงาน & วิเคราะห์",               status:"done",    note:"Phase 7 — รายงานยอดลงทะเบียน รายได้ และภาระงานอาจารย์ ครบแล้ว"},
+  {sec:"G", name:"การสื่อสาร / แจ้งเตือน",           status:"done",    note:"Phase 7 — ประกาศถึงผู้เรียน และเทมเพลตการแจ้งเตือน ครบแล้ว"},
+  {sec:"H", name:"ตั้งค่าระบบ",                      status:"done",    note:"Phase 8 — ตั้งค่าทั่วไป ข้อมูลหลัก บัญชีเจ้าหน้าที่ ครบแล้ว"},
+  {sec:"I", name:"เทียบโอนหน่วยกิต",                 status:"partial", note:"Phase 3 — เกือบครบ ระบบนับวันครบกำหนด SLA (I4) ยังเป็นแค่การเรียงลำดับ"},
+  {sec:"J", name:"ผลการเรียน & ใบรับรอง",            status:"done",    note:"Phase 4 — บันทึกผล GPA ใบรับรอง และใบแสดงผลการเรียน ครบแล้ว"},
+  {sec:"K", name:"หน้ากฎหมาย (Privacy/Terms)",       status:"done",    note:"Phase 6 — นโยบายและข้อตกลง (คุมเวอร์ชัน) และหน้าเนื้อหา ครบแล้ว"},
+  {sec:"L", name:"คัดสรรหน้าแรก",                    status:"done",    note:"Phase 6 — หลักสูตรแนะนำและแบนเนอร์หน้าแรก ครบแล้ว"},
+  {sec:"M", name:"ความสอดคล้องข้อมูล",              status:"done",    note:"Phase 8 — ข้อมูลหลัก (คณะ/ระดับ/หมวดวิชา) เป็นแหล่งกลางแหล่งเดียวแล้ว"},
+  {sec:"N", name:"รีวิว & ให้คะแนน",                 status:"done",    note:"Phase 5 — คิวตรวจรีวิวและระบบให้คะแนน ครบแล้ว"},
 ];
 
 /* ============================================================ */
@@ -402,7 +600,11 @@ function renderFilter(){
 /* ---- sidebar ---- */
 function renderSidebar(){
   const visible = PHASES.filter(p=>activeFilter==="all"||String(p.id)===activeFilter);
-  sidebar.innerHTML = visible.map(ph=>{
+  const covBtn = `<div style="padding:2px 6px 12px;margin-bottom:6px;border-bottom:1px solid var(--border)">
+    <button class="nav-item ${activeItem==='__coverage__'?'active':''}" data-id="__coverage__" style="font-weight:600">
+      <span class="dot" style="background:var(--gold)"></span><span>📊 สรุปความคืบหน้า &amp; สิ่งที่ยังขาด</span>
+    </button></div>`;
+  sidebar.innerHTML = covBtn + visible.map(ph=>{
     const groupsHtml = ph.groups.map(g=>{
       const label = g.label ? `<div class="subgroup-label">${g.label}</div>` : "";
       const items = g.items.map(it=>`
@@ -451,19 +653,30 @@ function renderOverview(){
   }).join("");
   content.innerHTML = `
     <div class="overview-head">
-      <h2>ระบบหลังบ้าน TU Credit Bank แบ่งเป็น 4 Phase</h2>
-      <p>แต่ละ Phase ต่อยอดจาก Phase ก่อนหน้า เริ่มจากรากฐานความปลอดภัย ไปสู่ข้อมูลวิชาการ งานประจำวัน และงานเฉพาะทาง คลิกที่การ์ดหรือเมนูด้านซ้ายเพื่อดูรายละเอียดของแต่ละเมนู</p>
+      <h2>ระบบหลังบ้าน TU Credit Bank แบ่งเป็น 9 Phase (0–8)</h2>
+      <p>ครอบคลุมครบทั้ง 14 หมวดของ module spec — เริ่มจากรากฐานความปลอดภัย (Phase 0) ไปสู่ข้อมูลวิชาการ งานประจำวัน เทียบโอน ผลการเรียน รีวิว เนื้อหาเว็บ รายงาน และการตั้งค่าระบบ คลิกที่การ์ดหรือเมนูด้านซ้ายเพื่อดูรายละเอียดของแต่ละเมนู</p>
     </div>
-    <div class="phase-cards">${cards}</div>
+    <div class="phase-cards">${cards}
+      <div class="pcard" style="border-color:var(--gold)">
+        <div class="pnum" style="background:var(--gold);font-size:22px">📊</div>
+        <div style="flex:1">
+          <h3>สรุปความคืบหน้า &amp; สิ่งที่ยังขาด</h3>
+          <p class="pdesc">เทียบกับ module spec ฉบับเต็ม (A–N) — ทำไปแค่ไหน เหลืออะไร และทำไมยังเก็บข้อมูลจริงไม่ได้</p>
+          <div class="ptags"><span class="ptag">ครบ 11</span><span class="ptag">เหลือรายละเอียด 3</span><span class="ptag">ยังไม่เริ่ม 0</span></div>
+        </div>
+        <span class="status-tag pstat" style="background:var(--gold-soft);color:var(--gold)">ดูสรุป →</span>
+      </div>
+    </div>
     <div class="note">หมายเหตุ: การแบ่ง Phase นี้อิงจากเมนูที่พัฒนาไว้จริงในระบบ และเรียงตามลำดับที่ระบบต้องพึ่งพากัน — ต้องมีข้อมูลวิชาการก่อน ผู้เรียนจึงลงทะเบียนและชำระเงินได้ เมนูที่ระบุ “เร็ว ๆ นี้” คือส่วนที่วางแผนไว้แต่ยังไม่เปิดใช้</div>`;
   content.querySelectorAll(".pcard").forEach(c=>{
-    c.onclick=()=>{ const p=c.dataset.phase; const first=PHASES.find(x=>String(x.id)===p).groups[0].items[0]; selectItem(first.id); };
+    c.onclick=()=>{ const p=c.dataset.phase; if(!p){ renderCoverage(); return; } const first=PHASES.find(x=>String(x.id)===p).groups[0].items[0]; selectItem(first.id); };
   });
   content.scrollTo?.(0,0); window.scrollTo(0,0);
 }
 
 /* ---- item detail ---- */
 function selectItem(id){
+  if(id==='__coverage__'){ renderCoverage(); return; }
   const it = itemIndex[id];
   if(!it){ renderOverview(); return; }
   activeItem=id; renderSidebar();
@@ -493,6 +706,8 @@ function selectItem(id){
         `<span class="state-node ${s[1]}">${s[0]}</span>${i<it.states.length-1?'<span class="arrow">→</span>':''}`).join("")}</div>
     </div>` : "";
 
+  const noteBlock = it.note ? `<div class="note">${it.note}</div>` : "";
+
   content.innerHTML = `
     <div class="crumb">
       <span style="cursor:pointer" id="toHome">ภาพรวมทั้งหมด</span>
@@ -510,7 +725,63 @@ function selectItem(id){
     </div>
     ${roleTableBlock}
     ${actionsBlock}
-    ${statesBlock}`;
+    ${statesBlock}
+    ${noteBlock}`;
+  document.getElementById("toHome").onclick=renderOverview;
+  window.scrollTo(0,0);
+}
+
+/* ---- coverage / gap view ---- */
+function renderCoverage(){
+  activeItem='__coverage__'; renderSidebar();
+  const map={done:'✅ ทำเกือบครบ',partial:'🟡 ทำบางส่วน',none:'⬜ ยังไม่เริ่ม'};
+  const rows = COVERAGE.map(c=>`
+    <tr>
+      <td class="cov-sec">${c.sec}</td>
+      <td><b>${c.name}</b></td>
+      <td><span class="cov-badge ${c.status}">${map[c.status]}</span></td>
+      <td class="cov-note">${c.note}</td>
+    </tr>`).join("");
+
+  content.innerHTML = `
+    <div class="crumb"><span style="cursor:pointer" id="toHome">ภาพรวมทั้งหมด</span><span class="sep">›</span><b>สรุปความคืบหน้า &amp; สิ่งที่ยังขาด</b></div>
+    <div class="detail-head"><h2 class="title">สรุปความคืบหน้า &amp; สิ่งที่ยังขาด</h2></div>
+    <p class="lead">เทียบสิ่งที่พัฒนาไปแล้ว (Phase 0–8) กับ module spec ฉบับเต็ม (หมวด A–N) เพื่อให้เห็นชัดว่าทำไปแค่ไหนและเหลืออะไร</p>
+
+    <div class="section why" style="border-color:var(--primary);background:var(--primary-soft)">
+      <h3 style="color:var(--primary)"><span class="bar" style="background:var(--primary)"></span>ข้อควรรู้สำคัญที่สุด</h3>
+      <p>ตอนนี้ทั้ง 14 หมวดของ spec <b>มีหน้าจอครบแล้วในระดับ prototype</b> — แต่ทุกเมนูยัง <b>กดเล่นได้ โดยข้อมูลไม่ถูกบันทึกจริง</b> refresh แล้วข้อมูลกลับเป็นเดิม เพราะระบบยัง <b>ไม่มีฐานข้อมูล (database) ไม่มี backend/API และไม่มีระบบเข้าสู่ระบบจริง</b> นี่คือด่านสุดท้ายก่อนใช้งานจริง (ดู 3 ชิ้นที่ต้องเพิ่มด้านล่าง)</p>
+    </div>
+
+    <div class="cov-summary">
+      <div class="cov-stat"><div class="n" style="color:var(--success)">11</div><div class="l">หมวดที่ทำครบ</div></div>
+      <div class="cov-stat"><div class="n" style="color:var(--gold)">3</div><div class="l">หมวดที่เหลือรายละเอียดย่อย</div></div>
+      <div class="cov-stat"><div class="n" style="color:var(--ink-subtle)">0</div><div class="l">หมวดที่ยังไม่เริ่ม</div></div>
+    </div>
+
+    <div class="section">
+      <h3><span class="bar"></span>เทียบรายหมวด (A–N) จากทั้งหมด 14 หมวด</h3>
+      <div style="overflow-x:auto"><table class="cov-table">${rows}</table></div>
+    </div>
+
+    <div class="section">
+      <h3><span class="bar"></span>สิ่งที่ยังเหลือ (หน้าจอครบแล้ว เหลือทำให้ใช้ได้จริง)</h3>
+      <ul class="actions">
+        <li><span class="num">1</span><span><b>ระบบเก็บข้อมูลจริง (database + API + ที่เก็บไฟล์)</b> — เรื่องใหญ่ที่สุดที่เหลืออยู่ ทุกหน้าจอพร้อมแล้ว แต่ยังไม่ผูกกับที่เก็บข้อมูลจริง</span></li>
+        <li><span class="num">2</span><span><b>workflow เผยแพร่ / ฉบับร่างของหลักสูตร (B1)</b> และ <b>การอัปโหลดเอกสารประกอบวิชา (B4)</b> ยังไม่เต็ม</span></li>
+        <li><span class="num">3</span><span><b>การออกใบเสร็จ (D4)</b> และ <b>การแจ้งเตือนค้างชำระ (D7)</b> ในหมวดการเงิน</span></li>
+        <li><span class="num">4</span><span><b>ระบบนับวันครบกำหนด (SLA) ของการเทียบโอน (I4)</b> — ตอนนี้เป็นแค่การเรียงลำดับ ยังไม่ใช่ระบบเตือนจริง</span></li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h3><span class="bar"></span>ถ้าต้องการให้ระบบ “เก็บข้อมูลจริง” ต้องเพิ่ม 3 ชิ้น</h3>
+      <div class="db-item"><div class="di-ico">DB</div><div><b>Database (ฐานข้อมูล)</b><br><span class="cov-note">ที่เก็บข้อมูลถาวร — ผู้เรียน การชำระเงิน การลงทะเบียน คำขอเทียบโอน • แนะนำ Neon (Postgres) ต่อผ่าน Vercel</span></div></div>
+      <div class="db-item"><div class="di-ico">API</div><div><b>Backend / API</b><br><span class="cov-note">ตัวกลางรับคำสั่งจากหน้าเว็บไปเขียน/อ่าน database • Next.js ทำได้ในโปรเจกต์เดิม ไม่ต้องแยกเซิร์ฟเวอร์</span></div></div>
+      <div class="db-item"><div class="di-ico">📎</div><div><b>File Storage (ที่เก็บไฟล์)</b><br><span class="cov-note">เก็บสลิปโอนเงิน เอกสาร รูปภาพ ที่เก็บใน database ไม่ได้ • แนะนำ Vercel Blob</span></div></div>
+    </div>
+
+    <div class="note">การเทียบนี้อิงจากโค้ดจริงในโปรเจกต์ (app/admin) และ module spec (docs/11-back-office-module-spec.md) ณ ปัจจุบัน</div>`;
   document.getElementById("toHome").onclick=renderOverview;
   window.scrollTo(0,0);
 }

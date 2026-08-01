@@ -136,7 +136,7 @@ export function PaymentDetailClient({ initialPayment }: PaymentDetailClientProps
                       </Link>
                     ),
                   },
-                  { label: "รหัสนักศึกษา", value: <span className="font-mono">{student.studentCode}</span> },
+                  { label: "รหัสผู้เรียน", value: <span className="font-mono">{student.studentCode}</span> },
                   { label: "คณะ", value: student.faculty },
                   { label: "ระดับการศึกษา", value: student.educationLevel },
                   { label: "อีเมล", value: student.email },

@@ -159,7 +159,7 @@ export function SubjectDetailView({ subject }: { subject: Subject }) {
     { key: "student", header: "ผู้เรียน", cell: (r) => getStudentName(r.studentId) },
     {
       key: "code",
-      header: "รหัสนักศึกษา",
+      header: "รหัสผู้เรียน",
       cell: (r) => getStudentById(r.studentId)?.studentCode ?? "—",
       hideOnMobile: true,
     },
@@ -440,10 +440,10 @@ export function SubjectDetailView({ subject }: { subject: Subject }) {
             </div>
           </Panel>
 
-          <Panel title="ผู้สอน">
+          <Panel title="อาจารย์">
             <MultiSelectList
               id="s-teachers"
-              label="ผู้สอนประจำวิชา"
+              label="อาจารย์ประจำวิชา"
               options={teachers.map((t) => ({ id: t.id, label: t.name, hint: t.title }))}
               selectedIds={values.teacherIds}
               onChange={(ids) => updateField("teacherIds", ids)}

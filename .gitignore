@@ -34,3 +34,4 @@ entities.json
 
 # Playwright MCP debug artifacts
 .playwright-mcp/
+.env*

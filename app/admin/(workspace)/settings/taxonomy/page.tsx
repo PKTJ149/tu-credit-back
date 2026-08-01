@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { ArrowDown, ArrowUp, Ban, CheckCircle2, MoreHorizontal, Pencil, Plus, ShieldAlert, Tags, Trash2 } from "lucide-react";
+import { Ban, CheckCircle2, MoreHorizontal, Pencil, Plus, ShieldAlert, Tags, Trash2 } from "lucide-react";
 
 import { PageHeader } from "@/components/admin/page-header";
 import { Panel } from "@/components/admin/detail-panel";
@@ -22,6 +22,7 @@ import { useStaffSession } from "@/lib/admin/staff-session";
 import { TAXONOMY_KIND_HINT, TAXONOMY_KIND_LABEL, taxonomyTerms as initialTaxonomyTerms } from "@/lib/admin/mock-settings";
 import type { TaxonomyKind, TaxonomyTerm } from "@/lib/admin/types";
 import { TaxonomyTermSheet, type TaxonomyTermFormValues } from "./taxonomy-term-sheet";
+import { ReorderControls } from "@/components/admin/reorder-controls";
 
 const KIND_ORDER: TaxonomyKind[] = ["faculty", "education-level", "subject-category", "grade-scale"];
 
@@ -138,27 +139,14 @@ function TaxonomyManager() {
               header: "ลำดับ",
               width: "w-24",
               cell: (row) => (
-                <div className="flex items-center gap-1">
-                  <span className="font-mono text-xs text-[var(--ink-muted)]">{row.order}</span>
-                  <Button
-                    size="icon-xs"
-                    variant="ghost"
-                    disabled={row.order === 1}
-                    onClick={() => moveTerm(kind, row.id, "up")}
-                    aria-label={`เลื่อน "${row.value}" ขึ้น`}
-                  >
-                    <ArrowUp className="size-3" aria-hidden />
-                  </Button>
-                  <Button
-                    size="icon-xs"
-                    variant="ghost"
-                    disabled={row.order === rows.length}
-                    onClick={() => moveTerm(kind, row.id, "down")}
-                    aria-label={`เลื่อน "${row.value}" ลง`}
-                  >
-                    <ArrowDown className="size-3" aria-hidden />
-                  </Button>
-                </div>
+                <ReorderControls
+                  position={row.order}
+                  itemLabel={row.value}
+                  canMoveUp={row.order > 1}
+                  canMoveDown={row.order < rows.length}
+                  onMoveUp={() => moveTerm(kind, row.id, "up")}
+                  onMoveDown={() => moveTerm(kind, row.id, "down")}
+                />
               ),
             },
             {

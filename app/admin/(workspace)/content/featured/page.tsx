@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
-import { AlertTriangle, ArrowDown, ArrowUp, ImageOff, MoreHorizontal, Plus, Sparkles, Trash2 } from "lucide-react";
+import { AlertTriangle, ImageOff, MoreHorizontal, Plus, Sparkles, Trash2 } from "lucide-react";
 
 import { PageHeader } from "@/components/admin/page-header";
 import { DataTable, type Column } from "@/components/admin/data-table";
@@ -28,6 +28,7 @@ import {
 import type { FeaturedEntry } from "@/lib/admin/types";
 import { cn } from "@/lib/utils";
 import { FeaturedPickerSheet } from "./featured-picker-sheet";
+import { ReorderControls } from "@/components/admin/reorder-controls";
 
 type Slot = FeaturedEntry["slot"];
 const SLOTS: Slot[] = ["hero", "recommended", "popular"];
@@ -100,32 +101,19 @@ export default function FeaturedPage() {
         width: "w-24",
         cell: (entry) => {
           const index = list.findIndex((e) => e.id === entry.id);
+          // The label names the program or subject, not just the direction: a
+          // dozen buttons all announcing "เลื่อนขึ้น" tell a screen-reader user
+          // nothing about which row they are about to move.
+          const name = getFeaturedCatalogueItem(entry)?.name ?? entry.itemId;
           return (
-            <div className="flex items-center gap-1">
-              <span className="font-mono text-xs tabular-nums text-[var(--ink-subtle)]">{index + 1}</span>
-              <div className="flex flex-col">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  aria-label="เลื่อนขึ้น"
-                  disabled={index === 0}
-                  onClick={() => move(entry, "up")}
-                >
-                  <ArrowUp className="size-3" aria-hidden />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon-xs"
-                  aria-label="เลื่อนลง"
-                  disabled={index === list.length - 1}
-                  onClick={() => move(entry, "down")}
-                >
-                  <ArrowDown className="size-3" aria-hidden />
-                </Button>
-              </div>
-            </div>
+            <ReorderControls
+              position={index + 1}
+              itemLabel={name}
+              canMoveUp={index > 0}
+              canMoveDown={index < list.length - 1}
+              onMoveUp={() => move(entry, "up")}
+              onMoveDown={() => move(entry, "down")}
+            />
           );
         },
       },

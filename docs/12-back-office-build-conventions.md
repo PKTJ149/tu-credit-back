@@ -47,6 +47,7 @@ so rather than solving it locally.
 | Add/remove row list, checklist, field error, error summary | `StringListField`, `MultiSelectList`, `FieldError`, `FormErrorSummary` | `@/components/admin/form-fields` |
 | A subject's enrolment | `subjectEnrolment` | `@/lib/admin/mock-academic` |
 | Publish lifecycle labels and tones | `publishStateLabel`, `publishStateTone`, `publishStateLearnerEffect` | `@/lib/admin/publish-state` |
+| Move an item up/down in an ordered list | `ReorderControls` | `@/components/admin/reorder-controls` |
 | Icons | `lucide-react` only |  |
 
 **Never render a raw ISO date.** `2026-07-30` is not a date a Thai officer reads;
@@ -139,6 +140,20 @@ novelty. The tool should disappear into the work.
   table underneath for exact figures. Recharts clips an over-long category tick
   rather than shortening it, and on a horizontal chart the cut lands on the
   *front* of the label — supply a custom tick that truncates from the end.
+- **Icon-only controls are `size="icon-sm"` (32px) or larger, never `icon-xs`.**
+  Four screens each hand-rolled a reorder pair at 24px — the WCAG 2.5.8 floor
+  exactly, stacked with no gap, two adjacent targets doing opposite things. Use
+  `ReorderControls`; it owns the size decision.
+- **A control's accessible name says *which* thing it acts on.** Twelve buttons
+  all announcing "เลื่อนขึ้น" tell a screen-reader user nothing. Name the row.
+- **One word per concept.** The learner is **ผู้เรียน** (never นักเรียน); the
+  people behind the อาจารย์ menu are **อาจารย์** everywhere they are those
+  records — `ผู้สอน` is only for `ScheduleItem.teacher`, which is free text and
+  not a `Teacher` at all.
+- **Focus rings are measured, not eyeballed.** `--ring` shipped from the theme
+  export at 1.26:1 against the page — invisible. Components draw it at 50%
+  alpha, so the token must clear 3:1 *after* that blend (WCAG 2.4.11). It now
+  measures 3.24-3.33. Never take a theme's ring colour on trust.
 - **Keep table labels short.** A cell is not a place to spell out a definition;
   if a label needs the long form, keep a separate `*Long` map for detail screens.
 - **Validate on submit, not on blur.** Radix focuses a dialog's first field on

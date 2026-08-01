@@ -160,7 +160,7 @@ export function ProgramDetailView({ program }: { program: Program }) {
     { key: "student", header: "ผู้เรียน", cell: (r) => getStudentName(r.studentId) },
     {
       key: "code",
-      header: "รหัสนักศึกษา",
+      header: "รหัสผู้เรียน",
       cell: (r) => getStudentById(r.studentId)?.studentCode ?? "—",
       hideOnMobile: true,
     },
@@ -443,10 +443,10 @@ export function ProgramDetailView({ program }: { program: Program }) {
             </div>
           </Panel>
 
-          <Panel title="ผู้สอน">
+          <Panel title="อาจารย์">
             <MultiSelectList
               id="p-teachers"
-              label="ผู้สอนประจำหลักสูตร"
+              label="อาจารย์ประจำหลักสูตร"
               options={teachers.map((t) => ({ id: t.id, label: t.name, hint: t.title }))}
               selectedIds={values.teacherIds}
               onChange={(ids) => updateField("teacherIds", ids)}
