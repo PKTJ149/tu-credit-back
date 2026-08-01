@@ -9,25 +9,42 @@
 
 import type { LucideIcon } from "lucide-react";
 import {
+  Award,
+  BadgeCheck,
+  BarChart3,
+  BellRing,
   BookOpen,
   Building2,
   CalendarDays,
+  CircleDollarSign,
   ClipboardList,
   FileBadge,
   FileClock,
+  FileText,
+  Folder,
   GraduationCap,
+  History,
   LayoutDashboard,
+  LayoutPanelTop,
   Landmark,
   Layers,
+  LifeBuoy,
   ListChecks,
+  Megaphone,
+  Newspaper,
   Receipt,
   RefreshCcw,
   Repeat2,
   Scale,
+  Sparkles,
+  Star,
+  Tags,
   Undo2,
   UserCog,
   Users,
+  UsersRound,
   Wallet,
+  Wrench,
 } from "lucide-react";
 
 import type { StaffRole } from "./types";
@@ -97,7 +114,50 @@ export const navGroups: NavGroup[] = [
   {
     label: "ผลการเรียน",
     items: [
-      { label: "บันทึกผลการเรียน", href: "/admin/grades", icon: FileBadge, roles: TEACHING, upcoming: true },
+      { label: "บันทึกผลการเรียน", href: "/admin/grades", icon: FileBadge, roles: TEACHING },
+      { label: "หน่วยกิตสะสม", href: "/admin/credits", icon: Award, roles: STAFF },
+      { label: "ใบรับรอง", href: "/admin/certificates", icon: BadgeCheck, roles: STAFF },
+      { label: "ใบแสดงผลการเรียน", href: "/admin/transcripts", icon: FileText, roles: STAFF },
+    ],
+  },
+  {
+    label: "เนื้อหาเว็บไซต์",
+    items: [
+      { label: "ข่าวและกิจกรรม", href: "/admin/content/news", icon: Newspaper, roles: STAFF },
+      { label: "แบนเนอร์หน้าแรก", href: "/admin/content/banners", icon: LayoutPanelTop, roles: STAFF },
+      { label: "หลักสูตรแนะนำ", href: "/admin/content/featured", icon: Sparkles, roles: STAFF },
+      { label: "ศูนย์ช่วยเหลือ", href: "/admin/content/help", icon: LifeBuoy, roles: STAFF },
+      { label: "หน้าเนื้อหา", href: "/admin/content/pages", icon: FileText, roles: STAFF },
+      { label: "นโยบายและข้อตกลง", href: "/admin/content/legal", icon: Scale, roles: ADMIN_ONLY },
+      { label: "คลังสื่อ", href: "/admin/content/media", icon: Folder, roles: STAFF },
+    ],
+  },
+  {
+    label: "รีวิวและคะแนน",
+    items: [{ label: "คิวตรวจรีวิว", href: "/admin/reviews", icon: Star, roles: STAFF }],
+  },
+  {
+    label: "รายงาน",
+    items: [
+      { label: "ยอดลงทะเบียน", href: "/admin/reports/enrollment", icon: BarChart3, roles: ADMIN_ONLY },
+      { label: "รายได้", href: "/admin/reports/revenue", icon: CircleDollarSign, roles: ADMIN_ONLY },
+      { label: "ภาระงานอาจารย์", href: "/admin/reports/workload", icon: UsersRound, roles: ADMIN_ONLY },
+    ],
+  },
+  {
+    label: "การสื่อสาร",
+    items: [
+      { label: "ประกาศถึงผู้เรียน", href: "/admin/announcements", icon: Megaphone, roles: STAFF },
+      { label: "เทมเพลตการแจ้งเตือน", href: "/admin/notifications", icon: BellRing, roles: ADMIN_ONLY },
+    ],
+  },
+  {
+    label: "ตั้งค่าระบบ",
+    items: [
+      { label: "บัญชีเจ้าหน้าที่", href: "/admin/settings/staff", icon: Users, roles: ADMIN_ONLY },
+      { label: "ข้อมูลหลัก", href: "/admin/settings/taxonomy", icon: Tags, roles: ADMIN_ONLY },
+      { label: "ตั้งค่าทั่วไป", href: "/admin/settings/general", icon: Wrench, roles: ADMIN_ONLY },
+      { label: "บันทึกการใช้งาน", href: "/admin/settings/audit", icon: History, roles: ADMIN_ONLY },
     ],
   },
 ];
