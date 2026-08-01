@@ -46,11 +46,18 @@ so rather than solving it locally.
 | Dates | `formatThaiDate`, `formatThaiDateLong`, `daysBetween` | `@/lib/admin/format` |
 | Add/remove row list, checklist, field error, error summary | `StringListField`, `MultiSelectList`, `FieldError`, `FormErrorSummary` | `@/components/admin/form-fields` |
 | A subject's enrolment | `subjectEnrolment` | `@/lib/admin/mock-academic` |
+| Publish lifecycle labels and tones | `publishStateLabel`, `publishStateTone`, `publishStateLearnerEffect` | `@/lib/admin/publish-state` |
 | Icons | `lucide-react` only |  |
 
 **Never render a raw ISO date.** `2026-07-30` is not a date a Thai officer reads;
 `30 ก.ค. 2569` is. Three areas each solved this differently during phase 1-3,
 which is how one task showed a date three ways — hence one module.
+
+**Never label a state locally.** A state's Thai wording and its tone travel
+with the state, in one module — `lib/finance/payment-state.ts` set that pattern
+and `lib/admin/publish-state.ts` follows it. Two content areas each wrote their
+own copy during phase 6 and disagreed twice over, so the same draft article read
+as a different word in a different colour on two adjacent screens.
 
 **Never compute a subject's enrolment locally.** `Subject.enrolledCount` is
 unpopulated in the catalogue; `subjectEnrolment` derives it from live
@@ -120,6 +127,18 @@ novelty. The tool should disappear into the work.
   labelled buttons, and mark the column `stickyEnd: true` so it stays pinned to
   the right edge while the rest of the table scrolls under it. A control an
   officer cannot see is a control they do not have.
+- **Name a column after what it measures.** Two columns on the grade index
+  counted different populations — learners currently studying vs. learners a
+  grade can be recorded for — and reading "0" beside "3/3" looked like a bug
+  until the headers said which was which.
+- **Derive mock rows; don't hand-list them.** A hand-written seed of five grade
+  entries gave every roster exactly one learner, and a batch-entry screen with
+  one learner in it demonstrates nothing. Derive from the records that already
+  exist and overlay named exceptions for the states you need to show.
+- **Charts:** one form per report family, `--chart-*` tokens only, and a data
+  table underneath for exact figures. Recharts clips an over-long category tick
+  rather than shortening it, and on a horizontal chart the cut lands on the
+  *front* of the label — supply a custom tick that truncates from the end.
 - **Keep table labels short.** A cell is not a place to spell out a definition;
   if a label needs the long form, keep a separate `*Long` map for detail screens.
 - **Validate on submit, not on blur.** Radix focuses a dialog's first field on
