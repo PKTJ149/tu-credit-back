@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { ProfileDropdown } from "@/components/profile-dropdown";
@@ -42,15 +43,26 @@ export function PublicPageShell({ children, showBreadcrumb = true }: PublicPageS
       <header className="border-b border-[color:var(--border)] bg-[var(--background)]">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--primary)] text-sm font-semibold text-[var(--primary-foreground)]">
-              CB
-            </div>
+            {/* The mark is the TUCBS logo itself. No background tint behind it —
+                the artwork carries its own colour, and the institutional red
+                square would fight it. `object-contain` keeps the 2.5:1 emblem
+                undistorted inside the square box. */}
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl">
+              <Image
+                src="/images/tucbs-logo-trimmed.png"
+                alt="TUCBS"
+                width={830}
+                height={334}
+                priority
+                className="h-auto w-full object-contain"
+              />
+            </span>
             <div>
               <p className="text-sm font-medium text-[var(--ink-subtle)]">
-                มหาวิทยาลัยธรรมศาสตร์
+                Thammasat University
               </p>
               <p className="text-base font-semibold text-[var(--foreground)]">
-                Credit Bank
+                Credit Bank System (TUCBS)
               </p>
             </div>
           </Link>
@@ -118,7 +130,7 @@ export function PublicPageShell({ children, showBreadcrumb = true }: PublicPageS
 
       <footer className="border-t border-[color:var(--border)] bg-[var(--background)]">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 py-5 text-sm text-[var(--ink-subtle)] sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-          <p>Credit Bank มหาวิทยาลัยธรรมศาสตร์</p>
+          <p>Thammasat University Credit Bank System (TUCBS)</p>
           <div className="flex flex-wrap items-center gap-5">
             <Link href="/help" className="transition hover:text-[var(--foreground)]">
               ช่วยเหลือ

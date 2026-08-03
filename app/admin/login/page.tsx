@@ -52,7 +52,7 @@ export default function AdminLoginPage() {
             <ShieldCheck className="size-5" aria-hidden />
           </span>
           <span>
-            <span className="block text-sm font-semibold">Credit Bank มหาวิทยาลัยธรรมศาสตร์</span>
+            <span className="block text-sm font-semibold">Thammasat University Credit Bank System (TUCBS)</span>
             <span className="block text-xs text-[color:color-mix(in_oklch,var(--primary-foreground)_74%,transparent)]">
               ระบบหลังบ้านสำหรับเจ้าหน้าที่
             </span>

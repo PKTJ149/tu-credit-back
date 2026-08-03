@@ -20,6 +20,7 @@ import {
 } from "@/lib/admin/mock-dashboard";
 import type { AdminPayment, AuditEntry, StaffUser, TransferCase } from "@/lib/admin/types";
 import { cn } from "@/lib/utils";
+import { ProportionBar, Reveal } from "@/components/admin/motion";
 
 const linkClass =
   "inline-flex w-fit items-center gap-1 rounded text-sm font-medium text-[var(--primary)] transition-colors hover:underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
@@ -131,6 +132,7 @@ export function SuperAdminDashboard({ staff }: { staff: StaffUser }) {
       <PageHeader title={`สวัสดี ${staff.name}`} description={headline} />
 
       <div className="grid gap-4 lg:grid-cols-2">
+        <Reveal index={0} className="min-w-0">
         <Panel
           className="min-w-0"
           title="การชำระเงินรอตรวจสอบ"
@@ -155,7 +157,9 @@ export function SuperAdminDashboard({ staff }: { staff: StaffUser }) {
             <PanelLink href="/admin/payments">ไปที่คิวรออนุมัติการชำระเงิน</PanelLink>
           </div>
         </Panel>
+        </Reveal>
 
+        <Reveal index={1} className="min-w-0">
         <Panel
           className="min-w-0"
           title="คำขอเทียบโอนหน่วยกิต"
@@ -180,9 +184,11 @@ export function SuperAdminDashboard({ staff }: { staff: StaffUser }) {
             <PanelLink href="/admin/transfers">ไปที่คำขอรอตรวจสอบ</PanelLink>
           </div>
         </Panel>
+        </Reveal>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
+        <Reveal index={2}>
         <Panel title="รายได้">
           <div className="space-y-3">
             <div className="flex items-baseline justify-between gap-4">
@@ -197,26 +203,19 @@ export function SuperAdminDashboard({ staff }: { staff: StaffUser }) {
                 </p>
               </div>
             </div>
-            <div
-              role="progressbar"
-              aria-valuenow={confirmedPct}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label="สัดส่วนรายได้ที่ยืนยันแล้วเทียบกับค้างรับ"
-              className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--surface-strong)]"
-            >
-              <div
-                className="h-full rounded-full bg-[var(--success)] transition-[width] duration-200"
-                style={{ width: `${confirmedPct}%` }}
-              />
-            </div>
+            <ProportionBar
+              percent={confirmedPct}
+              label="สัดส่วนรายได้ที่ยืนยันแล้วเทียบกับค้างรับ"
+            />
             <p className="text-xs text-[var(--ink-muted)]">
               ยืนยันแล้ว {revenue.confirmedCount} รายการ · ค้างรับ {revenue.outstandingCount} รายการ
             </p>
             <PanelLink href="/admin/payments/all">ดูรายการชำระเงินทั้งหมด</PanelLink>
           </div>
         </Panel>
+        </Reveal>
 
+        <Reveal index={3}>
         <Panel title="ที่นั่งและความจุ">
           <div className="space-y-3">
             <p className="text-sm leading-6 text-pretty">
@@ -233,7 +232,9 @@ export function SuperAdminDashboard({ staff }: { staff: StaffUser }) {
             </PanelLink>
           </div>
         </Panel>
+        </Reveal>
 
+        <Reveal index={4}>
         <Panel title="ภาคการศึกษาปัจจุบัน">
           <div className="space-y-3">
             <p className="text-sm leading-6 text-pretty">
@@ -244,8 +245,10 @@ export function SuperAdminDashboard({ staff }: { staff: StaffUser }) {
             <PanelLink href="/admin/terms">ไปที่หน้าภาคการศึกษา</PanelLink>
           </div>
         </Panel>
+        </Reveal>
       </div>
 
+      <Reveal index={5}>
       <Panel title="กิจกรรมล่าสุดของเจ้าหน้าที่" description="การดำเนินการล่าสุดของเจ้าหน้าที่ทุกคนในระบบ" flush>
         <DataTable
           columns={auditColumns}
@@ -260,6 +263,7 @@ export function SuperAdminDashboard({ staff }: { staff: StaffUser }) {
           <PanelLink href="/admin/settings/audit">ดูบันทึกการใช้งานทั้งหมด</PanelLink>
         </div>
       </Panel>
+      </Reveal>
     </>
   );
 }

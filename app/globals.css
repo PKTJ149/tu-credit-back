@@ -300,3 +300,65 @@ input::placeholder {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ==========================================================================
+   Back office motion
+   --------------------------------------------------------------------------
+   Scoped to `.admin-*` classes so none of this reaches the learner site.
+
+   Two rules govern everything here, both from the product register: motion
+   conveys state rather than decorating, and a reveal enhances an
+   already-visible default. Every animated element's *resting* style is its
+   final visible style; `@starting-style` supplies the transient entry state.
+   If transitions never run — a hidden tab, a headless renderer, reduced
+   motion — the content is simply there, fully rendered. Nothing is gated
+   behind an animation.
+   ========================================================================== */
+
+:root {
+  /* Exponential ease-out. No bounce, no elastic. */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --admin-reveal-duration: 260ms;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .admin-reveal {
+    opacity: 1;
+    translate: 0 0;
+    transition:
+      opacity var(--admin-reveal-duration) var(--ease-out-quint) var(--admin-reveal-delay, 0ms),
+      translate var(--admin-reveal-duration) var(--ease-out-quint) var(--admin-reveal-delay, 0ms);
+  }
+
+  @starting-style {
+    .admin-reveal {
+      opacity: 0;
+      translate: 0 6px;
+    }
+  }
+
+  /* Grows from nothing on first paint so the ratio is read as a proportion
+     rather than found as a static bar, then morphs whenever the value moves.
+     scaleX, not width: width is a layout property and would cost a reflow
+     every frame. */
+  .admin-bar-fill {
+    transform: scaleX(var(--admin-bar-scale, 1));
+    transform-origin: left center;
+    transition: transform 520ms var(--ease-out-quint);
+  }
+
+  @starting-style {
+    .admin-bar-fill {
+      transform: scaleX(0);
+    }
+  }
+}
+
+/* Reduced motion keeps the same final geometry — the bar is still a bar, it
+   just arrives instead of growing. */
+@media (prefers-reduced-motion: reduce) {
+  .admin-bar-fill {
+    transform: scaleX(var(--admin-bar-scale, 1));
+    transform-origin: left center;
+  }
+}

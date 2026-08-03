@@ -12,6 +12,7 @@ import type { ScheduleSession } from "@/lib/admin/mock-schedule";
 import { getTeacherSubjects, getTeacherUngradedCompletions, getTeacherUpcomingSessions } from "@/lib/admin/mock-dashboard";
 import type { AdminRegistration, StaffUser } from "@/lib/admin/types";
 import type { Subject } from "@/lib/discovery/types";
+import { Reveal } from "@/components/admin/motion";
 
 const linkClass =
   "inline-flex w-fit items-center gap-1 rounded text-sm font-medium text-[var(--primary)] transition-colors hover:underline focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50";
@@ -145,6 +146,7 @@ export function TeacherDashboard({ staff }: { staff: StaffUser }) {
     <TooltipProvider>
       <PageHeader title={`สวัสดี ${staff.name}`} description={headline} />
 
+      <Reveal index={0}>
       <Panel title="คาบเรียนที่จะถึง" description="คาบเรียนของรายวิชาที่คุณสอน เรียงตามวันที่ใกล้ที่สุดก่อน" flush>
         <DataTable
           columns={sessionColumns}
@@ -163,7 +165,9 @@ export function TeacherDashboard({ staff }: { staff: StaffUser }) {
           <PanelLink href="/admin/schedule">ไปที่ตารางเรียนทั้งหมด</PanelLink>
         </div>
       </Panel>
+      </Reveal>
 
+      <Reveal index={1}>
       <Panel title="รายวิชาที่คุณสอน" description="จำนวนผู้ลงทะเบียนของแต่ละรายวิชาที่มอบหมายให้คุณ" flush>
         <DataTable
           columns={subjectColumns}
@@ -180,7 +184,9 @@ export function TeacherDashboard({ staff }: { staff: StaffUser }) {
           }
         />
       </Panel>
+      </Reveal>
 
+      <Reveal index={2}>
       <Panel
         title="ผลการเรียนที่ยังไม่บันทึก"
         description="ผู้เรียนที่เรียนจบรายวิชาของคุณแล้วแต่ยังไม่มีการบันทึกผลการเรียน"
@@ -203,6 +209,7 @@ export function TeacherDashboard({ staff }: { staff: StaffUser }) {
           <PanelLink href="/admin/grades">ไปที่หน้าบันทึกผลการเรียน</PanelLink>
         </div>
       </Panel>
+      </Reveal>
     </TooltipProvider>
   );
 }

@@ -17,9 +17,9 @@ const plexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "เข้าสู่ระบบ | Credit Bank มหาวิทยาลัยธรรมศาสตร์",
+  title: "เข้าสู่ระบบ | TUCBS — Thammasat University Credit Bank System",
   description:
-    "เข้าสู่ระบบ Credit Bank มหาวิทยาลัยธรรมศาสตร์ เพื่อจัดการการลงทะเบียน การชำระเงิน และความก้าวหน้าการเรียนรู้",
+    "เข้าสู่ระบบ TUCBS (Thammasat University Credit Bank System) เพื่อจัดการการลงทะเบียน การชำระเงิน และความก้าวหน้าการเรียนรู้",
 };
 
 export default function RootLayout({

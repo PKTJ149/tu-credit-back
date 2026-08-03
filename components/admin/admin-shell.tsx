@@ -37,7 +37,7 @@ function SidebarBrand() {
       </span>
       <span className="min-w-0">
         <span className="block truncate text-sm font-semibold text-[var(--sidebar-foreground)]">
-          Credit Bank
+          TUCBS
         </span>
         <span className="block truncate text-[11px] text-[color:color-mix(in_oklch,var(--sidebar-foreground)_58%,transparent)]">
           ระบบหลังบ้าน

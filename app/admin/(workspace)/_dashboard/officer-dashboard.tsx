@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/admin/empty-state";
 import { formatThaiDate } from "@/lib/admin/format";
 import { getOfficerWorklist, getStaffRecentActions, type OfficerTask, type OfficerTaskKind } from "@/lib/admin/mock-dashboard";
 import type { AuditEntry, StaffUser } from "@/lib/admin/types";
+import { Reveal } from "@/components/admin/motion";
 
 const KIND_ICON: Record<OfficerTaskKind, LucideIcon> = {
   payment: Wallet,
@@ -85,6 +86,7 @@ export function OfficerDashboard({ staff }: { staff: StaffUser }) {
     <>
       <PageHeader title="งานของคุณวันนี้" description={headline} />
 
+      <Reveal index={0}>
       <Panel title="งานที่ต้องทำวันนี้" description="เรียงจากเร่งด่วนที่สุดไปหาน้อยที่สุด" flush>
         <DataTable
           columns={worklistColumns}
@@ -101,7 +103,9 @@ export function OfficerDashboard({ staff }: { staff: StaffUser }) {
           }
         />
       </Panel>
+      </Reveal>
 
+      <Reveal index={1}>
       <Panel title="การดำเนินการล่าสุดของคุณ" description="สิ่งที่คุณดำเนินการล่าสุดในระบบ" flush>
         <DataTable
           columns={auditColumns}
@@ -117,6 +121,7 @@ export function OfficerDashboard({ staff }: { staff: StaffUser }) {
           }
         />
       </Panel>
+      </Reveal>
     </>
   );
 }
